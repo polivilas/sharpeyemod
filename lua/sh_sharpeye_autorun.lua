@@ -17,5 +17,7 @@ if (CLIENT) then
 	if (sharpeye and sharpeye.Unmount) then sharpeye.Unmount() end
 	sharpeye = {}
 	
+	include("cl_sharpeye_base.lua")
 	include("cl_sharpeye_version.lua")
+	include("cl_sharpeye_cvar_custom.lua")
 end
