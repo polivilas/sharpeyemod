@@ -16,8 +16,11 @@ SHARPEYE_NAME = "SharpeYe"
 if (CLIENT) then
 	if (sharpeye and sharpeye.Unmount) then sharpeye.Unmount() end
 	sharpeye = {}
+	sharpeye_dat = {}
 	
 	include("cl_sharpeye_base.lua")
 	include("cl_sharpeye_version.lua")
 	include("cl_sharpeye_cvar_custom.lua")
+	
+	sharpeye.Mount()
 end
