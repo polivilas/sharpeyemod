@@ -13,7 +13,7 @@ end
 
 SHARPEYE_NAME = "SharpeYe"
 
-if (CLIENT) then
+if (CLIENT or SinglePlayer()) then
 	if (sharpeye and sharpeye.Unmount) then sharpeye.Unmount() end
 	sharpeye = {}
 	sharpeye_dat = {}

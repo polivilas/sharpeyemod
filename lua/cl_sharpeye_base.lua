@@ -66,9 +66,9 @@ function sharpeye.DiceNoRepeat( myTable, lastUsed )
 	return dice
 end
 
-function sharpeye.PlayerFootstep( ply, pos, foot, sound, volume, rf ) 
+function sharpeye.PlayerFootstep( ply, pos, foot, sound, volume, rf )
 	if not sharpeye.IsEnabled() then return end
-	if not ply == LocalPlayer() then return end
+	if not SinglePlayer() and not ply == LocalPlayer() then return end
 
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye_dat.player_RunSpeed
 	local clampedSpeed = (relativeSpeed > 1) and 1 or relativeSpeed
@@ -77,6 +77,7 @@ function sharpeye.PlayerFootstep( ply, pos, foot, sound, volume, rf )
 	local isInModerateWater = (ply:WaterLevel() == 1) or (ply:WaterLevel() == 2)
 	
 	if not isInDeepWater and not isInModerateWater then
+	
 		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.footsteps, sharpeye_dat.footsteps_LastPlayed)
 		sharpeye_dat.footsteps_LastPlayed = dice
 		
@@ -148,8 +149,16 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_core_enable", "1", true, false)
 	sharpeye.InitializeData()
 	
-	hook.Add("PlayerFootstep", "sharpeye_PlayerFootstep", sharpeye.PlayerFootstep)
-	hook.Add("Think", "sharpeye_Think", sharpeye.Think)
+	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
+		--If SinglePlayer, hook this server-side
+		hook.Add("PlayerFootstep", "sharpeye_PlayerFootstep", sharpeye.PlayerFootstep)
+		
+	end
+	
+	if CLIENT then
+		hook.Add("Think", "sharpeye_Think", sharpeye.Think)
+		
+	end
 	
 	print("[ " .. SHARPEYE_NAME .. " is now mounted. ]")
 	print("")
@@ -159,7 +168,15 @@ function sharpeye.Unmount()
 	print("")
 	print("] Unmounting " .. SHARPEYE_NAME .. " ... [")
 
-	hook.Remove("PlayerFootstep", "sharpeye_PlayerFootstep")
+	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
+		hook.Remove("PlayerFootstep", "sharpeye_PlayerFootstep")
+		
+	end
+	
+	if CLIENT then
+		hook.Remove("Think", "sharpeye_Think")
+			
+	end
 	
 	sharpeye = nil
 	sharpeye_dat = nil
