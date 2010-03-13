@@ -7,6 +7,15 @@
 // Shared Autorun                             //
 ////////////////////////////////////////////////
 
+if SHARPEYE_DEBUG == nil then
+	SHARPEYE_DEBUG = false
+end
+
+SHARPEYE_NAME = "SharpeYe"
+
 if (CLIENT) then
-	print("Loading SharpeYe")
+	if (sharpeye and sharpeye.Unmount) then sharpeye.Unmount() end
+	sharpeye = {}
+	
+	include("cl_sharpeye_version.lua")
 end

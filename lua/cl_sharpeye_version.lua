@@ -11,11 +11,11 @@ local MY_VERSION = tonumber(string.Explode( "\n", file.Read("sharpeye.txt"))[1])
 local SVN_VERSION = nil
 local DOWNLOAD_LINK = nil
 
-function dhinline.GetVersionData()
+function sharpeye.GetVersionData()
 	return MY_VERSION, SVN_VERSION, DOWNLOAD_LINK
 end
 
-function dhinline.GetVersion( contents , size )
+function sharpeye.GetVersion( contents , size )
 	--Taken from RabidToaster Achievements mod.
 	local split = string.Explode( "\n", contents )
 	local version = tonumber( split[ 1 ] or "" )
@@ -33,4 +33,4 @@ function dhinline.GetVersion( contents , size )
 	
 	--print( MY_VERSION , SVN_VERSION , DOWNLOAD_LINK )
 end
-http.Get( "http://sharpeyemod.googlecode.com/svn/trunk/data/sharpeyemod.txt", "", dhinline.GetVersion )
+http.Get( "http://sharpeyemod.googlecode.com/svn/trunk/data/sharpeyemod.txt", "", sharpeye.GetVersion )
