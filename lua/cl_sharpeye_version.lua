@@ -33,4 +33,4 @@ function sharpeye.GetVersion( contents , size )
 	
 	--print( MY_VERSION , SVN_VERSION , DOWNLOAD_LINK )
 end
-http.Get( "http://sharpeyemod.googlecode.com/svn/trunk/data/sharpeyemod.txt", "", sharpeye.GetVersion )
+http.Get( "http://sharpeyemod.googlecode.com/svn/trunk/data/sharpeye.txt", "", sharpeye.GetVersion )

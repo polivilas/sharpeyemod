@@ -19,8 +19,12 @@ if (CLIENT or SinglePlayer()) then
 	sharpeye_dat = {}
 	
 	include("cl_sharpeye_base.lua")
+	include("cl_sharpeye_motion.lua")
+	include("cl_sharpeye_sound.lua")
+	--include("cl_sharpeye_vision.lua")
 	include("cl_sharpeye_version.lua")
 	include("cl_sharpeye_cvar_custom.lua")
+	include("cl_sharpeye_menu.lua")
 	
 	sharpeye.Mount()
 end
