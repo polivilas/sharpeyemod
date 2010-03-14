@@ -61,6 +61,7 @@ function sharpeye.InitializeData()
 	sharpeye_dat.player_TimeOffGroundWhenLanding = 0
 	
 	sharpeye_dat.player_PitchInfluence = 0
+	sharpeye_dat.player_RollChange = 0
 	
 	sharpeye_dat.player_TimeShift = 0
 	
@@ -228,10 +229,12 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 	local pitchMod = sharpeye_dat.player_PitchInfluence - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * 2) or 0)
 	
+	local rollCalc = (relativeSpeed > 1) and (math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y) * 0.2) or 0
+	sharpeye_dat.player_RollChange = sharpeye_dat.player_RollChange + (rollCalc - sharpeye_dat.player_RollChange) * math.Clamp( 0.2 * FrameTime() * 25 , 0 , 1 )
 	
 	view.angles.p = view.angles.p + sharpeye.Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod
 	view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod
-	view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod
+	view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod - sharpeye_dat.player_RollChange
 
 	return view
 	
