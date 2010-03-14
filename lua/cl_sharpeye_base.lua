@@ -53,8 +53,21 @@ function sharpeye.InitializeData()
 	sharpeye_dat.player_LastRelSpeed = 0
 	sharpeye_dat.player_LastWaterLevel = 0
 	
+	sharpeye_dat.player_Stamina = 0
+	sharpeye_dat.player_StaminaSpeedFactor = 0.01
+	sharpeye_dat.player_StaminaRecover     = 0.97
+	
+	sharpeye_dat.player_TimeOffGround = 0
+	sharpeye_dat.player_TimeOffGroundWhenLanding = 0
+	
+	sharpeye_dat.player_PitchInfluence = 0
+	
+	sharpeye_dat.player_TimeShift = 0
+	
 	sharpeye_dat.bumpsounds_LastTime = 0
 	sharpeye_dat.bumpsounds_delay    = 0.1
+	
+	
 end
 
 function sharpeye.DiceNoRepeat( myTable, lastUsed )
@@ -68,7 +81,7 @@ end
 
 function sharpeye.PlayerFootstep( ply, pos, foot, sound, volume, rf )
 	if not sharpeye.IsEnabled() then return end
-	if not SinglePlayer() and not ply == LocalPlayer() then return end
+	if not SinglePlayer() and not (ply == LocalPlayer()) then return end
 
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye_dat.player_RunSpeed
 	local clampedSpeed = (relativeSpeed > 1) and 1 or relativeSpeed
@@ -111,6 +124,16 @@ function sharpeye.Think( )
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye_dat.player_RunSpeed
 	local clampedSpeed = (relativeSpeed > 1) and 1 or relativeSpeed
 	
+	
+	sharpeye_dat.player_Stamina = sharpeye_dat.player_Stamina * sharpeye_dat.player_StaminaRecover + sharpeye_dat.player_StaminaSpeedFactor * relativeSpeed
+	sharpeye_dat.player_Stamina = (sharpeye_dat.player_Stamina > 1) and 1 or sharpeye_dat.player_Stamina
+	
+	if sharpeye_dat.player_TimeOffGroundWhenLanding > 0 then
+		sharpeye_dat.player_TimeOffGroundWhenLanding = 0
+	end
+	
+	--print(sharpeye_dat.player_Stamina)
+	
 	local shouldTriggerStopSound = (sharpeye_dat.player_LastRelSpeed - relativeSpeed) > 0.5
 	sharpeye_dat.player_LastRelSpeed = relativeSpeed
 	
@@ -120,6 +143,18 @@ function sharpeye.Think( )
 	local isInDeepWater = ply:WaterLevel() >= 3
 	local isInModerateWater = (ply:WaterLevel() == 1) or (ply:WaterLevel() == 2)
 	
+	if not ply:IsOnGround() then
+		if not isInDeepWater then
+			sharpeye_dat.player_TimeOffGround = sharpeye_dat.player_TimeOffGround + sharpeye_dat.bumpsounds_delay
+		else
+			sharpeye_dat.player_TimeOffGround = 0
+		end
+		
+	elseif sharpeye_dat.player_TimeOffGround > 0 then
+		sharpeye_dat.player_TimeOffGroundWhenLanding = sharpeye_dat.player_TimeOffGround
+		sharpeye_dat.player_TimeOffGround = 0	
+	
+	end
 	
 	if shouldTriggerStopSound and not shouldTriggerWaterFlop and not isInModerateWater and not isInDeepWater and (ply:GetMoveType() ~= MOVETYPE_NOCLIP) then
 		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.stops, sharpeye_dat.footsteps_LastPlayed)
@@ -136,6 +171,84 @@ function sharpeye.Think( )
 	end
 	
 	--return true
+end
+
+function sharpeye.Modulation( magic, speedMod, shift )
+	local aa = -1^magic        + (((0 + magic * 7 ) % 11) / 11) * 0.3
+	local bb = -1^(magic % 7)  + (((7 + magic * 11) % 29) / 29) * 0.3
+	local cc = -1^(magic % 11) + (((11 + magic * 3) % 37) / 37) * 0.3
+	
+	return math.sin( CurTime()*aa*speedMod + bb*6 + shift ) * math.sin( CurTime()*bb*speedMod + cc*6 + shift ) * math.sin( CurTime()*cc*speedMod + aa*6 + shift )
+end
+
+function sharpeye.CalcView( ply, origin, angles, fov )
+	if not sharpeye.IsEnabled() then return end
+
+	if not sharpeye_dat.player_view then
+		sharpeye_dat.player_view = {}
+	end
+	
+	local view = sharpeye_dat.player_view
+	view.origin = origin
+	view.angles = angles
+	view.fov = fov
+		
+	local wep = ply:GetActiveWeapon()
+	if ( ValidEntity( wep ) ) then
+	
+		local func = wep.GetViewModelPosition
+		if ( func ) then view.vm_origin,  view.vm_angles = func( wep, view.origin*1, view.angles*1 ) end
+		
+		local func = wep.CalcView
+		if ( func ) then view.origin, view.angles, view.fov = func( wep, ply, view.origin*1, view.angles*1, view.fov ) end
+	
+	end
+	
+	local relativeSpeed = ply:GetVelocity():Length() / sharpeye_dat.player_RunSpeed
+	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
+	
+	local shiftMod = sharpeye_dat.player_TimeShift + sharpeye_dat.player_Stamina * 0.3 * ( 1 + clampedSpeedCustom ) / 2
+	local distMod  = 1 + sharpeye_dat.player_Stamina * 15 * ( 2 + clampedSpeedCustom ) / 3
+	local breatheMod  = 1 + sharpeye_dat.player_Stamina * 30 * (1 - clampedSpeedCustom)^2
+	
+	sharpeye_dat.player_TimeShift = shiftMod
+	
+	view.origin.x = view.origin.x + sharpeye.Modulation(27, 1, shiftMod) * 1 * distMod
+	view.origin.y = view.origin.y + sharpeye.Modulation(16, 1, shiftMod) * 1 * distMod
+	view.origin.z = view.origin.z + sharpeye.Modulation(7 , 1, shiftMod) * 1 * distMod
+	
+	sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence * 0.75
+	--print(sharpeye_dat.player_PitchInfluence)
+	
+	if sharpeye_dat.player_TimeOffGroundWhenLanding > 0 then
+		local timeFactor = sharpeye_dat.player_TimeOffGroundWhenLanding
+		timeFactor = (timeFactor > 2) and 1 or (timeFactor / 2)
+		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + timeFactor * 12
+	end
+	
+	local pitchMod = sharpeye_dat.player_PitchInfluence - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * 2) or 0)
+	
+	
+	view.angles.p = view.angles.p + sharpeye.Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod
+	view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod
+	view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod
+
+	return view
+	
+end
+
+function sharpeye.GetMotionBlurValues( y, x, fwd, spin ) 
+	if not sharpeye.IsEnabled() then return end
+	
+	local ply = LocalPlayer()
+	
+	local relativeSpeed = ply:GetVelocity():Length() / sharpeye_dat.player_RunSpeed
+	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
+
+	fwd = fwd + (clampedSpeedCustom ^ 2) * relativeSpeed * 0.005
+
+	return y, x, fwd, spin
+
 end
 
 function sharpeye.IsEnabled()
@@ -157,6 +270,8 @@ function sharpeye.Mount()
 	
 	if CLIENT then
 		hook.Add("Think", "sharpeye_Think", sharpeye.Think)
+		hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
+		hook.Add("GetMotionBlurValues", "sharpeye_GetMotionBlurValues", sharpeye.GetMotionBlurValues)
 		
 	end
 	
@@ -175,6 +290,8 @@ function sharpeye.Unmount()
 	
 	if CLIENT then
 		hook.Remove("Think", "sharpeye_Think")
+		hook.Remove("CalcView", "sharpeye_CalcView")
+		hook.Remove("GetMotionBlurValues", "sharpeye_GetMotionBlurValues")
 			
 	end
 	
