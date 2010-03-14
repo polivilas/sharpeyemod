@@ -184,8 +184,25 @@ function sharpeye.Modulation( magic, speedMod, shift )
 	return math.sin( CurTime()*aa*speedMod + bb*6 + shift ) * math.sin( CurTime()*bb*speedMod + cc*6 + shift ) * math.sin( CurTime()*cc*speedMod + aa*6 + shift )
 end
 
+function sharpeye.IsInVehicle()
+	local ply = LocalPlayer()
+	local Vehicle = ply:GetVehicle()
+	if ( ValidEntity( Vehicle ) and gmod_vehicle_viewmode:GetInt() == 1 ) then
+		return true
+	end
+
+	local ScriptedVehicle = ply:GetScriptedVehicle()
+	if ( ValidEntity( ScriptedVehicle ) ) then
+		return true
+	end
+	
+	return false
+end
+
 function sharpeye.CalcView( ply, origin, angles, fov )
 	if not sharpeye.IsEnabled() then return end
+	if sharpeye.IsInVehicle() then return end
+	
 
 	if not sharpeye_dat.player_view then
 		sharpeye_dat.player_view = {}
@@ -266,6 +283,7 @@ end
 
 function sharpeye.GetMotionBlurValues( y, x, fwd, spin ) 
 	if not sharpeye.IsEnabled() then return end
+	if sharpeye.IsInVehicle() then return end
 	
 	local ply = LocalPlayer()
 	
