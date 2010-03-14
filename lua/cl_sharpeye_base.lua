@@ -49,7 +49,7 @@ function sharpeye.InitializeData()
 	}
 	sharpeye_dat.waterflop_LastPlayed = 1
 	
-	sharpeye_dat.player_RunSpeed = 80
+	sharpeye_dat.player_RunSpeed = 100
 	sharpeye_dat.player_LastRelSpeed = 0
 	sharpeye_dat.player_LastWaterLevel = 0
 	
@@ -195,22 +195,11 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	view.origin = origin
 	view.angles = angles
 	view.fov = fov
-		
-	local wep = ply:GetActiveWeapon()
-	if ( ValidEntity( wep ) ) then
-	
-		local func = wep.GetViewModelPosition
-		if ( func ) then view.vm_origin,  view.vm_angles = func( wep, view.origin*1, view.angles*1 ) end
-		
-		local func = wep.CalcView
-		if ( func ) then view.origin, view.angles, view.fov = func( wep, ply, view.origin*1, view.angles*1, view.fov ) end
-	
-	end
 	
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye_dat.player_RunSpeed
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 	
-	local shiftMod = sharpeye_dat.player_TimeShift + sharpeye_dat.player_Stamina * 0.3 * ( 1 + clampedSpeedCustom ) / 2
+	local shiftMod = sharpeye_dat.player_TimeShift + sharpeye_dat.player_Stamina * 0.2 * ( 1 + clampedSpeedCustom ) / 2
 	local distMod  = 1 + sharpeye_dat.player_Stamina * 7 * ( 2 + clampedSpeedCustom ) / 3
 	local breatheMod  = 1 + sharpeye_dat.player_Stamina * 30 * (1 - clampedSpeedCustom)^2
 	
@@ -250,6 +239,27 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod
 	view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod - sharpeye_dat.player_RollChange
 
+	//--[[
+	local wep = ply:GetActiveWeapon()
+	if ( ValidEntity( wep ) ) then
+	
+		local func = wep.GetViewModelPosition
+		if ( func ) then
+			view.vm_origin, view.vm_angles = func( wep, view.origin*1, view.angles*1 )
+		else
+			view.vm_origin = nil
+			view.vm_angles = nil
+		end
+		
+		local func = wep.CalcView
+		if ( func ) then view.origin, view.angles, view.fov = func( wep, ply, view.origin*1, view.angles*1, view.fov ) end
+	else
+		view.vm_origin = nil
+		view.vm_angles = nil
+		
+	end
+	//]]--
+	
 	return view
 	
 end
