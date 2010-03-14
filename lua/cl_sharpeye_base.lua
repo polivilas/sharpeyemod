@@ -82,6 +82,25 @@ function sharpeye.DiceNoRepeat( myTable, lastUsed )
 	return dice
 end
 
+function sharpeye.IsInVehicle()
+	local ply = LocalPlayer()
+	local Vehicle = ply:GetVehicle()
+	if ( ValidEntity( Vehicle ) and gmod_vehicle_viewmode:GetInt() == 1 ) then
+		return true
+	end
+
+	local ScriptedVehicle = ply:GetScriptedVehicle()
+	if ( ValidEntity( ScriptedVehicle ) ) then
+		return true
+	end
+	
+	return false
+end
+
+function sharpeye.IsNoclipping()
+	return (LocalPlayer():GetMoveType() == MOVETYPE_NOCLIP)
+end
+
 function sharpeye.PlayerFootstep( ply, pos, foot, sound, volume, rf )
 	if not sharpeye.IsEnabled() then return end
 	if not SinglePlayer() and not (ply == LocalPlayer()) then return end
@@ -159,7 +178,7 @@ function sharpeye.Think( )
 	
 	end
 	
-	if shouldTriggerStopSound and not shouldTriggerWaterFlop and not isInModerateWater and not isInDeepWater and (ply:GetMoveType() ~= MOVETYPE_NOCLIP) then
+	if shouldTriggerStopSound and not shouldTriggerWaterFlop and not isInModerateWater and not isInDeepWater and not sharpeye.IsNoclipping() then
 		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.stops, sharpeye_dat.footsteps_LastPlayed)
 		sharpeye_dat.footsteps_LastPlayed = dice
 	
@@ -184,24 +203,9 @@ function sharpeye.Modulation( magic, speedMod, shift )
 	return math.sin( CurTime()*aa*speedMod + bb*6 + shift ) * math.sin( CurTime()*bb*speedMod + cc*6 + shift ) * math.sin( CurTime()*cc*speedMod + aa*6 + shift )
 end
 
-function sharpeye.IsInVehicle()
-	local ply = LocalPlayer()
-	local Vehicle = ply:GetVehicle()
-	if ( ValidEntity( Vehicle ) and gmod_vehicle_viewmode:GetInt() == 1 ) then
-		return true
-	end
-
-	local ScriptedVehicle = ply:GetScriptedVehicle()
-	if ( ValidEntity( ScriptedVehicle ) ) then
-		return true
-	end
-	
-	return false
-end
-
 function sharpeye.CalcView( ply, origin, angles, fov )
 	if not sharpeye.IsEnabled() then return end
-	if sharpeye.IsInVehicle() then return end
+	if sharpeye.IsNoclipping() or sharpeye.IsInVehicle() then return end
 	
 
 	if not sharpeye_dat.player_view then
