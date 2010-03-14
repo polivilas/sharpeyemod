@@ -49,9 +49,11 @@ function sharpeye.InitializeData()
 	}
 	sharpeye_dat.waterflop_LastPlayed = 1
 	
-	sharpeye_dat.player_RunSpeed = 90
+	sharpeye_dat.player_RunSpeed = 80
 	sharpeye_dat.player_LastRelSpeed = 0
 	sharpeye_dat.player_LastWaterLevel = 0
+	
+	sharpeye_dat.player_RelStop = 2.2
 	
 	sharpeye_dat.player_Stamina = 0
 	sharpeye_dat.player_StaminaSpeedFactor = 0.01
@@ -135,7 +137,7 @@ function sharpeye.Think( )
 	
 	--print(sharpeye_dat.player_Stamina)
 	
-	local shouldTriggerStopSound = (sharpeye_dat.player_LastRelSpeed - relativeSpeed) > 0.5
+	local shouldTriggerStopSound = (sharpeye_dat.player_LastRelSpeed - relativeSpeed) > sharpeye_dat.player_RelStop
 	sharpeye_dat.player_LastRelSpeed = relativeSpeed
 	
 	local shouldTriggerWaterFlop = (sharpeye_dat.player_LastWaterLevel - ply:WaterLevel()) <= -2
