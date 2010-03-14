@@ -49,7 +49,7 @@ function sharpeye.InitializeData()
 	}
 	sharpeye_dat.waterflop_LastPlayed = 1
 	
-	sharpeye_dat.player_RunSpeed = 128
+	sharpeye_dat.player_RunSpeed = 90
 	sharpeye_dat.player_LastRelSpeed = 0
 	sharpeye_dat.player_LastWaterLevel = 0
 	
@@ -209,7 +209,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 	
 	local shiftMod = sharpeye_dat.player_TimeShift + sharpeye_dat.player_Stamina * 0.3 * ( 1 + clampedSpeedCustom ) / 2
-	local distMod  = 1 + sharpeye_dat.player_Stamina * 15 * ( 2 + clampedSpeedCustom ) / 3
+	local distMod  = 1 + sharpeye_dat.player_Stamina * 7 * ( 2 + clampedSpeedCustom ) / 3
 	local breatheMod  = 1 + sharpeye_dat.player_Stamina * 30 * (1 - clampedSpeedCustom)^2
 	
 	sharpeye_dat.player_TimeShift = shiftMod
@@ -229,7 +229,19 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 	local pitchMod = sharpeye_dat.player_PitchInfluence - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * 2) or 0)
 	
-	local rollCalc = (relativeSpeed > 1) and (math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y) * 0.2) or 0
+	local rollCalc = 0
+	if (relativeSpeed > 1) then
+		local angleDiff = math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y)
+		if math.abs(angleDiff) < 110 then
+			rollCalc = angleDiff * 0.15
+		else
+			rollCalc = 0
+		end
+		
+	else
+		rollCalc = 0
+		
+	end
 	sharpeye_dat.player_RollChange = sharpeye_dat.player_RollChange + (rollCalc - sharpeye_dat.player_RollChange) * math.Clamp( 0.2 * FrameTime() * 25 , 0 , 1 )
 	
 	view.angles.p = view.angles.p + sharpeye.Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod
