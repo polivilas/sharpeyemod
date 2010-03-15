@@ -109,8 +109,8 @@ function sharpeye.Breathing()
 	end
 	
 	if sharpeye_dat.breathing_LastGender ~= gender then
-		if sharpeye_dat.breathing_cached[sharpeye_dat.breathing_LastTrack] then
-			sharpeye_dat.breathing_cached[sharpeye_dat.breathing_LastTrack]:Stop()
+		if sharpeye_dat.breathing_cached[sharpeye_dat.breathing_LastGender] then
+			sharpeye_dat.breathing_cached[sharpeye_dat.breathing_LastGender]:Stop()
 		end
 		
 		sharpeye_dat.breathing_WasBreathing = false
