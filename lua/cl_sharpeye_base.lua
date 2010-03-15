@@ -50,7 +50,22 @@ function sharpeye.InitializeData()
 	}
 	sharpeye_dat.waterflop_LastPlayed = 1
 	
-	sharpeye_dat.player_RunSpeed = 100
+	sharpeye_dat.breathing = {
+		"sharpeye/breathe_male.wav",
+		"sharpeye/breathe_female.wav",
+		"sharpeye/breathe_mask.wav"
+	}
+	
+	sharpeye_dat.soundtables = {
+		sharpeye_dat.footsteps,
+		sharpeye_dat.sloshsteps,
+		sharpeye_dat.watersteps,
+		sharpeye_dat.stops,
+		sharpeye_dat.waterflop,
+		sharpeye_dat.breathing
+	}
+	
+	--sharpeye_day.player_RunSpeed = 100
 	sharpeye_dat.player_LastRelSpeed = 0
 	sharpeye_dat.player_LastWaterLevel = 0
 	
@@ -58,7 +73,7 @@ function sharpeye.InitializeData()
 	
 	sharpeye_dat.player_Stamina = 0
 	sharpeye_dat.player_StaminaSpeedFactor = 0.01
-	sharpeye_dat.player_StaminaRecover     = 0.97
+	--sharpeye_dat.player_StaminaRecover    = 0.97
 	
 	sharpeye_dat.player_TimeOffGround = 0
 	sharpeye_dat.player_TimeOffGroundWhenLanding = 0
@@ -72,6 +87,29 @@ function sharpeye.InitializeData()
 	sharpeye_dat.bumpsounds_delay    = 0.1
 	
 	
+	sharpeye_dat.breathing_MaxVolume = 0.5
+	
+	sharpeye_dat.breathing_LastMode = -1
+	sharpeye_dat.breathing_LastModel = ""
+	sharpeye_dat.breathing_LastGender = 0
+	sharpeye_dat.breathing_WasBreathing = false
+	
+	
+	for _,subtable in pairs(sharpeye_dat.soundtables) do
+		for k,path in pairs(subtable) do
+			Sound(path)
+		end
+	end
+	
+end
+
+function sharpeye.RevertDetails()
+
+	sharpeye.SetVar("sharpeye_detail_breathebobdist" , "5")
+	sharpeye.SetVar("sharpeye_detail_runningbobfreq" , "5")
+	sharpeye.SetVar("sharpeye_basis_runspeed" , "100")
+	sharpeye.SetVar("sharpeye_basis_staminarecover" , "5")
+	sharpeye.SetVar("sharpeye_basis_healthbased" , "5")
 end
 
 -- Player status
@@ -98,6 +136,31 @@ function sharpeye.IsNoclipping()
 	return (LocalPlayer():GetMoveType() == MOVETYPE_NOCLIP)
 end
 
+-- Player custom status
+function sharpeye.GetBasisHealthBehavior()
+	-- Default is 5, so 0.5
+	return math.Clamp(tonumber(sharpeye.GetVar("sharpeye_basis_healthbased")) * 0.1, 0, 1)
+end
+
+function sharpeye.GetHealthFactor()
+	-- returns 1 if Health doesn't count
+	-- returns 1 if Player is in good health
+	-- returns 0.? if player is in bad shape 	
+	local behav = sharpeye.GetBasisHealthBehavior()
+	return (1 - behav) + math.Clamp(LocalPlayer():Health() * 0.01, 0, 1) * behav
+end
+
+function sharpeye.GetBasisRunSpeed()
+	-- Defaulted to 100
+	return 1 + math.abs(tonumber(sharpeye.GetVar("sharpeye_basis_runspeed")))
+end
+
+function sharpeye.GetBasisStaminaRecover()
+	-- Default is 5, so 0.25 that means 0.97
+	return 0.995 - math.abs(tonumber(sharpeye.GetVar("sharpeye_basis_staminarecover")) * 0.1 * 0.05) * sharpeye.GetHealthFactor()
+end
+
+
 -- Generation
 function sharpeye.Modulation( magic, speedMod, shift )
 	local aa = -1^magic        + (((0 + magic * 7 ) % 11) / 11) * 0.3
@@ -117,7 +180,7 @@ function sharpeye.DiceNoRepeat( myTable, lastUsed )
 end
 
 -- Data
-function sharpeye.Think( ) 
+function sharpeye.Think( )
 	if not sharpeye.IsEnabled() then return end
 	
 	if (CurTime() - sharpeye_dat.bumpsounds_LastTime) < sharpeye_dat.bumpsounds_delay then return end
@@ -125,12 +188,20 @@ function sharpeye.Think( )
 	
 	local ply = LocalPlayer()
 	
-	local relativeSpeed = ply:GetVelocity():Length() / sharpeye_dat.player_RunSpeed
+	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 	local clampedSpeed = (relativeSpeed > 1) and 1 or relativeSpeed
 	
 	-- Stamina
-	sharpeye_dat.player_Stamina = sharpeye_dat.player_Stamina * sharpeye_dat.player_StaminaRecover + sharpeye_dat.player_StaminaSpeedFactor * relativeSpeed
-	sharpeye_dat.player_Stamina = (sharpeye_dat.player_Stamina > 1) and 1 or sharpeye_dat.player_Stamina
+	if not ply:Alive() then
+		sharpeye_dat.player_Stamina = 0
+		
+	else
+		sharpeye_dat.player_Stamina = sharpeye_dat.player_Stamina * sharpeye.GetBasisStaminaRecover() + sharpeye_dat.player_StaminaSpeedFactor * relativeSpeed
+		sharpeye_dat.player_Stamina = (sharpeye_dat.player_Stamina > 1) and 1 or sharpeye_dat.player_Stamina
+		
+	end
+	
+	--print(sharpeye_dat.player_Stamina)
 	
 	-- Reset previous tick ground landing memoryvar
 	if sharpeye_dat.player_TimeOffGroundWhenLanding > 0 then
@@ -180,6 +251,13 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_core_motion", "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_sound" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_crosshair" , "1", true, false)
+	sharpeye.CreateVar("sharpeye_breathing" , "1", true, false)
+	
+	sharpeye.CreateVar("sharpeye_detail_breathebobdist" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_detail_runningbobfreq" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_basis_runspeed" , "100", true, false)
+	sharpeye.CreateVar("sharpeye_basis_staminarecover" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_basis_healthbased" , "5", true, false)
 	sharpeye.InitializeData()
 	
 	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then

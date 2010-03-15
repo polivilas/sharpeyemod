@@ -11,6 +11,16 @@ function sharpeye.IsMotionEnabled()
 	return ((sharpeye.GetVar("sharpeye_core_motion") or 0) > 0)
 end
 
+function sharpeye.Detail_GetBreatheBobDistance()
+	-- Default is 5, so 30
+	return (tonumber(sharpeye.GetVar("sharpeye_detail_breathebobdist")) * 0.1) * 60 * (3 - sharpeye.GetHealthFactor() * 2)
+end
+
+function sharpeye.Detail_GetRunningBobFrequency()
+	-- Default is 5, so 0.2
+	return 0.1 + (tonumber(sharpeye.GetVar("sharpeye_detail_runningbobfreq")) * 0.1) * 0.2
+end
+
 function sharpeye.CalcView( ply, origin, angles, fov )
 	if not sharpeye.IsEnabled() then return end
 	if not sharpeye.IsMotionEnabled() then return end
@@ -26,12 +36,12 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	view.angles = angles
 	view.fov = fov
 	
-	local relativeSpeed = ply:GetVelocity():Length() / sharpeye_dat.player_RunSpeed
+	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 	
-	local shiftMod = sharpeye_dat.player_TimeShift + sharpeye_dat.player_Stamina * 0.2 * ( 1 + clampedSpeedCustom ) / 2
+	local shiftMod = sharpeye_dat.player_TimeShift + sharpeye_dat.player_Stamina * sharpeye.Detail_GetRunningBobFrequency() * ( 1 + clampedSpeedCustom ) / 2
 	local distMod  = 1 + sharpeye_dat.player_Stamina * 7 * ( 2 + clampedSpeedCustom ) / 3
-	local breatheMod  = 1 + sharpeye_dat.player_Stamina * 30 * (1 - clampedSpeedCustom)^2
+	local breatheMod  = 1 + sharpeye_dat.player_Stamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2
 	
 	sharpeye_dat.player_TimeShift = shiftMod
 	
@@ -102,7 +112,7 @@ function sharpeye.GetMotionBlurValues( y, x, fwd, spin )
 	
 	local ply = LocalPlayer()
 	
-	local relativeSpeed = ply:GetVelocity():Length() / sharpeye_dat.player_RunSpeed
+	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 
 	fwd = fwd + (clampedSpeedCustom ^ 2) * relativeSpeed * 0.005

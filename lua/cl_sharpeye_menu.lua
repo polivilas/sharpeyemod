@@ -39,8 +39,8 @@ end
 
 function sharpeye.MenuGetExpandTable()
 	return {
-		sharpeye.DermaPanel.GeneralCategory:GetExpanded()--,
-		--sharpeye.DermaPanel.UIStyleCategory:GetExpanded()
+		sharpeye.DermaPanel.GeneralCategory:GetExpanded(),
+		sharpeye.DermaPanel.CDetailsCategory:GetExpanded()
 		}
 end
 
@@ -58,7 +58,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	local MY_VERSION, SVN_VERSION, DOWNLOAD_LINK = sharpeye.GetVersionData()
 	
 	sharpeye.DermaPanel = vgui.Create( "DFrame" )
-	local w, h = 256, ScrH() * 0.4
+	local w, h = 256, ScrH() * 0.7
 	local border = 4
 	local W_WIDTH = w - 2*border
 	
@@ -95,6 +95,27 @@ function sharpeye.BuildMenu( opt_tExpand )
 	local GeneralSoundCheck  = sharpeye.Util_CheckBox( "Use Sounds" , "sharpeye_core_sound" )
 	local GeneralCrosshairCheck  = sharpeye.Util_CheckBox( "Use Crosshair (Not yet available)" , "sharpeye_core_crosshair" )
 	
+	
+	local GeneralBreathingLabel = vgui.Create("DLabel")
+	GeneralBreathingLabel:SetText( "Breathing mode :" )
+	
+	local GeneralBreathingMulti = vgui.Create( "DMultiChoice" )
+	
+	GeneralBreathingMulti:AddChoice( "No breathing" )
+	GeneralBreathingMulti:AddChoice( "Based on player model" )
+	GeneralBreathingMulti:AddChoice( "Always Male" )
+	GeneralBreathingMulti:AddChoice( "Always Female" )
+	GeneralBreathingMulti:AddChoice( "Always Gas mask" )
+	
+	GeneralBreathingMulti.OnSelect = function(index, value, data)
+		sharpeye.SetVar( "sharpeye_breathing", (value - 1) or 0 )
+	end
+	
+	GeneralBreathingMulti:ChooseOptionID( 1 + sharpeye.GetBreathingMode() )
+	
+	GeneralBreathingMulti:PerformLayout()
+	GeneralBreathingMulti:SizeToContents()
+	
 	// DHDIV	
 	local GeneralTextLabel = vgui.Create("DLabel")
 	local GeneralTextLabelMessage = "The command \"sharpeye_menu\" calls this menu.\n"
@@ -122,6 +143,8 @@ function sharpeye.BuildMenu( opt_tExpand )
 	GeneralCatList:AddItem( GeneralMotionCheck )
 	GeneralCatList:AddItem( GeneralSoundCheck )
 	GeneralCatList:AddItem( GeneralCrosshairCheck )
+	GeneralCatList:AddItem( GeneralBreathingLabel )
+	GeneralCatList:AddItem( GeneralBreathingMulti )
 	GeneralCatList:AddItem( GeneralTextLabel )
 	GeneralCatList:AddItem( GeneralCommandLabel )
 	GeneralCatList:PerformLayout()
@@ -129,62 +152,89 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.DermaPanel.GeneralCategory:SetContents( GeneralCatList ) // CATEGORY GENERAL FILLED
 
 
-	--[[
-	////// CATEGORY : UIStyle
-	sharpeye.DermaPanel.UIStyleCategory = vgui.Create("DCollapsibleCategory", PanelList)
-	sharpeye.DermaPanel.UIStyleCategory:SetSize( W_WIDTH, 50 )
-	sharpeye.DermaPanel.UIStyleCategory:SetLabel( "UI Design" )
+	////// CATEGORY : CDetails
+	sharpeye.DermaPanel.CDetailsCategory = vgui.Create("DCollapsibleCategory", PanelList)
+	sharpeye.DermaPanel.CDetailsCategory:SetSize( W_WIDTH, 50 )
+	sharpeye.DermaPanel.CDetailsCategory:SetLabel( "Details and Crosshair" )
 	
-	local UIStyleCatList = vgui.Create( "DPanelList" )
-	UIStyleCatList:SetSize(W_WIDTH, 128 )
-	UIStyleCatList:EnableHorizontal( false )
-	UIStyleCatList:EnableVerticalScrollbar( false )
+	local CDetailsCatList = vgui.Create( "DPanelList" )
+	CDetailsCatList:SetSize(W_WIDTH, 128 )
+	CDetailsCatList:EnableHorizontal( false )
+	CDetailsCatList:EnableVerticalScrollbar( false )
 	
 	// REVERT BUTTON
-	local UIStyleRevertButton = vgui.Create("DButton")
-	UIStyleRevertButton:SetText( "Revert Theme back to Defaults" )
-	UIStyleRevertButton.DoClick = function()
-		sharpeye.RevertTheme( )
+	local CDetailsRevertButton = vgui.Create("DButton")
+	CDetailsRevertButton:SetText( "Revert to Defaults" )
+	CDetailsRevertButton.DoClick = function()
+		sharpeye.RevertDetails( )
 	end
 	
 	// PRESETS : STYLE
-	local UIStyleSaver = sharpeye.MakePresetPanel( {
+	--[[
+	local CDetailsSaver = sharpeye.MakePresetPanel( {
 		options = { ["default"] = theme:GetThemeDefaultsTable() },
 		cvars = theme:GetThemeConvarTable(),
 		folder = "sharpeye_themes_"..theme:GetRawName()
 	} )
+	]]--
 	
-	// SIZE XREL
-	local UIStyleSpacingSlider = vgui.Create("DNumSlider")
-	UIStyleSpacingSlider:SetText( "Spacing" )
-	UIStyleSpacingSlider:SetMin( 0 )
-	UIStyleSpacingSlider:SetMax( 2 )
-	UIStyleSpacingSlider:SetDecimals( 1 )
-	UIStyleSpacingSlider:SetConVar("sharpeye_core_ui_spacing")
+	local CDetailsBreathingBobDist = vgui.Create("DNumSlider")
+	CDetailsBreathingBobDist:SetText( "Breathing : Bobbing Distance" )
+	CDetailsBreathingBobDist:SetMin( 0 )
+	CDetailsBreathingBobDist:SetMax( 10 )
+	CDetailsBreathingBobDist:SetDecimals( 0 )
+	CDetailsBreathingBobDist:SetConVar("sharpeye_detail_breathebobdist")
 	
-	// MAKE: UIStyle
-	UIStyleCatList:AddItem( UIStyleRevertButton )
-	UIStyleCatList:AddItem( UIStyleSaver )
-	UIStyleCatList:AddItem( UIStyleSpacingSlider )
+
+	local CDetailsRunningBobFreq = vgui.Create("DNumSlider")
+	CDetailsRunningBobFreq:SetText( "Running : Bobbing Frequency" )
+	CDetailsRunningBobFreq:SetMin( 0 )
+	CDetailsRunningBobFreq:SetMax( 10 )
+	CDetailsRunningBobFreq:SetDecimals( 0 )
+	CDetailsRunningBobFreq:SetConVar("sharpeye_detail_runningbobfreq")
 	
 	
-	local themeParamsNames = theme:GetParametersNames()
-	for k,sName in pairs(themeParamsNames) do
-		local myPanel = theme:BuildParameterPanel( sName )
-		UIStyleCatList:AddItem( myPanel )
-	end
+	local CDetailsRunSpeed = vgui.Create("DNumSlider")
+	CDetailsRunSpeed:SetText( "Basis : Run Speed reference (inches/s)" )
+	CDetailsRunSpeed:SetMin( 50 )
+	CDetailsRunSpeed:SetMax( 150 )
+	CDetailsRunSpeed:SetDecimals( 0 )
+	CDetailsRunSpeed:SetConVar("sharpeye_basis_runspeed")
 	
-	UIStyleCatList:PerformLayout()
-	UIStyleCatList:SizeToContents()
-	sharpeye.DermaPanel.UIStyleCategory:SetContents( UIStyleCatList ) // CATEGORY GENERAL FILLED
-]]--
+	local CDetailsStaminaRecovery = vgui.Create("DNumSlider")
+	CDetailsStaminaRecovery:SetText( "Basis : Faster Stamina recovery" )
+	CDetailsStaminaRecovery:SetMin( 0 )
+	CDetailsStaminaRecovery:SetMax( 10 )
+	CDetailsStaminaRecovery:SetDecimals( 0 )
+	CDetailsStaminaRecovery:SetConVar("sharpeye_basis_staminarecover")
+	
+	local CDetailsHealthBased = vgui.Create("DNumSlider")
+	CDetailsHealthBased:SetText( "Basis : Health-based behavior" )
+	CDetailsHealthBased:SetMin( 0 )
+	CDetailsHealthBased:SetMax( 10 )
+	CDetailsHealthBased:SetDecimals( 0 )
+	CDetailsHealthBased:SetConVar("sharpeye_basis_healthbased")
+	
+	// MAKE: CDetails
+	CDetailsCatList:AddItem( CDetailsRevertButton )
+	--CDetailsCatList:AddItem( CDetailsSaver )
+	CDetailsCatList:AddItem( CDetailsBreathingBobDist )
+	CDetailsCatList:AddItem( CDetailsRunningBobFreq )
+	CDetailsCatList:AddItem( CDetailsRunSpeed )
+	CDetailsCatList:AddItem( CDetailsStaminaRecovery )
+	CDetailsCatList:AddItem( CDetailsHealthBased )
+	
+	CDetailsCatList:PerformLayout()
+	CDetailsCatList:SizeToContents()
+	sharpeye.DermaPanel.CDetailsCategory:SetContents( CDetailsCatList ) // CATEGORY GENERAL FILLED
+
 	
 	sharpeye.DermaPanel.GeneralCategory:SetExpanded( opt_tExpand and (opt_tExpand[1] and 1 or 0) or 1 )
-	--sharpeye.DermaPanel.UIStyleCategory:SetExpanded( opt_tExpand and (opt_tExpand[3] and 1 or 0) or 0 )
+	sharpeye.DermaPanel.CDetailsCategory:SetExpanded( opt_tExpand and (opt_tExpand[2] and 1 or 0) or 0 )
 	
 	//FINISHING THE PANEL
 	PanelList:AddItem( sharpeye.DermaPanel.GeneralCategory )  //CATEGORY GENERAL CREATED
-	--PanelList:AddItem( sharpeye.DermaPanel.UIStyleCategory )  //CATEGORY UIStyle CREATED
+	PanelList:AddItem( sharpeye.DermaPanel.CDetailsCategory )  //CATEGORY CDetails CREATED
 end
 
 function sharpeye.ShowMenu()

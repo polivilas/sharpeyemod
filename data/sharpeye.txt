@@ -1,2 +1,2 @@
-0.02
-Added menu ! - http://www.facepunch.com/showthread.php?t=908557
+0.04
+Bobbing properties are now customizable. Added health as a customizable parameter. - http://www.facepunch.com/showthread.php?t=908557
