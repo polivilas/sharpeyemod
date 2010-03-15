@@ -94,7 +94,7 @@ end
 function sharpeye.Breathing()
 	if not sharpeye.IsEnabled() then return end
 	if not sharpeye.IsSoundEnabled() then return end
-	if (sharpeye.GetBreathingMode() == 0) then return end
+	if (sharpeye.GetBreathingMode() == 0) and (sharpeye_dat.breathing_LastGender == 0) then return end
 	
 	local gender = sharpeye.GetBreathingGender()
 	--print(sharpeye.GetBreathingMode() , sharpeye.GetBreathingGender())
@@ -120,22 +120,23 @@ function sharpeye.Breathing()
 		--end
 	end
 	
-	local breathingcap = 0.7 - (1 - sharpeye.GetHealthFactor()) * 0.4
-	
-	if (sharpeye_dat.player_Stamina > breathingcap) then
-		if not sharpeye_dat.breathing_WasBreathing then
-			sharpeye_dat.breathing_cached[gender]:PlayEx(sharpeye_dat.player_Stamina * sharpeye_dat.breathing_MaxVolume, 100)
-			sharpeye_dat.breathing_WasBreathing = true
+	if (gender > 0) then
+		local breathingcap = 0.7 - (1 - sharpeye.GetHealthFactor()) * 0.4
+		if (sharpeye_dat.player_Stamina > breathingcap) then
+			if not sharpeye_dat.breathing_WasBreathing then
+				sharpeye_dat.breathing_cached[gender]:PlayEx(sharpeye_dat.player_Stamina * sharpeye_dat.breathing_MaxVolume, 100)
+				sharpeye_dat.breathing_WasBreathing = true
+				
+			else
+				sharpeye_dat.breathing_cached[gender]:ChangeVolume(sharpeye_dat.player_Stamina * sharpeye_dat.breathing_MaxVolume, 100)
+				
+			end
 			
-		else
-			sharpeye_dat.breathing_cached[gender]:ChangeVolume(sharpeye_dat.player_Stamina * sharpeye_dat.breathing_MaxVolume, 100)
+		elseif (sharpeye_dat.player_Stamina < breathingcap) and sharpeye_dat.breathing_WasBreathing then
+			sharpeye_dat.breathing_cached[gender]:FadeOut(0.5)
+				sharpeye_dat.breathing_WasBreathing = false
 			
 		end
-		
-	elseif (sharpeye_dat.player_Stamina < breathingcap) and sharpeye_dat.breathing_WasBreathing then
-		sharpeye_dat.breathing_cached[gender]:FadeOut(0.5)
-			sharpeye_dat.breathing_WasBreathing = false
-		
 	end
 	
 	sharpeye.StoreBreathingGender()
