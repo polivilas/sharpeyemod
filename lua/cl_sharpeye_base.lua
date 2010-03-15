@@ -65,6 +65,11 @@ function sharpeye.InitializeData()
 		sharpeye_dat.breathing
 	}
 	
+	sharpeye_dat.crosshairshapes = {
+		"depthhud/linebow_crosshair.vmt",
+		"depthhud/X_CircleSolid.vmt"
+	}
+	
 	--sharpeye_day.player_RunSpeed = 100
 	sharpeye_dat.player_LastRelSpeed = 0
 	sharpeye_dat.player_LastWaterLevel = 0
@@ -104,22 +109,26 @@ function sharpeye.InitializeData()
 end
 
 function sharpeye.RevertDetails()
-
 	sharpeye.SetVar("sharpeye_detail_breathebobdist" , "5")
 	sharpeye.SetVar("sharpeye_detail_runningbobfreq" , "5")
 	sharpeye.SetVar("sharpeye_basis_runspeed" , "100")
 	sharpeye.SetVar("sharpeye_basis_staminarecover" , "5")
 	sharpeye.SetVar("sharpeye_basis_healthbased" , "5")
+	
 end
 
 -- Player status
 function sharpeye.IsEnabled()
-	return ((sharpeye.GetVar("sharpeye_core_enable") or 0) > 0)
+	return (sharpeye.GetVarNumber("sharpeye_core_enable") > 0)
 end
 
 function sharpeye.IsInVehicle()
+	return LocalPlayer():InVehicle()
+	
+	--[[
 	local ply = LocalPlayer()
 	local Vehicle = ply:GetVehicle()
+	
 	if ( ValidEntity( Vehicle ) and gmod_vehicle_viewmode:GetInt() == 1 ) then
 		return true
 	end
@@ -130,6 +139,7 @@ function sharpeye.IsInVehicle()
 	end
 	
 	return false
+	]]--
 end
 
 function sharpeye.IsNoclipping()
@@ -139,7 +149,7 @@ end
 -- Player custom status
 function sharpeye.GetBasisHealthBehavior()
 	-- Default is 5, so 0.5
-	return math.Clamp(tonumber(sharpeye.GetVar("sharpeye_basis_healthbased")) * 0.1, 0, 1)
+	return math.Clamp(sharpeye.GetVarNumber("sharpeye_basis_healthbased") * 0.1, 0, 1)
 end
 
 function sharpeye.GetHealthFactor()
@@ -152,12 +162,12 @@ end
 
 function sharpeye.GetBasisRunSpeed()
 	-- Defaulted to 100
-	return 1 + math.abs(tonumber(sharpeye.GetVar("sharpeye_basis_runspeed")))
+	return 1 + math.abs(sharpeye.GetVarNumber("sharpeye_basis_runspeed"))
 end
 
 function sharpeye.GetBasisStaminaRecover()
 	-- Default is 5, so 0.25 that means 0.97
-	return 0.995 - math.abs(tonumber(sharpeye.GetVar("sharpeye_basis_staminarecover")) * 0.1 * 0.05) * sharpeye.GetHealthFactor()
+	return 0.995 - math.abs(sharpeye.GetVarNumber("sharpeye_basis_staminarecover") * 0.1 * 0.05) * sharpeye.GetHealthFactor()
 end
 
 
@@ -177,6 +187,10 @@ function sharpeye.DiceNoRepeat( myTable, lastUsed )
 	end
 	
 	return dice
+end
+
+function sharpeye.GetVarNumber( sVar )
+	return (tonumber(sharpeye.GetVar(sVar)) or 0)
 end
 
 -- Data
@@ -258,6 +272,12 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_basis_runspeed" , "100", true, false)
 	sharpeye.CreateVar("sharpeye_basis_staminarecover" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_basis_healthbased" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_color_r" , "255", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_color_g" , "220", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_color_b" , "0", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_color_a" , "255", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_staticsize" , "8", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_dynamicsize" , "8", true, false)
 	sharpeye.InitializeData()
 	
 	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
@@ -270,6 +290,7 @@ function sharpeye.Mount()
 		hook.Add("Think", "sharpeye_Think", sharpeye.Think)
 		hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
 		hook.Add("GetMotionBlurValues", "sharpeye_GetMotionBlurValues", sharpeye.GetMotionBlurValues)
+		hook.Add("HUDPaint", "sharpeye_HUDPaint", sharpeye.HUDPaint)
 		
 		if sharpeye.MountMenu then
 			sharpeye.MountMenu()
@@ -294,6 +315,7 @@ function sharpeye.Unmount()
 		hook.Remove("Think", "sharpeye_Think")
 		hook.Remove("CalcView", "sharpeye_CalcView")
 		hook.Remove("GetMotionBlurValues", "sharpeye_GetMotionBlurValues")
+		hook.Remove("HUDPaint", "sharpeye_HUDPaint")
 			
 		if sharpeye.UnmountMenu then
 			sharpeye.UnmountMenu()

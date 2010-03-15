@@ -8,17 +8,17 @@
 ////////////////////////////////////////////////
 
 function sharpeye.IsMotionEnabled()
-	return ((sharpeye.GetVar("sharpeye_core_motion") or 0) > 0)
+	return (sharpeye.GetVarNumber("sharpeye_core_motion") > 0)
 end
 
 function sharpeye.Detail_GetBreatheBobDistance()
 	-- Default is 5, so 30
-	return (tonumber(sharpeye.GetVar("sharpeye_detail_breathebobdist")) * 0.1) * 60 * (3 - sharpeye.GetHealthFactor() * 2)
+	return (sharpeye.GetVarNumber("sharpeye_detail_breathebobdist") * 0.1) * 60 * (3 - sharpeye.GetHealthFactor() * 2)
 end
 
 function sharpeye.Detail_GetRunningBobFrequency()
 	-- Default is 5, so 0.2
-	return 0.1 + (tonumber(sharpeye.GetVar("sharpeye_detail_runningbobfreq")) * 0.1) * 0.2
+	return 0.1 + (sharpeye.GetVarNumber("sharpeye_detail_runningbobfreq") * 0.1) * 0.2
 end
 
 function sharpeye.CalcView( ply, origin, angles, fov )

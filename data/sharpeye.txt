@@ -1,2 +1,2 @@
-0.041
-Weapon aims at the target. Bobbing properties are now customizable. Added health as a customizable parameter. - http://www.facepunch.com/showthread.php?t=908557
+0.05
+Added lightweight crosshair. (Previous: Dynamic weapon angles, menu options, health influence.) - http://www.facepunch.com/showthread.php?t=908557

@@ -93,7 +93,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	local GeneralEnableCheck = sharpeye.Util_CheckBox( "Enable" , "sharpeye_core_enable" )
 	local GeneralMotionCheck = sharpeye.Util_CheckBox( "Use Motion" , "sharpeye_core_motion" )
 	local GeneralSoundCheck  = sharpeye.Util_CheckBox( "Use Sounds" , "sharpeye_core_sound" )
-	local GeneralCrosshairCheck  = sharpeye.Util_CheckBox( "Use Crosshair (Not yet available)" , "sharpeye_core_crosshair" )
+	local GeneralCrosshairCheck  = sharpeye.Util_CheckBox( "Use Crosshair" , "sharpeye_core_crosshair" )
 	
 	
 	local GeneralBreathingLabel = vgui.Create("DLabel")
@@ -215,6 +215,32 @@ function sharpeye.BuildMenu( opt_tExpand )
 	CDetailsHealthBased:SetDecimals( 0 )
 	CDetailsHealthBased:SetConVar("sharpeye_basis_healthbased")
 	
+
+	local CDetailsCrosshairColorLabel = vgui.Create("DLabel")
+	CDetailsCrosshairColorLabel:SetText("Crosshair color")
+	
+	local CDetailsCrosshairColor = vgui.Create("CtrlColor")
+	CDetailsCrosshairColor.Prefix = "sharpeye_xhair_color"
+	CDetailsCrosshairColor:SetConVarR(CDetailsCrosshairColor.Prefix .."_r")
+	CDetailsCrosshairColor:SetConVarG(CDetailsCrosshairColor.Prefix .."_g")
+	CDetailsCrosshairColor:SetConVarB(CDetailsCrosshairColor.Prefix .."_b")
+	CDetailsCrosshairColor:SetConVarA(CDetailsCrosshairColor.Prefix .."_a")
+	
+	local CDetailsCrosshairStatic = vgui.Create("DNumSlider")
+	CDetailsCrosshairStatic:SetText( "Static Crosshair Reticule size" )
+	CDetailsCrosshairStatic:SetMin( 0 )
+	CDetailsCrosshairStatic:SetMax( 8 )
+	CDetailsCrosshairStatic:SetDecimals( 0 )
+	CDetailsCrosshairStatic:SetConVar("sharpeye_xhair_staticsize")
+	
+	local CDetailsCrosshairDynamic = vgui.Create("DNumSlider")
+	CDetailsCrosshairDynamic:SetText( "Dynamic Crosshair Reticule size" )
+	CDetailsCrosshairDynamic:SetMin( 0 )
+	CDetailsCrosshairDynamic:SetMax( 8 )
+	CDetailsCrosshairDynamic:SetDecimals( 0 )
+	CDetailsCrosshairDynamic:SetConVar("sharpeye_xhair_dynamicsize")
+
+	
 	// MAKE: CDetails
 	CDetailsCatList:AddItem( CDetailsRevertButton )
 	--CDetailsCatList:AddItem( CDetailsSaver )
@@ -223,6 +249,11 @@ function sharpeye.BuildMenu( opt_tExpand )
 	CDetailsCatList:AddItem( CDetailsRunSpeed )
 	CDetailsCatList:AddItem( CDetailsStaminaRecovery )
 	CDetailsCatList:AddItem( CDetailsHealthBased )
+	CDetailsCatList:AddItem( CDetailsCrosshairColorLabel )
+	CDetailsCatList:AddItem( CDetailsCrosshairColor )
+	CDetailsCatList:AddItem( CDetailsCrosshairStatic )
+	CDetailsCatList:AddItem( CDetailsCrosshairDynamic )
+	
 	
 	CDetailsCatList:PerformLayout()
 	CDetailsCatList:SizeToContents()

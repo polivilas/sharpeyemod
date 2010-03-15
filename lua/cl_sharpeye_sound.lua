@@ -8,11 +8,11 @@
 ////////////////////////////////////////////////
 
 function sharpeye.IsSoundEnabled()
-	return ((sharpeye.GetVar("sharpeye_core_sound") or 0) > 0)
+	return (sharpeye.GetVarNumber("sharpeye_core_sound") > 0)
 end
 
 function sharpeye.GetBreathingMode()
-	return math.Clamp( math.floor(sharpeye.GetVar("sharpeye_breathing")), 0, 4)
+	return math.Clamp( math.floor(sharpeye.GetVarNumber("sharpeye_breathing")), 0, 4)
 end
 
 function sharpeye.GetBreathingGender()
