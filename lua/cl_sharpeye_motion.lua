@@ -29,7 +29,12 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 
 	if not sharpeye_dat.player_view then
 		sharpeye_dat.player_view = {}
+		sharpeye_dat.player_oriangle = Angle(0,0,0)
 	end
+	
+	sharpeye_dat.player_oriangle.p = angles.p
+	sharpeye_dat.player_oriangle.y = angles.y
+	sharpeye_dat.player_oriangle.r = angles.r
 	
 	local view = sharpeye_dat.player_view
 	view.origin = origin
@@ -87,16 +92,18 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		local func = wep.GetViewModelPosition
 		if ( func ) then
 			view.vm_origin, view.vm_angles = func( wep, view.origin*1, view.angles*1 )
+			view.vm_angles = view.vm_angles + (sharpeye_dat.player_oriangle - view.angles)
+			
 		else
 			view.vm_origin = nil
-			view.vm_angles = nil
+			view.vm_angles = sharpeye_dat.player_oriangle
 		end
 		
 		local func = wep.CalcView
 		if ( func ) then view.origin, view.angles, view.fov = func( wep, ply, view.origin*1, view.angles*1, view.fov ) end
 	else
 		view.vm_origin = nil
-		view.vm_angles = nil
+		view.vm_angles = sharpeye_dat.player_oriangle
 		
 	end
 	

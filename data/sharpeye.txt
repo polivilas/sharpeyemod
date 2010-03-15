@@ -1,2 +1,2 @@
-0.04
-Bobbing properties are now customizable. Added health as a customizable parameter. - http://www.facepunch.com/showthread.php?t=908557
+0.041
+Weapon aims at the target. Bobbing properties are now customizable. Added health as a customizable parameter. - http://www.facepunch.com/showthread.php?t=908557
