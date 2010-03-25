@@ -298,7 +298,7 @@ function sharpeye.Mount()
 		hook.Add("GetMotionBlurValues", "sharpeye_GetMotionBlurValues", sharpeye.GetMotionBlurValues)
 		hook.Add("HUDPaint", "sharpeye_HUDPaint", sharpeye.HUDPaint)
 		hook.Add("Initialize", "shapeye_Initialize", sharpeye.GamemodeInitialize)
-		concommand.Add( "sharpeye_call_forcesolvecompatibilities", sharpeye.SolveCompatilibityIssues)
+		concommand.Add( "sharpeye_call_forcesolvecompatibilities", sharpeye.ForceSolveCompatilibityIssues)
 		
 		if sharpeye.MountMenu then
 			sharpeye.MountMenu()

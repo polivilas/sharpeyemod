@@ -7,12 +7,21 @@
 // Compatibility Fixes                        //
 ////////////////////////////////////////////////
 
-function sharpeye.SolveCompatilibityIssues()
-	sharpeye.Compatibility_MakeSpacebuildCompatible()
+function sharpeye.ForceSolveCompatilibityIssues( )
+	sharpeye.SolveCompatilibityIssues( true )
+	
 end
 
-function sharpeye.Compatilibity_ShouldOverrideSpacebuild()
-	if sharpeye_dat.comp_spacebuild then
+function sharpeye.SolveCompatilibityIssues( optbForce )
+	if not sharpeye_dat.comp then
+		sharpeye_dat.comp = {}
+	end
+	
+	sharpeye.Compatibility_MakeSpacebuildCompatible( optbForce )
+end
+
+function sharpeye.Compatilibity_ShouldOverrideSpacebuild( optbForce )
+	if not optbForce and sharpeye_dat.comp.spacebuild then
 		return false
 		
 	elseif hook.GetTable()["CalcView"] and hook.GetTable()["CalcView"]["SBEPBMView"] then
@@ -23,9 +32,9 @@ function sharpeye.Compatilibity_ShouldOverrideSpacebuild()
 	end
 end
 
-function sharpeye.Compatibility_MakeSpacebuildCompatible()
-	if not sharpeye.Compatilibity_ShouldOverrideSpacebuild() then return end
-	sharpeye_dat.comp_spacebuild = true
+function sharpeye.Compatibility_MakeSpacebuildCompatible( optbForce )
+	if not sharpeye.Compatilibity_ShouldOverrideSpacebuild( optbForce ) then return end
+	sharpeye_dat.comp.spacebuild = true
 	
 	print("[ > SharpeYe has found a potential uncompatibility with Spacebuild. Patching... ]")
 	
