@@ -200,6 +200,9 @@ function sharpeye.Think( )
 	if (CurTime() - sharpeye_dat.bumpsounds_LastTime) < sharpeye_dat.bumpsounds_delay then return end
 	sharpeye_dat.bumpsounds_LastTime = CurTime()
 	
+	-- Try to solve compatibilities
+	sharpeye.SolveCompatilibityIssues()
+	
 	local ply = LocalPlayer()
 	
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
