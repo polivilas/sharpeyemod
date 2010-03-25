@@ -30,13 +30,12 @@ function sharpeye.Compatibility_MakeSpacebuildCompatible()
 	hook.Remove("CalcView", "SBEPBMView")
 	local sbview = {}
 	function SBEPBMView_sharpeye(ply, origin, angles, fov)
-		if ply.BCMode then
-			if ply.BComp and ply.BComp:IsValid() then
-				sbview.origin = origin + ply.BComp.CVVec
-				sbview.angles = Angle(90,0,0)
-				return sbview
-			end
-		end
+		if not (ply.BCMode and ply.BComp and ply.BComp:IsValid()) then return end
+		
+		sbview.origin = origin + ply.BComp.CVVec
+		sbview.angles = Angle(90,0,0)
+		
+		return sbview
 	end
 	hook.Add("CalcView", "SBEPBMView_sharpeye", SBEPBMView_sharpeye)
 end
