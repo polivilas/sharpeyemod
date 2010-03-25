@@ -194,14 +194,17 @@ function sharpeye.GetVarNumber( sVar )
 end
 
 -- Data
+function sharpeye.GamemodeInitialize()
+	-- Try to solve compatibilities
+	sharpeye.SolveCompatilibityIssues()
+	
+end
+
 function sharpeye.Think( )
 	if not sharpeye.IsEnabled() then return end
 	
 	if (CurTime() - sharpeye_dat.bumpsounds_LastTime) < sharpeye_dat.bumpsounds_delay then return end
 	sharpeye_dat.bumpsounds_LastTime = CurTime()
-	
-	-- Try to solve compatibilities
-	sharpeye.SolveCompatilibityIssues()
 	
 	local ply = LocalPlayer()
 	
@@ -294,6 +297,7 @@ function sharpeye.Mount()
 		hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
 		hook.Add("GetMotionBlurValues", "sharpeye_GetMotionBlurValues", sharpeye.GetMotionBlurValues)
 		hook.Add("HUDPaint", "sharpeye_HUDPaint", sharpeye.HUDPaint)
+		hook.Add("Initialize", "shapeye_Initialize", sharpeye.GamemodeInitialize)
 		
 		if sharpeye.MountMenu then
 			sharpeye.MountMenu()
@@ -319,6 +323,7 @@ function sharpeye.Unmount()
 		hook.Remove("CalcView", "sharpeye_CalcView")
 		hook.Remove("GetMotionBlurValues", "sharpeye_GetMotionBlurValues")
 		hook.Remove("HUDPaint", "sharpeye_HUDPaint")
+		hook.Remove("Initialize", "shapeye_Initialize")
 			
 		if sharpeye.UnmountMenu then
 			sharpeye.UnmountMenu()

@@ -13,7 +13,7 @@ elseif SHARPEYE_SENDCOPY then
 	AddCSLuaFile( "cl_sharpeye_version.lua" )
 	AddCSLuaFile( "cl_sharpeye_compatibility" )
 	AddCSLuaFile( "cl_sharpeye_vision.lua" )
-	AddCSLuaFile( "CtrlColor.lua" )
+	--AddCSLuaFile( "CtrlColor.lua" )
 	AddCSLuaFile( "sh_sharpeye_autorun.lua" )
 	
 	local sharpeye_dat = {}
