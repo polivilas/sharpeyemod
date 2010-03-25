@@ -27,6 +27,8 @@ function sharpeye.Compatibility_MakeSpacebuildCompatible()
 	if not sharpeye.Compatilibity_ShouldOverrideSpacebuild() then return end
 	sharpeye_dat.comp_spacebuild = true
 	
+	print("[ > SharpeYe has found a potential uncompatibility with Spacebuild. Patching... ]")
+	
 	hook.Remove("CalcView", "SBEPBMView")
 	local sbview = {}
 	function SBEPBMView_sharpeye(ply, origin, angles, fov)
