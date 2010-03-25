@@ -298,6 +298,7 @@ function sharpeye.Mount()
 		hook.Add("GetMotionBlurValues", "sharpeye_GetMotionBlurValues", sharpeye.GetMotionBlurValues)
 		hook.Add("HUDPaint", "sharpeye_HUDPaint", sharpeye.HUDPaint)
 		hook.Add("Initialize", "shapeye_Initialize", sharpeye.GamemodeInitialize)
+		concommand.Add( "sharpeye_call_forcesolvecompatibilities", sharpeye.SolveCompatilibityIssues)
 		
 		if sharpeye.MountMenu then
 			sharpeye.MountMenu()
@@ -324,6 +325,7 @@ function sharpeye.Unmount()
 		hook.Remove("GetMotionBlurValues", "sharpeye_GetMotionBlurValues")
 		hook.Remove("HUDPaint", "sharpeye_HUDPaint")
 		hook.Remove("Initialize", "shapeye_Initialize")
+		concommand.Remove( "sharpeye_call_forcesolvecompatibilities")
 			
 		if sharpeye.UnmountMenu then
 			sharpeye.UnmountMenu()
