@@ -146,6 +146,11 @@ function sharpeye.IsNoclipping()
 	return (LocalPlayer():GetMoveType() == MOVETYPE_NOCLIP)
 end
 
+function sharpeye.IsUsingSandboxTools()
+	local myWeapon = LocalPlayer():GetActiveWeapon()
+	return ( ValidEntity(myWeapon) and ((myWeapon:GetClass() == "gmod_tool") or (myWeapon:GetClass() == "weapon_physgun")) )
+end
+
 -- Player custom status
 function sharpeye.GetBasisHealthBehavior()
 	-- Default is 5, so 0.5
@@ -271,7 +276,8 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_core_motion", "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_sound" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_crosshair" , "1", true, false)
-	sharpeye.CreateVar("sharpeye_breathing" , "1", true, false)
+	sharpeye.CreateVar("sharpeye_opt_breathing" , "1", true, false)
+	sharpeye.CreateVar("sharpeye_opt_disablewithtools" , "1", true, false)
 	
 	sharpeye.CreateVar("sharpeye_detail_breathebobdist" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_detail_runningbobfreq" , "5", true, false)

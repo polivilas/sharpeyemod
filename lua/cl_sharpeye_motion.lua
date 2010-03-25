@@ -11,6 +11,10 @@ function sharpeye.IsMotionEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_core_motion") > 0)
 end
 
+function sharpeye.ShouldMotionDisableWithTools()
+	return ((sharpeye.GetVarNumber("sharpeye_opt_disablewithtools") > 0) and sharpeye.IsUsingSandboxTools())
+end
+
 function sharpeye.Detail_GetBreatheBobDistance()
 	-- Default is 5, so 30
 	return (sharpeye.GetVarNumber("sharpeye_detail_breathebobdist") * 0.1) * 60 * (3 - sharpeye.GetHealthFactor() * 2)
@@ -24,7 +28,7 @@ end
 function sharpeye.CalcView( ply, origin, angles, fov )
 	if not sharpeye.IsEnabled() then return end
 	if not sharpeye.IsMotionEnabled() then return end
-	if sharpeye.IsNoclipping() or sharpeye.IsInVehicle() then return end
+	if sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableWithTools() then return end
 	
 
 	if not sharpeye_dat.player_view then

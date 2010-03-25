@@ -94,6 +94,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	local GeneralMotionCheck = sharpeye.Util_CheckBox( "Use Motion" , "sharpeye_core_motion" )
 	local GeneralSoundCheck  = sharpeye.Util_CheckBox( "Use Sounds" , "sharpeye_core_sound" )
 	local GeneralCrosshairCheck  = sharpeye.Util_CheckBox( "Use Crosshair" , "sharpeye_core_crosshair" )
+	local GeneralDisableTools  = sharpeye.Util_CheckBox( "Disable with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
 	
 	
 	local GeneralBreathingLabel = vgui.Create("DLabel")
@@ -108,7 +109,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	GeneralBreathingMulti:AddChoice( "Always Gas mask" )
 	
 	GeneralBreathingMulti.OnSelect = function(index, value, data)
-		sharpeye.SetVar( "sharpeye_breathing", (value - 1) or 0 )
+		sharpeye.SetVar( "sharpeye_opt_breathing", (value - 1) or 0 )
 	end
 	
 	GeneralBreathingMulti:ChooseOptionID( 1 + sharpeye.GetBreathingMode() )
@@ -143,6 +144,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	GeneralCatList:AddItem( GeneralMotionCheck )
 	GeneralCatList:AddItem( GeneralSoundCheck )
 	GeneralCatList:AddItem( GeneralCrosshairCheck )
+	GeneralCatList:AddItem( GeneralDisableTools )
 	GeneralCatList:AddItem( GeneralBreathingLabel )
 	GeneralCatList:AddItem( GeneralBreathingMulti )
 	GeneralCatList:AddItem( GeneralTextLabel )
