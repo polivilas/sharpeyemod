@@ -121,7 +121,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	local GeneralTextLabel = vgui.Create("DLabel")
 	local GeneralTextLabelMessage = "The command \"sharpeye_menu\" calls this menu.\n"
 	if not (MY_VERSION and SVN_VERSION and (MY_VERSION < SVN_VERSION)) then
-		GeneralTextLabelMessage = GeneralTextLabelMessage .. "Example : To assign SharpeYe menu to F10, type in the console :"
+		GeneralTextLabelMessage = GeneralTextLabelMessage .. "Example : To assign " .. SHARPEYE_NAME .. " menu to F10, type in the console :"
 	else
 		GeneralTextLabelMessage = GeneralTextLabelMessage .. "Your version is "..MY_VERSION.." and the updated one is "..SVN_VERSION.." ! You should update !"
 	end
