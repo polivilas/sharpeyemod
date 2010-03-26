@@ -13,33 +13,11 @@ include( 'CtrlColor.lua' )
 /////////////////////////////////////////////////////////////////////////
 //// DERMA PANEL .
 
---[[
-function sharpeye.MakePresetPanel( data )
-	local ctrl = vgui.Create( "ControlPresets", self )
-	
-	ctrl:SetPreset( data.folder )
-	
-	if ( data.options ) then
-		for k, v in pairs( data.options ) do
-			if ( k != "id" ) then
-				ctrl:AddOption( k, v )
-			end
-		end
-	end
-	
-	if ( data.cvars ) then
-		for k, v in pairs( data.cvars ) do
-			ctrl:AddConVar( v )
-		end
-	end
-	
-	return ctrl
-end
-]]--
 
 function sharpeye.MenuGetExpandTable()
 	return {
 		sharpeye.DermaPanel.GeneralCategory:GetExpanded(),
+		sharpeye.DermaPanel.CDevtCategory:GetExpanded(),
 		sharpeye.DermaPanel.CDetailsCategory:GetExpanded()
 		}
 end
@@ -153,7 +131,48 @@ function sharpeye.BuildMenu( opt_tExpand )
 	GeneralCatList:SizeToContents()
 	sharpeye.DermaPanel.GeneralCategory:SetContents( GeneralCatList ) // CATEGORY GENERAL FILLED
 
-
+	
+	
+	////// CATEGORY : CDevt
+	
+	sharpeye.DermaPanel.CDevtCategory = vgui.Create("DCollapsibleCategory", PanelList)
+	sharpeye.DermaPanel.CDevtCategory:SetSize( W_WIDTH, 50 )
+	sharpeye.DermaPanel.CDevtCategory:SetLabel( "Head motion not working ? [DEBUG]" )
+	
+	local DevtList = vgui.Create( "DPanelList", sharpeye.DermaPanel )
+	DevtList:SetPos( border , 22 + border )
+	DevtList:SetSize( W_WIDTH, h - 2*border - 22 )
+	DevtList:SetSpacing( 5 )
+	DevtList:EnableHorizontal( false )
+	DevtList:EnableVerticalScrollbar( false )
+	
+	local DevtTextLabel = vgui.Create("DLabel")
+	DevtTextLabel:SetWrap( true )
+	DevtTextLabel:SetText( "If you encounter issues with head motion not working, please post this report :" )
+	DevtTextLabel:SetContentAlignment( 2 )
+	DevtTextLabel:SetSize( W_WIDTH, 30 )
+	
+	local DevtMultiline = vgui.Create("DTextEntry")
+	DevtMultiline:SetMultiline( true )
+	do
+		local myText = ""
+		for k,v in pairs( hook.GetTable()["CalcView"] ) do
+			myText = myText .. tostring(k) .. " >> " .. tostring(v) .. "\n"
+		end
+		DevtMultiline:SetText( myText )
+	end
+	DevtMultiline:SetEditable( false )
+	DevtMultiline:SetSize( W_WIDTH, 100 )
+	
+	DevtList:AddItem( DevtTextLabel )
+	DevtList:AddItem( DevtMultiline )
+	DevtList:PerformLayout()
+	DevtList:SizeToContents( )
+	
+	sharpeye.DermaPanel.CDevtCategory:SetContents( DevtList ) // CATEGORY GENERAL FILLED
+	
+	
+	
 	////// CATEGORY : CDetails
 	sharpeye.DermaPanel.CDetailsCategory = vgui.Create("DCollapsibleCategory", PanelList)
 	sharpeye.DermaPanel.CDetailsCategory:SetSize( W_WIDTH, 50 )
@@ -263,18 +282,20 @@ function sharpeye.BuildMenu( opt_tExpand )
 
 	
 	sharpeye.DermaPanel.GeneralCategory:SetExpanded( opt_tExpand and (opt_tExpand[1] and 1 or 0) or 1 )
-	sharpeye.DermaPanel.CDetailsCategory:SetExpanded( opt_tExpand and (opt_tExpand[2] and 1 or 0) or 0 )
+	sharpeye.DermaPanel.CDevtCategory:SetExpanded( opt_tExpand and (opt_tExpand[2] and 1 or 0) or 0 )
+	sharpeye.DermaPanel.CDetailsCategory:SetExpanded( opt_tExpand and (opt_tExpand[3] and 1 or 0) or 0 )
 	
 	//FINISHING THE PANEL
 	PanelList:AddItem( sharpeye.DermaPanel.GeneralCategory )  //CATEGORY GENERAL CREATED
-	PanelList:AddItem( sharpeye.DermaPanel.CDetailsCategory )  //CATEGORY CDetails CREATED
+	PanelList:AddItem( sharpeye.DermaPanel.CDevtCategory )    //CATEGORY CDevt CREATED
+	PanelList:AddItem( sharpeye.DermaPanel.CDetailsCategory ) //CATEGORY CDetails CREATED
 end
 
 function sharpeye.ShowMenu()
 	if not sharpeye.DermaPanel then
 		sharpeye.BuildMenu()
 	end
-	//sharpeye.DermaPanel:Center()
+	--sharpeye.DermaPanel:Center()
 	sharpeye.DermaPanel:MakePopup()
 	sharpeye.DermaPanel:SetVisible( true )
 end
@@ -285,6 +306,30 @@ function sharpeye.DestroyMenu()
 		sharpeye.DermaPanel = nil
 	end
 end
+
+--[[
+function sharpeye.MakePresetPanel( data )
+	local ctrl = vgui.Create( "ControlPresets", self )
+	
+	ctrl:SetPreset( data.folder )
+	
+	if ( data.options ) then
+		for k, v in pairs( data.options ) do
+			if ( k != "id" ) then
+				ctrl:AddOption( k, v )
+			end
+		end
+	end
+	
+	if ( data.cvars ) then
+		for k, v in pairs( data.cvars ) do
+			ctrl:AddConVar( v )
+		end
+	end
+	
+	return ctrl
+end
+]]--
 
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
