@@ -72,7 +72,7 @@ function sharpeye.HUDPaint()
 			surface.DrawTexturedRectRotated(ScrW() * 0.5, ScrH() * 0.5, staticSize, staticSize, 0)
 		end
 
-		if dynamicSize > 0 then
+		if not sharpeye.IsInVehicle() and LocalPlayer():Alive() and (dynamicSize > 0) then
 			surface.SetTexture(sharpeye_dat.crosshair.shape[2])
 			surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.ch_x, sharpeye_dat.crosshair.ch_y, dynamicSize, dynamicSize, 0)
 		end

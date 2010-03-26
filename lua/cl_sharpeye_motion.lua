@@ -21,8 +21,9 @@ function sharpeye.Detail_GetBreatheBobDistance()
 end
 
 function sharpeye.Detail_GetRunningBobFrequency()
+	-- OLD : Default is 5, so 0.2
 	-- Default is 5, so 0.2
-	return 0.1 + (sharpeye.GetVarNumber("sharpeye_detail_runningbobfreq") * 0.1) * 0.2
+	return 0.06 + (sharpeye.GetVarNumber("sharpeye_detail_runningbobfreq") * 0.1) * 0.2
 end
 
 function sharpeye.CalcView( ply, origin, angles, fov )

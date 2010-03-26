@@ -1,2 +1,2 @@
-0.08
-Attempt to fix Spacebuild compatibility issues. Added disable option for Sandbox tools. - http://www.facepunch.com/showthread.php?t=908557
+0.09
+Attempt to fix SCars compatibility issues. Added disable option for Sandbox tools. Spacebuild-compatible. - http://www.facepunch.com/showthread.php?t=908557
