@@ -114,6 +114,8 @@ function sharpeye.RevertDetails()
 	sharpeye.SetVar("sharpeye_basis_runspeed" , "100")
 	sharpeye.SetVar("sharpeye_basis_staminarecover" , "5")
 	sharpeye.SetVar("sharpeye_basis_healthbased" , "5")
+	sharpeye.SetVar("sharpeye_detail_leaningangle" , "5")
+	sharpeye.SetVar("sharpeye_detail_landingangle" , "5")
 	
 end
 
@@ -281,6 +283,8 @@ function sharpeye.Mount()
 	
 	sharpeye.CreateVar("sharpeye_detail_breathebobdist" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_detail_runningbobfreq" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_detail_leaningangle" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_detail_landingangle" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_basis_runspeed" , "100", true, false)
 	sharpeye.CreateVar("sharpeye_basis_staminarecover" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_basis_healthbased" , "5", true, false)

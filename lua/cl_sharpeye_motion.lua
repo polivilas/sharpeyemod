@@ -15,6 +15,16 @@ function sharpeye.ShouldMotionDisableWithTools()
 	return ((sharpeye.GetVarNumber("sharpeye_opt_disablewithtools") > 0) and sharpeye.IsUsingSandboxTools())
 end
 
+function sharpeye.Detail_GetLeaningAngle()
+	-- Default is 5, so 8
+	return (sharpeye.GetVarNumber("sharpeye_detail_leaningangle") * 0.1) * 16
+end
+
+function sharpeye.Detail_GetLandingAngle()
+	-- Default is 5, so 12
+	return (sharpeye.GetVarNumber("sharpeye_detail_landingangle") * 0.1) * 24
+end
+
 function sharpeye.Detail_GetBreatheBobDistance()
 	-- Default is 5, so 30
 	return (sharpeye.GetVarNumber("sharpeye_detail_breathebobdist") * 0.1) * 60 * (3 - sharpeye.GetHealthFactor() * 2)
@@ -65,16 +75,16 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	if sharpeye_dat.player_TimeOffGroundWhenLanding > 0 then
 		local timeFactor = sharpeye_dat.player_TimeOffGroundWhenLanding
 		timeFactor = (timeFactor > 2) and 1 or (timeFactor / 2)
-		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + timeFactor * 12
+		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + timeFactor * sharpeye.Detail_GetLandingAngle()
 	end
 	
-	local pitchMod = sharpeye_dat.player_PitchInfluence - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * 2) or 0)
+	local pitchMod = sharpeye_dat.player_PitchInfluence - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * sharpeye.Detail_GetLandingAngle() / 6) or 0)
 	
 	local rollCalc = 0
-	if (relativeSpeed > 1) then
+	if (relativeSpeed > 1.8) then
 		local angleDiff = math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y)
 		if math.abs(angleDiff) < 110 then
-			rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * 8
+			rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleDiff * 2 ) )
 			--rollCalc = (1 - ((1 - (angleDiff / 110)) ^ 2)) * 8
 		else
 			rollCalc = 0
