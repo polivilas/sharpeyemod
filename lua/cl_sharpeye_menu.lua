@@ -14,7 +14,7 @@ include( 'CtrlColor.lua' )
 //// DERMA PANEL .
 
 
-function sharpeye.MenuGetExpandTable( myPanel )
+function sharpeye.Util_FrameGetExpandTable( myPanel )
 	local expandTable = {}
 	
 	for k,subtable in pairs( myPanel.Categories ) do
@@ -289,9 +289,9 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Running : Bobbing Frequency",  "sharpeye_detail_runningbobfreq", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Running : Leaning Angle",  "sharpeye_detail_leaningangle", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Jumping : Landing Angle",  "sharpeye_detail_landingangle", 0, 10, 0 )
-	sharpeye.Util_AppendSlider( refPanel, "Basis : Run Speed reference (inches/s)", "sharpeye_basis_runspeed", 50, 150, 0 )
-	sharpeye.Util_AppendSlider( refPanel, "Basis : Faster Stamina recovery",  "sharpeye_basis_staminarecover", 0, 10, 0 )
-	sharpeye.Util_AppendSlider( refPanel, "Basis : Health-based behavior",  "sharpeye_basis_healthbased", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Basis : Run Speed Reference (inches/s)", "sharpeye_basis_runspeed", 50, 150, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Basis : Faster Stamina Recovery",  "sharpeye_basis_staminarecover", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Basis : Health-based Behavior",  "sharpeye_basis_healthbased", 0, 10, 0 )
 	
 
 	sharpeye.Util_AppendLabel( refPanel, "Crosshair color" )
@@ -306,8 +306,10 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel(refPanel, CDetailsCrosshairColor)
 	end
 	
-	sharpeye.Util_AppendSlider( refPanel, "Static Crosshair Reticule size",  "sharpeye_xhair_staticsize", 0, 8, 0 )
-	sharpeye.Util_AppendSlider( refPanel, "Dynamic Crosshair Reticule size",  "sharpeye_xhair_dynamicsize", 0, 8, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Static Reticule Size",  "sharpeye_xhair_staticsize", 0, 8, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Dynamic Reticule Size",  "sharpeye_xhair_dynamicsize", 0, 8, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Sound : Footsteps Volume",  "sharpeye_snd_footsteps_vol", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Basis : Breathing Volume",  "sharpeye_snd_breathing_vol", 0, 10, 0 )
 	
 	sharpeye.Util_ApplyCategories( refPanel )
 end

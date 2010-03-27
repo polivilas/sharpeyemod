@@ -92,8 +92,6 @@ function sharpeye.InitializeData()
 	sharpeye_dat.bumpsounds_delay    = 0.1
 	
 	
-	sharpeye_dat.breathing_MaxVolume = 0.5
-	
 	sharpeye_dat.breathing_LastMode = -1
 	sharpeye_dat.breathing_LastModel = ""
 	sharpeye_dat.breathing_LastGender = 0
@@ -105,17 +103,6 @@ function sharpeye.InitializeData()
 			Sound(path)
 		end
 	end
-	
-end
-
-function sharpeye.RevertDetails()
-	sharpeye.SetVar("sharpeye_detail_breathebobdist" , "5")
-	sharpeye.SetVar("sharpeye_detail_runningbobfreq" , "5")
-	sharpeye.SetVar("sharpeye_basis_runspeed" , "100")
-	sharpeye.SetVar("sharpeye_basis_staminarecover" , "5")
-	sharpeye.SetVar("sharpeye_basis_healthbased" , "5")
-	sharpeye.SetVar("sharpeye_detail_leaningangle" , "5")
-	sharpeye.SetVar("sharpeye_detail_landingangle" , "5")
 	
 end
 
@@ -272,6 +259,18 @@ function sharpeye.Think( )
 	
 end
 
+function sharpeye.RevertDetails()
+	sharpeye.SetVar("sharpeye_detail_breathebobdist" , "5")
+	sharpeye.SetVar("sharpeye_detail_runningbobfreq" , "5")
+	sharpeye.SetVar("sharpeye_basis_runspeed" , "100")
+	sharpeye.SetVar("sharpeye_basis_staminarecover" , "5")
+	sharpeye.SetVar("sharpeye_basis_healthbased" , "5")
+	sharpeye.SetVar("sharpeye_detail_leaningangle" , "5")
+	sharpeye.SetVar("sharpeye_detail_landingangle" , "5")
+	sharpeye.SetVar("sharpeye_snd_footsteps_vol" , "5")
+	sharpeye.SetVar("sharpeye_snd_breathing_vol" , "5")
+	
+end
 
 -- Load
 function sharpeye.Mount()
@@ -299,6 +298,8 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_xhair_color_a" , "255", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_staticsize" , "8", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_dynamicsize" , "8", true, false)
+	sharpeye.CreateVar("sharpeye_snd_footsteps_vol" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_snd_breathing_vol" , "5", true, false)
 	sharpeye.InitializeData()
 	
 	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then

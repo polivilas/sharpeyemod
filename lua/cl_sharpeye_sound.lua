@@ -15,6 +15,14 @@ function sharpeye.GetBreathingMode()
 	return math.Clamp( math.floor(sharpeye.GetVarNumber("sharpeye_opt_breathing")), 0, 4)
 end
 
+function sharpeye.GetBreathingVolume()
+	return math.Clamp(sharpeye.GetVarNumber("sharpeye_snd_breathing_vol") * 0.1, 0, 1)
+end
+
+function sharpeye.GetFootstepsVolume()
+	return math.Clamp(sharpeye.GetVarNumber("sharpeye_snd_footsteps_vol") * 0.1, 0, 1)
+end
+
 function sharpeye.GetBreathingGender()
 	local mode = sharpeye.GetBreathingMode()
 	if mode == 0 then return 0 end
@@ -66,25 +74,28 @@ function sharpeye.PlayerFootstep( ply, pos, foot, sound, volume, rf )
 	local isInDeepWater = ply:WaterLevel() >= 3
 	local isInModerateWater = (ply:WaterLevel() == 1) or (ply:WaterLevel() == 2)
 	
+	local sndPitch  = 30 + clampedSpeed * 128
+	local sndVolume = 1 + ((sharpeye.GetFootstepsVolume() > 0) and (20 + clampedSpeed * sharpeye.GetFootstepsVolume() * 90) or 0)
+	
 	if not isInDeepWater and not isInModerateWater then
 	
 		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.footsteps, sharpeye_dat.footsteps_LastPlayed)
 		sharpeye_dat.footsteps_LastPlayed = dice
 		
-		ply:EmitSound(sharpeye_dat.footsteps[dice], 30 + clampedSpeed * 128, 80 + clampedSpeed * 70)
+		ply:EmitSound(sharpeye_dat.footsteps[dice], sndVolume, sndPitch)
 		
 	elseif isInModerateWater then
 	
 		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.sloshsteps, sharpeye_dat.sloshsteps_LastPlayed)
 		sharpeye_dat.sloshsteps_LastPlayed = dice
 		
-		ply:EmitSound(sharpeye_dat.sloshsteps[dice], 30 + clampedSpeed * 128, 80 + clampedSpeed * 50)
+		ply:EmitSound(sharpeye_dat.sloshsteps[dice], sndVolume, sndPitch * 0.8)
 	
 	else
 		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.watersteps, sharpeye_dat.watersteps_LastPlayed)
 		sharpeye_dat.watersteps_LastPlayed = dice
 		
-		ply:EmitSound(sharpeye_dat.watersteps[dice], 30 + clampedSpeed * 128, 80 + clampedSpeed * 70)
+		ply:EmitSound(sharpeye_dat.watersteps[dice], sndVolume, sndPitch * 0.8)
 		
 	end
 	
@@ -124,11 +135,11 @@ function sharpeye.Breathing()
 		local breathingcap = 0.7 - (1 - sharpeye.GetHealthFactor()) * 0.4
 		if (sharpeye_dat.player_Stamina > breathingcap) then
 			if not sharpeye_dat.breathing_WasBreathing then
-				sharpeye_dat.breathing_cached[gender]:PlayEx(sharpeye_dat.player_Stamina * sharpeye_dat.breathing_MaxVolume, 100)
+				sharpeye_dat.breathing_cached[gender]:PlayEx(sharpeye_dat.player_Stamina * sharpeye.GetBreathingVolume(), 100)
 				sharpeye_dat.breathing_WasBreathing = true
 				
 			else
-				sharpeye_dat.breathing_cached[gender]:ChangeVolume(sharpeye_dat.player_Stamina * sharpeye_dat.breathing_MaxVolume, 100)
+				sharpeye_dat.breathing_cached[gender]:ChangeVolume(sharpeye_dat.player_Stamina * sharpeye.GetBreathingVolume(), 100)
 				
 			end
 			

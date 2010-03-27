@@ -1,2 +1,2 @@
-0.1
-Added 2 new detailvars (Leaning, Landing). Added disable option for Sandbox tools. Spacebuild-compatible. SCars-compatible. - http://www.facepunch.com/showthread.php?t=908557
+0.11
+Added 4 new detailvars (Leaning, Landing, 2xSound Volume). Added disable option for Sandbox tools. Spacebuild-compatible. SCars-compatible. - http://www.facepunch.com/showthread.php?t=908557
