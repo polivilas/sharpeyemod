@@ -207,8 +207,21 @@ function sharpeye.BuildMenu( opt_tExpand )
 		DevtMultiline:SetMultiline( true )
 		do
 			local myText = ""
+			local M_R_O, M_R_A, M_R_F = EyePos(), EyeAngles(), 75
+			myText = myText .. "REF :: "
+			myText = myText .. "( " .. tostring(M_R_O) .. " , " .. tostring(M_R_A) .. " , " .. tostring(M_R_F) .. " )\n"
 			for k,v in pairs( hook.GetTable()["CalcView"] ) do
-				myText = myText .. tostring(k) .. " >> " .. tostring(v) .. "\n"
+				local I_R_O, I_R_A, I_R_F = v( LocalPlayer(), M_R_O, M_R_A, M_R_F )
+				local wasTable = false
+				if type(I_R_O) == "table" then
+					wasTable = true
+					local I_R_T = I_R_O
+					I_R_F = I_R_T.fov
+					I_R_A = I_R_T.angles
+					I_R_O = I_R_T.origin
+				end
+				myText = myText .. tostring(k) .. " >> "
+				myText = myText .. "( " .. tostring(I_R_O) .. " , " .. tostring(I_R_A) .. " , " .. tostring(I_R_F) .. " )::" .. (wasTable and "tbl" or "oaf") .. "\n"
 			end
 			DevtMultiline:SetText( myText )
 		end
