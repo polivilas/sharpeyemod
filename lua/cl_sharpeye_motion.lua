@@ -39,7 +39,7 @@ end
 function sharpeye.CalcView( ply, origin, angles, fov )
 	if not sharpeye.IsEnabled() then return end
 	if not sharpeye.IsMotionEnabled() then return end
-	if sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableWithTools() then return end
+	if not sharpeye.InMachinimaMode() and (sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableWithTools()) then return end
 	
 
 	if not sharpeye_dat.player_view then
@@ -78,7 +78,11 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + timeFactor * sharpeye.Detail_GetLandingAngle()
 	end
 	
-	local pitchMod = sharpeye_dat.player_PitchInfluence - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * sharpeye.Detail_GetLandingAngle() / 6) or 0)
+	local pitchMod = sharpeye_dat.player_PitchInfluence
+	-- This should not execute in Machinima Mode
+	if not sharpeye.IsNoclipping() then
+		pitchMod = pitchMod - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * sharpeye.Detail_GetLandingAngle() / 6) or 0)
+	end
 	
 	local rollCalc = 0
 	if (relativeSpeed > 1.8) then

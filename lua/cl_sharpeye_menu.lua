@@ -144,7 +144,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Motion" , "sharpeye_core_motion" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Sounds" , "sharpeye_core_sound" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Crosshair" , "sharpeye_core_crosshair" )
-	sharpeye.Util_AppendCheckBox( refPanel, "Disable with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Disable motion with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
 	sharpeye.Util_AppendLabel( refPanel, "Breathing mode :" )
 	--Breathing mode Choice
 	do
@@ -197,6 +197,11 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
 		
 	end
+	
+	
+	sharpeye.Util_MakeCategory( refPanel, "Advanced", 0)
+	sharpeye.Util_AppendLabel( refPanel, "Machinima mode allows you to enable SharpeYe even if noclipping or inside a vehicle. Remember to disable it during normal gameplay.", 40, true )
+	sharpeye.Util_AppendCheckBox( refPanel, "Machinima mode" , "sharpeye_opt_machinimamode" )
 	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Head motion not working ? [DEBUG]", 0)

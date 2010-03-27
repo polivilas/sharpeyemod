@@ -144,6 +144,10 @@ function sharpeye.IsInVehicle()
 	]]--
 end
 
+function sharpeye.InMachinimaMode()
+	return (sharpeye.GetVarNumber("sharpeye_opt_machinimamode") > 0)
+end
+
 function sharpeye.IsNoclipping()
 	return (LocalPlayer():GetMoveType() == MOVETYPE_NOCLIP)
 end
@@ -280,6 +284,7 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_core_crosshair" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_breathing" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_disablewithtools" , "1", true, false)
+	sharpeye.CreateVar("sharpeye_opt_machinimamode" , "0", true, false)
 	
 	sharpeye.CreateVar("sharpeye_detail_breathebobdist" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_detail_runningbobfreq" , "5", true, false)
