@@ -237,6 +237,28 @@ function sharpeye.BuildMenu( opt_tExpand )
 		
 	end
 	
+	sharpeye.Util_AppendLabel( refPanel, "If you are a developer and you know what you are doing, you can try to unhook some functions to figure out which one is the culprit :", 50, true )
+	--Disabler
+	do
+		local counter = 0
+		for k,v in pairs( hook.GetTable()["CalcView"] ) do
+			if not string.find( k , "sharpeye" ) then
+				counter = counter + 1
+				local DisablerButton = vgui.Create("DButton")
+				DisablerButton:SetText( "Unhook " .. k )
+				DisablerButton.DoClick = function()
+					hook.Remove("CalcView", k)
+					DisablerButton:SetDisabled( true )
+				end
+				
+				sharpeye.Util_AppendPanel( refPanel, DisablerButton )
+			end
+		end
+		if counter == 0 then
+			sharpeye.Util_AppendLabel( refPanel, "<No hooks to display.>" )
+		end
+	end
+	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Details and Crosshair", 0 )
 	--Revert button
