@@ -183,8 +183,9 @@ function sharpeye.BuildMenu( opt_tExpand )
 	--Helper multiline
 	do
 		local GeneralCommandLabel = vgui.Create("DTextEntry")
+		local hasUpdate = (MY_VERSION and SVN_VERSION and (MY_VERSION < SVN_VERSION) and DOWNLOAD_LINK)
 		
-		if not (MY_VERSION and SVN_VERSION and (MY_VERSION < SVN_VERSION) and DOWNLOAD_LINK) then
+		if not hasUpdate then
 			GeneralCommandLabel:SetText( "bind \"F10\" \"sharpeye_menu\"" )
 			
 		else
@@ -192,7 +193,10 @@ function sharpeye.BuildMenu( opt_tExpand )
 			
 		end
 		GeneralCommandLabel:SetEditable( false )
-		
+		if hasUpdate then
+			GeneralCommandLabel:SetMultiline( true )
+			GeneralCommandLabel:SetSize( refPanel.W_WIDTH, 60 )
+		end
 
 		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
 		
@@ -205,7 +209,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Head motion not working ? [DEBUG]", 0)
-	sharpeye.Util_AppendLabel( refPanel, "If you encounter issues with head motion not working, please post this report :", 30, true )
+	sharpeye.Util_AppendLabel( refPanel, "WARNING : Make sure you are NOT holding the Toolgun or Physgun for testing.\nIf you encounter issues with head motion not working, please post this report :", 70, true )
 	--Report multiline
 	do
 		local DevtMultiline = vgui.Create("DTextEntry")
