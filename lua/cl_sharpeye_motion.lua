@@ -88,7 +88,18 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	if (relativeSpeed > 1.8) then
 		local angleDiff = math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y)
 		if math.abs(angleDiff) < 110 then
-			rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleDiff * 2 ) )
+			rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2
+			--local angleProspect = (1 - (1 - math.abs(angleDiff) / 110 ) ^ 2 ) * ((angleDiff > 0) and 110 or -110)
+			--local angleProspect = ( 1 - (1 - math.abs(angleDiff) / 110 ) ^ 10 ) * ((angleDiff > 0) and 70 or -70)
+			--local cosProspect = math.cos( math.rad( angleProspect * 2 ) )
+			--print( angleDiff, angleProspect, cosProspect )
+			--cosProspect = (1 - (1 - math.abs(cosProspect)) ^ 2) * ((cosProspect > 0) and 1 or -1)
+			
+			--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2 * -cosProspect
+			--local angleProspect = (1 - (1 - math.abs(angleDiff) / 90 ) ^ 2 ) * ((angleDiff > 0) and 180 or -180)
+			--print( angleDiff * 2, angleProspect )
+			--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleProspect ) )
+			--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleDiff * 2 ) )
 			--rollCalc = (1 - ((1 - (angleDiff / 110)) ^ 2)) * 8
 		else
 			rollCalc = 0
