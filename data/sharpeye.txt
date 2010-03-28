@@ -1,2 +1,2 @@
-0.12
-Added option to disable Motion Blur extension. Added 4 new detailvars. Compatibility fixes. - http://www.facepunch.com/showthread.php?t=908557
+1.00
+Stable Milestone :: Added option to disable Motion Blur extension. Added 4 new detailvars. Compatibility fixes. - http://www.facepunch.com/showthread.php?t=908557
