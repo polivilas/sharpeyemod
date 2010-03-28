@@ -284,6 +284,7 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_opt_breathing" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_disablewithtools" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_machinimamode" , "0", true, false)
+	sharpeye.CreateVar("sharpeye_opt_motionblur", "1", true, false)
 	
 	sharpeye.CreateVar("sharpeye_detail_breathebobdist" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_detail_runningbobfreq" , "5", true, false)

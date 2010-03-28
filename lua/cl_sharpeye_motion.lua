@@ -11,6 +11,10 @@ function sharpeye.IsMotionEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_core_motion") > 0)
 end
 
+function sharpeye.IsMotionBlurEnabled()
+	return (sharpeye.GetVarNumber("sharpeye_opt_motionblur") > 0)
+end
+
 function sharpeye.ShouldMotionDisableWithTools()
 	return ((sharpeye.GetVarNumber("sharpeye_opt_disablewithtools") > 0) and sharpeye.IsUsingSandboxTools())
 end
@@ -147,6 +151,7 @@ end
 function sharpeye.GetMotionBlurValues( y, x, fwd, spin ) 
 	if not sharpeye.IsEnabled() then return end
 	if not sharpeye.IsMotionEnabled() then return end
+	if not sharpeye.IsMotionBlurEnabled() then return end
 	if sharpeye.IsInVehicle() then return end
 	
 	local ply = LocalPlayer()
