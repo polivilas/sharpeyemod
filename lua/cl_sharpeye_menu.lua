@@ -203,9 +203,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	end
 	
 	
-	sharpeye.Util_MakeCategory( refPanel, "Advanced", 0)
-	
-	sharpeye.Util_AppendCheckBox( refPanel, "Disable Motion and Motion blur in Third Person mode" , "sharpeye_opt_disableinthirdperson" )
+	sharpeye.Util_MakeCategory( refPanel, "Advanced", 0 )
 	
 	sharpeye.Util_AppendLabel( refPanel, "Machinima mode allows you to enable SharpeYe even if noclipping or inside a vehicle. Remember to disable it during normal gameplay.", 40 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Machinima mode" , "sharpeye_opt_machinimamode" )
@@ -213,6 +211,9 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendLabel( refPanel, SHARPEYE_NAME .. " has an integrated Motion blur extension to hub with Source Engine motion blur. However, experienced users may want to use the integrated Source \"Forward motion blur\" and disable this one.", 60 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use " .. SHARPEYE_NAME .. " Motion blur" , "sharpeye_opt_motionblur" )
 	
+	
+	sharpeye.Util_AppendLabel( refPanel, "If Machinima Mode is enabled, only Motion stays enabled.", 20 + 10, true )
+	sharpeye.Util_AppendCheckBox( refPanel, "Disable Motion and Motion blur in Third Person mode" , "sharpeye_opt_disableinthirdperson" )
 	
 	sharpeye.Util_MakeCategory( refPanel, "Head motion not working ? [DEBUG]", 0)
 	sharpeye.Util_AppendLabel( refPanel, "WARNING : Make sure you are NOT holding the Toolgun or Physgun for testing.\nIf you encounter issues with head motion not working, please post this report :", 70, true )
