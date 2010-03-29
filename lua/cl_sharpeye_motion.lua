@@ -15,6 +15,14 @@ function sharpeye.IsMotionBlurEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_opt_motionblur") > 0)
 end
 
+function sharpeye.IsInThirdPersonMode()
+	return GAMEMODE:ShouldDrawLocalPlayer()
+end
+
+function sharpeye.ShouldMotionDisableInThirdPerson()
+	return ((sharpeye.GetVarNumber("sharpeye_opt_disableinthirdperson") > 0) and sharpeye.IsInThirdPersonMode())
+end
+
 function sharpeye.ShouldMotionDisableWithTools()
 	return ((sharpeye.GetVarNumber("sharpeye_opt_disablewithtools") > 0) and sharpeye.IsUsingSandboxTools())
 end
@@ -44,6 +52,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	if not sharpeye.IsEnabled() then return end
 	if not sharpeye.IsMotionEnabled() then return end
 	if not sharpeye.InMachinimaMode() and (sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableWithTools()) then return end
+	if sharpeye.ShouldMotionDisableInThirdPerson() then return end
 	
 
 	if not sharpeye_dat.player_view then
@@ -153,6 +162,7 @@ function sharpeye.GetMotionBlurValues( y, x, fwd, spin )
 	if not sharpeye.IsMotionEnabled() then return end
 	if not sharpeye.IsMotionBlurEnabled() then return end
 	if sharpeye.IsInVehicle() then return end
+	if sharpeye.ShouldMotionDisableInThirdPerson() then return end
 	
 	local ply = LocalPlayer()
 	

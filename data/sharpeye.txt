@@ -1,2 +1,2 @@
-1.00
-Stable Milestone :: Added option to disable Motion Blur extension. Added 4 new detailvars. Compatibility fixes. - http://www.facepunch.com/showthread.php?t=908557
+1.01
+BETA: Added an Advanced option to disable SharpeYe Motion and Motion Blur when in a Third Person view, defaulted on - http://www.facepunch.com/showthread.php?t=908557

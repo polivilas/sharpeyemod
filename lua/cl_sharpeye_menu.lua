@@ -204,6 +204,9 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Advanced", 0)
+	
+	sharpeye.Util_AppendCheckBox( refPanel, "Disable Motion and Motion blur in Third Person mode" , "sharpeye_opt_disableinthirdperson" )
+	
 	sharpeye.Util_AppendLabel( refPanel, "Machinima mode allows you to enable SharpeYe even if noclipping or inside a vehicle. Remember to disable it during normal gameplay.", 40 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Machinima mode" , "sharpeye_opt_machinimamode" )
 	
