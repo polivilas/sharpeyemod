@@ -51,8 +51,7 @@ end
 function sharpeye.CalcView( ply, origin, angles, fov )
 	if not sharpeye.IsEnabled() then return end
 	if not sharpeye.IsMotionEnabled() then return end
-	if not sharpeye.InMachinimaMode() and (sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableWithTools()) then return end
-	if sharpeye.ShouldMotionDisableInThirdPerson() then return end
+	if not sharpeye.InMachinimaMode() and (sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableWithTools() or sharpeye.ShouldMotionDisableInThirdPerson()) then return end
 	
 
 	if not sharpeye_dat.player_view then
