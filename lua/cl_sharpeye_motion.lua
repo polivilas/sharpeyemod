@@ -16,7 +16,8 @@ function sharpeye.IsMotionBlurEnabled()
 end
 
 function sharpeye.IsInThirdPersonMode()
-	return GAMEMODE:ShouldDrawLocalPlayer()
+	return false
+	--return GAMEMODE:ShouldDrawLocalPlayer()
 end
 
 function sharpeye.ShouldMotionDisableInThirdPerson()
