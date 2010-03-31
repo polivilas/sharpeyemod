@@ -19,7 +19,12 @@ function sharpeye.SolveCompatilibityIssues( optbForce )
 	
 	sharpeye.Compatibility_MakeSpacebuildCompatible( optbForce )
 	sharpeye.Compatibility_MakeSCarsCompatible( optbForce )
+	sharpeye.Compatibility_MakeWeaponSeatsCompatible( optbForce )
 end
+
+// The following compatibility fix contains a direct copy
+// from a chunk of broken code
+// taken from the addon Spacebuild.
 
 function sharpeye.Compatilibity_ShouldOverrideSpacebuild( optbForce )
 	if not optbForce and sharpeye_dat.comp.spacebuild then
@@ -55,6 +60,7 @@ end
 
 // The following compatibility fix contains a direct copy
 // from a chunk of broken code that is Copyright (c) 2010 Sakarias Johansson
+// taken from the addon SCars.
 
 function sharpeye.Compatilibity_ShouldOverrideSCars( optbForce )
 	if not optbForce and sharpeye_dat.comp.scars then
@@ -197,6 +203,62 @@ function sharpeye.Compatibility_MakeSCarsCompatible( optbForce )
 		end
 	end
 	hook.Add("CalcView", "SCarCalcView_sharpeye", SCarCalcView_sharpeye)
+end
+
+// The following compatibility fix contains a direct copy
+// from a chunk of broken code by CapsAdmin
+// taken from the addon Weapon Seats.
+
+function sharpeye.Compatilibity_ShouldOverrideWeaponSeats( optbForce )
+	if not optbForce and sharpeye_dat.comp.weaponseats then
+		return false
+		
+	elseif hook.GetTable()["CalcView"] and hook.GetTable()["CalcView"]["Weapon Seat"] then
+		return true
+		
+	else
+		return false
+	end
+end
+
+function sharpeye.Compatibility_MakeWeaponSeatsCompatible( optbForce )
+	if not sharpeye.Compatilibity_ShouldOverrideWeaponSeats( optbForce ) then return end
+	sharpeye_dat.comp.weaponseats = true
+	
+	print("[ > " .. SHARPEYE_NAME .. " has found a potential uncompatibility with Weapon Seats. Patching... ]")
+	
+	hook.Remove("CalcView", "Weapon Seat")
+	local function WeaponSeat_DrawPlayerInSeat()
+		for key, ply in pairs(player.GetAll()) do
+			local seat = ply:GetNWEntity("weapon seat")
+			if ValidEntity(seat) and ValidEntity(ply) then
+				local posang = seat:GetAttachment(seat:LookupAttachment("vehicle_feet_passenger0"))
+				local angles = seat:GetAngles()
+				angles:RotateAroundAxis(seat:GetUp(), 90)
+				ply:SetAngles(angles)
+				ply:SetPos(posang.Pos)
+				local angle = math.NormalizeAngle(ply:EyeAngles().y-90)/180
+				ply:SetPoseParameter("body_yaw", angle*29.7)
+				ply:SetPoseParameter("spine_yaw", angle*30.7)
+				ply:SetPoseParameter("aim_yaw", angle*52.5)
+				ply:SetPoseParameter("head_yaw", angle*30.7)
+			end
+		end
+	end
+	
+	local sbview = {}
+	function WeaponSeat_sharpeye(ply, origin, angles, fov)
+		WeaponSeat_DrawPlayerInSeat()
+		local seat = ply:GetNWEntity("weapon seat")
+		if ply:GetNWBool("is in weapon seat") and ValidEntity(seat) and not ply.weapon_seat_visible then
+			local posang = seat:GetAttachment(seat:LookupAttachment("vehicle_feet_passenger0"))
+			sbview.origin = posang.Pos + posang.Ang:Up() * 25
+			return sbview
+		end
+		
+		return
+	end
+	hook.Add("CalcView", "WeaponSeat_sharpeye", WeaponSeat_sharpeye)
 end
 
 sharpeye.SolveCompatilibityIssues( )
