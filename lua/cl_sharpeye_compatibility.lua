@@ -27,7 +27,7 @@ end
 // taken from the addon Spacebuild.
 
 function sharpeye.Compatilibity_ShouldOverrideSpacebuild( optbForce )
-	if not optbForce and sharpeye_dat.comp.spacebuild then
+	if not optbForce and (sharpeye_dat.comp.spacebuild or CALCVIEW_ISFIXED_SPACEBUILD) then
 		return false
 		
 	elseif hook.GetTable()["CalcView"] and hook.GetTable()["CalcView"]["SBEPBMView"] then
@@ -63,7 +63,7 @@ end
 // taken from the addon SCars.
 
 function sharpeye.Compatilibity_ShouldOverrideSCars( optbForce )
-	if not optbForce and sharpeye_dat.comp.scars then
+	if not optbForce and (sharpeye_dat.comp.scars or CALCVIEW_ISFIXED_SCARS) then
 		return false
 		
 	elseif hook.GetTable()["CalcView"] and hook.GetTable()["CalcView"]["SCar CalcView"] then
@@ -210,7 +210,7 @@ end
 // taken from the addon Weapon Seats.
 
 function sharpeye.Compatilibity_ShouldOverrideWeaponSeats( optbForce )
-	if not optbForce and sharpeye_dat.comp.weaponseats then
+	if not optbForce and (sharpeye_dat.comp.weaponseats or CALCVIEW_ISFIXED_WEAPONSEATS) then
 		return false
 		
 	elseif hook.GetTable()["CalcView"] and hook.GetTable()["CalcView"]["Weapon Seat"] then
