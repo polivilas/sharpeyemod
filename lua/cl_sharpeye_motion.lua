@@ -152,6 +152,9 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		
 	end
 	
+	if sharpeye_focus and sharpeye_focus:IsEnabled() then
+		sharpeye_focus:AppendCalcView( view )
+	end
 	
 	return view
 	
