@@ -28,4 +28,6 @@ if (CLIENT or SinglePlayer()) then
 	include("cl_sharpeye_menu.lua")
 	
 	sharpeye.Mount()
+	
+	SHARPEYE_INCLUDED_AT_LEAST_ONCE = true
 end

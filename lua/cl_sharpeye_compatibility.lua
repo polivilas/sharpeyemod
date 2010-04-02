@@ -261,4 +261,4 @@ function sharpeye.Compatibility_MakeWeaponSeatsCompatible( optbForce )
 	hook.Add("CalcView", "WeaponSeat_sharpeye", WeaponSeat_sharpeye)
 end
 
-sharpeye.SolveCompatilibityIssues( )
+if SHARPEYE_INCLUDED_AT_LEAST_ONCE then sharpeye.SolveCompatilibityIssues( ) end
