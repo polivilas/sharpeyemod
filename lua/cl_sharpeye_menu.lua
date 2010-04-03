@@ -298,6 +298,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Jumping : Landing Angle",  "sharpeye_detail_landingangle", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Basis : Run Speed Reference (inches/s)", "sharpeye_basis_runspeed", 50, 150, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Basis : Faster Stamina Recovery",  "sharpeye_basis_staminarecover", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Basis : Healthy Level",  "sharpeye_basis_healthylevel", 0, 100, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Basis : Health-based Behavior",  "sharpeye_basis_healthbased", 0, 10, 0 )
 	
 

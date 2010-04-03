@@ -1,2 +1,2 @@
-1.02
-Added compatibility with Weapon Seats broken code (originally by CapsAdmin). - http://www.facepunch.com/showthread.php?t=908557
+1.03
+Added healthiness. Set it to a value higher than 100 to simulate drunk mode, or to increase the effects. - http://www.facepunch.com/showthread.php?t=908557

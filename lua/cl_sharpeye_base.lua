@@ -150,12 +150,17 @@ function sharpeye.GetBasisHealthBehavior()
 	return math.Clamp(sharpeye.GetVarNumber("sharpeye_basis_healthbased") * 0.1, 0, 1)
 end
 
+function sharpeye.GetBasisHealthyLevel()
+	-- Default is 100, so 100
+	return math.Clamp(sharpeye.GetVarNumber("sharpeye_basis_healthylevel"), 1, 10000)
+end
+
 function sharpeye.GetHealthFactor()
 	-- returns 1 if Health doesn't count
 	-- returns 1 if Player is in good health
 	-- returns 0.? if player is in bad shape 	
 	local behav = sharpeye.GetBasisHealthBehavior()
-	return (1 - behav) + math.Clamp(LocalPlayer():Health() * 0.01, 0, 1) * behav
+	return (1 - behav) + math.Clamp(LocalPlayer():Health() / sharpeye.GetBasisHealthyLevel(), 0, 1) * behav
 end
 
 function sharpeye.GetBasisRunSpeed()
@@ -265,6 +270,7 @@ function sharpeye.RevertDetails()
 	sharpeye.SetVar("sharpeye_basis_runspeed" , "100")
 	sharpeye.SetVar("sharpeye_basis_staminarecover" , "5")
 	sharpeye.SetVar("sharpeye_basis_healthbased" , "5")
+	sharpeye.SetVar("sharpeye_basis_healthylevel" , "100")
 	sharpeye.SetVar("sharpeye_detail_leaningangle" , "5")
 	sharpeye.SetVar("sharpeye_detail_landingangle" , "5")
 	sharpeye.SetVar("sharpeye_snd_footsteps_vol" , "5")
@@ -293,6 +299,7 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_detail_landingangle" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_basis_runspeed" , "100", true, false)
 	sharpeye.CreateVar("sharpeye_basis_staminarecover" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_basis_healthylevel" , "100", true, false)
 	sharpeye.CreateVar("sharpeye_basis_healthbased" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_color_r" , "255", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_color_g" , "220", true, false)
