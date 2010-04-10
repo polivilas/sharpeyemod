@@ -22,11 +22,27 @@ function sharpeye.SolveCompatilibityIssues( optbForce )
 	sharpeye.Compatibility_MakeWeaponSeatsCompatible( optbForce )
 end
 
+// PROCESS Function
+function sharpeye.ProcessCompatibleCalcView( ply, origin, angles, fov, tCalcView)
+	local modified = false
+	if sharpeye_dat.comp.spacebuild then
+		modified = modified or sharpeye.Compatibility_SBEPBMView( ply, origin, angles, fov, tCalcView)
+	end
+	if sharpeye_dat.comp.scars then
+		modified = modified or sharpeye.Compatibility_SCarCalcView( ply, origin, angles, fov, tCalcView)
+	end
+	if sharpeye_dat.comp.weaponseats then
+		modified = modified or sharpeye.Compatibility_WeaponSeat( ply, origin, angles, fov, tCalcView)
+	end
+	
+	return modified
+end
+
 // The following compatibility fix contains a direct copy
-// from a chunk of broken code
+// from a chunk of code
 // taken from the addon Spacebuild.
 
-function sharpeye.Compatilibity_ShouldOverrideSpacebuild( optbForce )
+function sharpeye.Compatibility_ShouldOverrideSpacebuild( optbForce )
 	if not optbForce and (sharpeye_dat.comp.spacebuild or CALCVIEW_ISFIXED_SPACEBUILD) then
 		return false
 		
@@ -39,30 +55,30 @@ function sharpeye.Compatilibity_ShouldOverrideSpacebuild( optbForce )
 end
 
 function sharpeye.Compatibility_MakeSpacebuildCompatible( optbForce )
-	if not sharpeye.Compatilibity_ShouldOverrideSpacebuild( optbForce ) then return end
+	if not sharpeye.Compatibility_ShouldOverrideSpacebuild( optbForce ) then return end
 	sharpeye_dat.comp.spacebuild = true
 	
 	print("[ > " .. SHARPEYE_NAME .. " has found a potential uncompatibility with Spacebuild. Patching... ]")
 	
 	hook.Remove("CalcView", "SBEPBMView")
-	local sbview = {}
-	function SBEPBMView_sharpeye(ply, origin, angles, fov)
+	--local sbview = {}
+	function sharpeye.Compatibility_SBEPBMView(ply, origin, angles, fov, tCalcView)
 		if not (ply.BCMode and ply.BComp and ply.BComp:IsValid()) then return end
 		
-		sbview.origin = origin + ply.BComp.CVVec
-		sbview.angles = Angle(90,0,0)
+		tCalcView.origin = origin + ply.BComp.CVVec
+		tCalcView.angles = Angle(90,0,0)
 		
-		return sbview
+		return true
 	end
-	hook.Add("CalcView", "SBEPBMView_sharpeye", SBEPBMView_sharpeye)
+	--hook.Add("CalcView", "SBEPBMView_sharpeye", SBEPBMView_sharpeye)
 end
 
 
 // The following compatibility fix contains a direct copy
-// from a chunk of broken code that is Copyright (c) 2010 Sakarias Johansson
+// from a chunk of code that is Copyright (c) 2010 Sakarias Johansson
 // taken from the addon SCars.
 
-function sharpeye.Compatilibity_ShouldOverrideSCars( optbForce )
+function sharpeye.Compatibility_ShouldOverrideSCars( optbForce )
 	if not optbForce and (sharpeye_dat.comp.scars or CALCVIEW_ISFIXED_SCARS) then
 		return false
 		
@@ -75,14 +91,14 @@ function sharpeye.Compatilibity_ShouldOverrideSCars( optbForce )
 end
 
 function sharpeye.Compatibility_MakeSCarsCompatible( optbForce )
-	if not sharpeye.Compatilibity_ShouldOverrideSCars( optbForce ) then return end
+	if not sharpeye.Compatibility_ShouldOverrideSCars( optbForce ) then return end
 	sharpeye_dat.comp.scars = true
 	
 	print("[ > " .. SHARPEYE_NAME .. " has found a potential uncompatibility with SCars. Patching... ]")
 	
 	hook.Remove("CalcView", "SCar CalcView")
-	local sbview = {}
-	function SCarCalcView_sharpeye(ply, origin, angles, fov)
+	--local sbview = {}
+	function sharpeye.Compatibility_SCarCalcView(ply, origin, angles, fov, tCalcView)
 		if not ply:Alive() then return end
 		if ((ply:GetActiveWeapon() == NULL) or (ply:GetActiveWeapon() == "Camera")) then return end
 		if GetViewEntity() ~= ply then return end
@@ -161,11 +177,11 @@ function sharpeye.Compatibility_MakeSCarsCompatible( optbForce )
 				position = tr.HitPos
 			end	
 			
-			sbview.origin = position
-			sbview.angles = angles
-			sbview.fov    = fov
+			tCalcView.origin = position
+			tCalcView.angles = angles
+			tCalcView.fov    = fov
 			
-			return sbview
+			return true
 			
 		elseif (veh ~= nil) and (isScarSeat ~= nil) and (isScarSeat == 1) and (ThirdPersonView == 0) then 	
 			
@@ -194,22 +210,22 @@ function sharpeye.Compatibility_MakeSCarsCompatible( optbForce )
 				
 			end
 			
-			sbview.origin = position
-			sbview.angles = angles
-			sbview.fov    = fov
+			tCalcView.origin = position
+			tCalcView.angles = angles
+			tCalcView.fov    = fov
 			
-			return sbview
+			return true
 			
 		end
 	end
-	hook.Add("CalcView", "SCarCalcView_sharpeye", SCarCalcView_sharpeye)
+	--hook.Add("CalcView", "SCarCalcView_sharpeye", SCarCalcView_sharpeye)
 end
 
 // The following compatibility fix contains a direct copy
-// from a chunk of broken code by CapsAdmin
+// from a chunk of code by CapsAdmin
 // taken from the addon Weapon Seats.
 
-function sharpeye.Compatilibity_ShouldOverrideWeaponSeats( optbForce )
+function sharpeye.Compatibility_ShouldOverrideWeaponSeats( optbForce )
 	if not optbForce and (sharpeye_dat.comp.weaponseats or CALCVIEW_ISFIXED_WEAPONSEATS) then
 		return false
 		
@@ -222,7 +238,7 @@ function sharpeye.Compatilibity_ShouldOverrideWeaponSeats( optbForce )
 end
 
 function sharpeye.Compatibility_MakeWeaponSeatsCompatible( optbForce )
-	if not sharpeye.Compatilibity_ShouldOverrideWeaponSeats( optbForce ) then return end
+	if not sharpeye.Compatibility_ShouldOverrideWeaponSeats( optbForce ) then return end
 	sharpeye_dat.comp.weaponseats = true
 	
 	print("[ > " .. SHARPEYE_NAME .. " has found a potential uncompatibility with Weapon Seats. Patching... ]")
@@ -246,19 +262,19 @@ function sharpeye.Compatibility_MakeWeaponSeatsCompatible( optbForce )
 		end
 	end
 	
-	local sbview = {}
-	function WeaponSeat_sharpeye(ply, origin, angles, fov)
+	--local sbview = {}
+	function sharpeye.Compatibility_WeaponSeat(ply, origin, angles, fov, tCalcView)
 		WeaponSeat_DrawPlayerInSeat()
 		local seat = ply:GetNWEntity("weapon seat")
 		if ply:GetNWBool("is in weapon seat") and ValidEntity(seat) and not ply.weapon_seat_visible then
 			local posang = seat:GetAttachment(seat:LookupAttachment("vehicle_feet_passenger0"))
-			sbview.origin = posang.Pos + posang.Ang:Up() * 25
-			return sbview
+			tCalcView.origin = posang.Pos + posang.Ang:Up() * 25
+			return true
 		end
 		
 		return
 	end
-	hook.Add("CalcView", "WeaponSeat_sharpeye", WeaponSeat_sharpeye)
+	--hook.Add("CalcView", "WeaponSeat_sharpeye", WeaponSeat_sharpeye)
 end
 
 if SHARPEYE_INCLUDED_AT_LEAST_ONCE then sharpeye.SolveCompatilibityIssues( ) end

@@ -50,9 +50,22 @@ function sharpeye.Detail_GetRunningBobFrequency()
 end
 
 function sharpeye.CalcView( ply, origin, angles, fov )
-	if not sharpeye.IsEnabled() then return end
-	if not sharpeye.IsMotionEnabled() then return end
-	if not sharpeye.InMachinimaMode() and (sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableWithTools() or sharpeye.ShouldMotionDisableInThirdPerson()) then return end
+	if not sharpeye_dat.player_view_med then
+		sharpeye_dat.player_view_med = {}
+	end
+	sharpeye_dat.player_view_med.origin = origin
+	sharpeye_dat.player_view_med.angles = angles
+	sharpeye_dat.player_view_med.fov    = fov
+	local bCustomChanged = sharpeye.ProcessCompatibleCalcView( ply, origin, angles, fov, sharpeye_dat.player_view_med )
+	origin = sharpeye_dat.player_view_med.origin
+	angles = sharpeye_dat.player_view_med.angles
+	fov    = sharpeye_dat.player_view_med.fov
+	
+	local defaultReturn = bCustomChanged and sharpeye_dat.player_view_med or nil
+	
+	if not sharpeye.IsEnabled() then return defaultReturn end
+	if not sharpeye.IsMotionEnabled() then return defaultReturn end
+	if not sharpeye.InMachinimaMode() and (sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableWithTools() or sharpeye.ShouldMotionDisableInThirdPerson()) then return defaultReturn end
 	
 
 	if not sharpeye_dat.player_view then
