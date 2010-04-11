@@ -78,9 +78,9 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	sharpeye_dat.player_oriangle.r = angles.r
 	
 	local view = sharpeye_dat.player_view
-	view.origin = origin
-	view.angles = angles
-	view.fov = fov
+	view.origin = sharpeye_dat.player_view_med.origin
+	view.angles = sharpeye_dat.player_view_med.angles
+	view.fov    = sharpeye_dat.player_view_med.fov
 	
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
