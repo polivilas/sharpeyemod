@@ -1,2 +1,2 @@
-1.04
-Changed the way the Compatibility Module work. - http://www.facepunch.com/showthread.php?t=908557
+1.05
+Added Master Scale in Advanced Mode. - http://www.facepunch.com/showthread.php?t=908557

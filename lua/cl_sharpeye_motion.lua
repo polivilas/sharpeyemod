@@ -28,6 +28,11 @@ function sharpeye.ShouldMotionDisableWithTools()
 	return ((sharpeye.GetVarNumber("sharpeye_opt_disablewithtools") > 0) and sharpeye.IsUsingSandboxTools())
 end
 
+function sharpeye.Detail_GetMasterMod()
+	-- Default is 5, so 1
+	return (sharpeye.GetVarNumber("sharpeye_detail_mastermod") * 0.1) * 2
+end
+
 function sharpeye.Detail_GetLeaningAngle()
 	-- Default is 5, so 8
 	return (sharpeye.GetVarNumber("sharpeye_detail_leaningangle") * 0.1) * 16
@@ -86,8 +91,8 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 	
 	local shiftMod = sharpeye_dat.player_TimeShift + sharpeye_dat.player_Stamina * sharpeye.Detail_GetRunningBobFrequency() * ( 1 + clampedSpeedCustom ) / 2
-	local distMod  = 1 + sharpeye_dat.player_Stamina * 7 * ( 2 + clampedSpeedCustom ) / 3
-	local breatheMod  = 1 + sharpeye_dat.player_Stamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2
+	local distMod  = (1 + sharpeye_dat.player_Stamina * 7 * ( 2 + clampedSpeedCustom ) / 3) * sharpeye.Detail_GetMasterMod()
+	local breatheMod  = (1 + sharpeye_dat.player_Stamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2) * sharpeye.Detail_GetMasterMod()
 	
 	sharpeye_dat.player_TimeShift = shiftMod
 	
