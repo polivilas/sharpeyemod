@@ -1,2 +1,2 @@
-1.05
-Added Master Scale in Advanced Mode. - http://www.facepunch.com/showthread.php?t=908557
+1.06
+PLEASE DON'T REPORT SHARPEYE NOT WORKING. It's Garry's Mod broken arithmetic rules (multiply has priority over power) that broke SharpeYe.- http://www.facepunch.com/showthread.php?t=908557
