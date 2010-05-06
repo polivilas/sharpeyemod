@@ -13,6 +13,8 @@ function sharpeye.ForceSolveCompatilibityIssues( )
 end
 
 function sharpeye.SolveCompatilibityIssues( optbForce )
+	do return end
+
 	if not sharpeye_dat.comp then
 		sharpeye_dat.comp = {}
 	end
