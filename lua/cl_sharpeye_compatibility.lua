@@ -26,6 +26,7 @@ end
 
 // PROCESS Function
 function sharpeye.ProcessCompatibleCalcView( ply, origin, angles, fov, tCalcView)
+/*
 	local modified = false
 	if sharpeye_dat.comp.spacebuild then
 		modified = modified or sharpeye.Compatibility_SBEPBMView( ply, origin, angles, fov, tCalcView)
@@ -36,7 +37,7 @@ function sharpeye.ProcessCompatibleCalcView( ply, origin, angles, fov, tCalcView
 	if sharpeye_dat.comp.weaponseats then
 		modified = modified or sharpeye.Compatibility_WeaponSeat( ply, origin, angles, fov, tCalcView)
 	end
-	
+	*/
 	return modified
 end
 
