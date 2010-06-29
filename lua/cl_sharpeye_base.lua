@@ -56,6 +56,10 @@ function sharpeye.InitializeData()
 		"sharpeye/breathe_mask.wav"
 	}
 	
+	sharpeye_dat.wind = {
+		"sharpeye/wind1.wav"
+	}
+	
 	sharpeye_dat.soundtables = {
 		sharpeye_dat.footsteps,
 		sharpeye_dat.sloshsteps,
@@ -96,6 +100,10 @@ function sharpeye.InitializeData()
 	sharpeye_dat.breathing_LastModel = ""
 	sharpeye_dat.breathing_LastGender = 0
 	sharpeye_dat.breathing_WasBreathing = false
+	
+	sharpeye_dat.motion_hooked = false
+	
+	sharpeye_dat.EXT_RollSwitch = false
 	
 	
 	for _,subtable in pairs(sharpeye_dat.soundtables) do
@@ -144,6 +152,10 @@ function sharpeye.IsUsingSandboxTools()
 	return ( ValidEntity(myWeapon) and ((myWeapon:GetClass() == "gmod_tool") or (myWeapon:GetClass() == "weapon_physgun")) )
 end
 
+function sharpeye.EXT_IsPCSEnabled()
+	return (sharpeye.GetVarNumber("sharpeye_ext_perfectedclimbswep") > 0)
+end
+
 -- Player custom status
 function sharpeye.GetBasisHealthBehavior()
 	-- Default is 5, so 0.5
@@ -173,6 +185,19 @@ function sharpeye.GetBasisStaminaRecover()
 	return 0.995 - math.abs(sharpeye.GetVarNumber("sharpeye_basis_staminarecover") * 0.1 * 0.05) * sharpeye.GetHealthFactor()
 end
 
+function sharpeye.GetStamina()
+	-- Dorky return ><
+	if sharpeye.EXT_IsPCSEnabled() then
+		local weapon = LocalPlayer():GetActiveWeapon()
+		if ValidEntity( weapon ) and (weapon:GetClass() == "climb_swep") then
+			
+			return math.Max(sharpeye_dat.player_Stamina, 1 - (LocalPlayer():GetNWInt("FATIG_AMOUNT") or 100) * 0.01)
+		end
+		
+	end
+	
+	return sharpeye_dat.player_Stamina
+end
 
 -- Generation
 function sharpeye.Modulation( magic, speedMod, shift )
@@ -204,7 +229,34 @@ function sharpeye.GamemodeInitialize()
 end
 
 function sharpeye.Think( )
-	if not sharpeye.IsEnabled() then return end
+	if not sharpeye.IsEnabled() then
+		-- There's already a check in UnhookMotion
+		sharpeye.UnhookMotion()
+		return
+	end
+	
+	if sharpeye.IsMotionEnabled() then
+		-- There's already a check in there
+		sharpeye.HookMotion()
+		
+	else
+		-- There's already a check in there
+		sharpeye.UnhookMotion()
+		-- Can't collapse with IsEnabled due to return
+		
+	end
+	
+	/*
+	if false do
+		local ply = LocalPlayer()
+		if sharpeye.EXT_IsPCSEnabled() then
+			if ply.CLHasDoneARoll then
+				-- print( ply.__pitch )
+				print( "PCS Motion Blur Override should be " .. (360 - ply.__pitch) / 360 )
+			end
+		end
+	end
+	*/
 	
 	if (CurTime() - sharpeye_dat.bumpsounds_LastTime) < sharpeye_dat.bumpsounds_delay then return end
 	sharpeye_dat.bumpsounds_LastTime = CurTime()
@@ -293,6 +345,7 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_opt_machinimamode" , "0", true, false)
 	sharpeye.CreateVar("sharpeye_opt_motionblur", "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_disableinthirdperson", "1", true, false)
+	sharpeye.CreateVar("sharpeye_ext_perfectedclimbswep", "1", true, false)
 	
 	sharpeye.CreateVar("sharpeye_detail_mastermod" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_detail_breathebobdist" , "5", true, false)
@@ -321,10 +374,11 @@ function sharpeye.Mount()
 	
 	if CLIENT then
 		hook.Add("Think", "sharpeye_Think", sharpeye.Think)
-		hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
+		--SharpeYe CalcView hook should now be evaluated.
+		--hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
 		hook.Add("GetMotionBlurValues", "sharpeye_GetMotionBlurValues", sharpeye.GetMotionBlurValues)
 		hook.Add("HUDPaint", "sharpeye_HUDPaint", sharpeye.HUDPaint)
-		hook.Add("Initialize", "shapeye_Initialize", sharpeye.GamemodeInitialize)
+		hook.Add("Initialize", "sharpeye_Initialize", sharpeye.GamemodeInitialize)
 		concommand.Add( "sharpeye_call_forcesolvecompatibilities", sharpeye.ForceSolveCompatilibityIssues)
 		
 		if sharpeye.MountMenu then
@@ -348,10 +402,11 @@ function sharpeye.Unmount()
 	
 	if CLIENT then
 		hook.Remove("Think", "sharpeye_Think")
-		hook.Remove("CalcView", "sharpeye_CalcView")
+		sharpeye.UnhookMotion()
+		--hook.Remove("CalcView", "sharpeye_CalcView")
 		hook.Remove("GetMotionBlurValues", "sharpeye_GetMotionBlurValues")
 		hook.Remove("HUDPaint", "sharpeye_HUDPaint")
-		hook.Remove("Initialize", "shapeye_Initialize")
+		hook.Remove("Initialize", "sharpeye_Initialize")
 		concommand.Remove( "sharpeye_call_forcesolvecompatibilities")
 			
 		if sharpeye.UnmountMenu then

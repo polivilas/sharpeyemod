@@ -53,13 +53,17 @@ elseif SHARPEYE_SENDCOPY then
 		"sharpeye/breathe_female.wav",
 		"sharpeye/breathe_mask.wav"
 	}
+	sharpeye_dat.wind = {
+		"sharpeye/wind1.wav"
+	}
 	sharpeye_dat.soundtables = {
 		sharpeye_dat.footsteps,
 		sharpeye_dat.sloshsteps,
 		sharpeye_dat.watersteps,
 		sharpeye_dat.stops,
 		sharpeye_dat.waterflop,
-		sharpeye_dat.breathing
+		sharpeye_dat.breathing,
+		sharpeye_dat.wind
 	}
 	
 	for _,subtable in pairs(sharpeye_dat.soundtables) do

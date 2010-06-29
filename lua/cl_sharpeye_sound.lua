@@ -32,8 +32,7 @@ function sharpeye.GetBreathingGender()
 	if (model ~= sharpeye_dat.breathing_LastModel) or (sharpeye_dat.breathing_LastMode ~= mode) then
 		if string.find(model, "female")
 			or string.find(model, "alyx")
-			or string.find(model, "mossman")
-			or string.find(model, "gman") then
+			or string.find(model, "mossman") then
 			return 2
 			
 		elseif string.find(model, "male")
@@ -132,18 +131,19 @@ function sharpeye.Breathing()
 	end
 	
 	if (gender > 0) then
+		local fStamina = sharpeye.GetStamina()
 		local breathingcap = 0.7 - (1 - sharpeye.GetHealthFactor()) * 0.4
-		if (sharpeye_dat.player_Stamina > breathingcap) then
+		if (fStamina > breathingcap) then
 			if not sharpeye_dat.breathing_WasBreathing then
-				sharpeye_dat.breathing_cached[gender]:PlayEx(sharpeye_dat.player_Stamina * sharpeye.GetBreathingVolume(), 100)
+				sharpeye_dat.breathing_cached[gender]:PlayEx(fStamina * sharpeye.GetBreathingVolume(), 100)
 				sharpeye_dat.breathing_WasBreathing = true
 				
 			else
-				sharpeye_dat.breathing_cached[gender]:ChangeVolume(sharpeye_dat.player_Stamina * sharpeye.GetBreathingVolume(), 100)
+				sharpeye_dat.breathing_cached[gender]:ChangeVolume(fStamina * sharpeye.GetBreathingVolume(), 100)
 				
 			end
 			
-		elseif (sharpeye_dat.player_Stamina < breathingcap) and sharpeye_dat.breathing_WasBreathing then
+		elseif (fStamina < breathingcap) and sharpeye_dat.breathing_WasBreathing then
 			sharpeye_dat.breathing_cached[gender]:FadeOut(0.5)
 				sharpeye_dat.breathing_WasBreathing = false
 			
@@ -151,6 +151,49 @@ function sharpeye.Breathing()
 	end
 	
 	sharpeye.StoreBreathingGender()
+	
+end
+
+function sharpeye.SoundWind()
+	if not sharpeye.IsEnabled() then return end
+	if not sharpeye.IsSoundEnabled() then return end
+	
+	if not sharpeye_dat.wind_cached then
+		sharpeye_dat.wind_cached = {}
+		
+		for k,path in pairs(sharpeye_dat.wind) do
+			sharpeye_dat.wind_cached[k] = CreateSound( LocalPlayer(), path )
+		end
+		
+	end
+	
+	
+	sharpeye_dat.wind_velocity = LocalPlayer():GetVelocity():Length()
+	if (sharpeye_dat.wind_velocity > 256) then
+		local volume = math.Clamp( (sharpeye_dat.player_TimeOffGround * 0.5) ^ 2 , 0, 1) * sharpeye_dat.wind_velocity / 64
+		volume = (volume > 1) and 1 or volume
+		
+		local pitch = ( math.Clamp((sharpeye_dat.wind_velocity - 256) / 512, 0, 1) ) * 120 + 80
+		if not sharpeye_dat.wind_IsPlaying then
+			sharpeye_dat.wind_cached[1]:PlayEx(volume, pitch)
+			sharpeye_dat.wind_IsPlaying = true
+			
+		else
+			sharpeye_dat.wind_cached[1]:ChangeVolume(volume)
+			sharpeye_dat.wind_cached[1]:ChangePitch(pitch)
+			
+		end
+		
+	--elseif sharpeye_dat.wind_IsPlaying then
+	--	sharpeye_dat.wind_cached[1]:FadeOut(0.1)
+	--	sharpeye_dat.wind_IsPlaying = false
+	--	
+	--end
+	else
+		-- The reason we're doing this is that stopping the sound plays it back to zero. It creates too much of a sense of loop
+		sharpeye_dat.wind_cached[1]:ChangeVolume(0)
+		
+	end
 	
 end
 
@@ -175,6 +218,7 @@ function sharpeye.SoundThink(shouldTriggerStopSound, shouldTriggerWaterFlop, isI
 	end
 	
 	sharpeye.Breathing()
+	sharpeye.SoundWind()
 	
 end
 

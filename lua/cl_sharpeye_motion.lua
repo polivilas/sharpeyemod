@@ -11,6 +11,21 @@ function sharpeye.IsMotionEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_core_motion") > 0)
 end
 
+function sharpeye.HookMotion()
+	if sharpeye_dat.motion_hooked then return end
+	hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
+	
+	sharpeye_dat.motion_hooked = true
+	
+end
+
+function sharpeye.UnhookMotion()
+	if not sharpeye_dat.motion_hooked then return end
+	hook.Remove("CalcView", "sharpeye_CalcView")
+	
+	sharpeye_dat.motion_hooked = false
+end
+
 function sharpeye.IsMotionBlurEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_opt_motionblur") > 0)
 end
@@ -90,9 +105,11 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 	
-	local shiftMod = sharpeye_dat.player_TimeShift + sharpeye_dat.player_Stamina * sharpeye.Detail_GetRunningBobFrequency() * ( 1 + clampedSpeedCustom ) / 2
-	local distMod  = (1 + sharpeye_dat.player_Stamina * 7 * ( 2 + clampedSpeedCustom ) / 3) * sharpeye.Detail_GetMasterMod()
-	local breatheMod  = (1 + sharpeye_dat.player_Stamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2) * sharpeye.Detail_GetMasterMod()
+	local fStamina = sharpeye.GetStamina()
+	local correction = math.Clamp( FrameTime() * 66 , 0 , 1	)
+	local shiftMod = sharpeye_dat.player_TimeShift + fStamina * sharpeye.Detail_GetRunningBobFrequency() * ( 1 + clampedSpeedCustom ) / 2 * correction
+	local distMod  = (1 + fStamina * 7 * ( 2 + clampedSpeedCustom ) / 3) * sharpeye.Detail_GetMasterMod()
+	local breatheMod  = (1 + fStamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2)
 	
 	sharpeye_dat.player_TimeShift = shiftMod
 	
@@ -100,19 +117,38 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	view.origin.y = view.origin.y + sharpeye.Modulation(16, 1, shiftMod) * 1 * distMod
 	view.origin.z = view.origin.z + sharpeye.Modulation(7 , 1, shiftMod) * 1 * distMod
 	
-	sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence * 0.75
+	sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence * 0.90 * correction
 	--print(sharpeye_dat.player_PitchInfluence)
 	
 	if sharpeye_dat.player_TimeOffGroundWhenLanding > 0 then
 		local timeFactor = sharpeye_dat.player_TimeOffGroundWhenLanding
 		timeFactor = (timeFactor > 2) and 1 or (timeFactor / 2)
 		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + timeFactor * sharpeye.Detail_GetLandingAngle()
+		
 	end
+	
+	-- Removed
+	--[[
+	if sharpeye.EXT_IsPCSEnabled() then
+		if not sharpeye_dat.EXT_RollSwitch and LocalPlayer().CLHasDoneARoll then
+			sharpeye_dat.EXT_RollSwitch = true
+			
+		end
+		
+		if sharpeye_dat.EXT_RollSwitch and not LocalPlayer().CLHasDoneARoll then
+			sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + sharpeye.Detail_GetLandingAngle()
+			sharpeye_dat.EXT_RollSwitch = false
+			
+		end
+		
+	end
+	]]--
 	
 	local pitchMod = sharpeye_dat.player_PitchInfluence
 	-- This should not execute in Machinima Mode
 	if not sharpeye.IsNoclipping() then
 		pitchMod = pitchMod - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * sharpeye.Detail_GetLandingAngle() / 6) or 0)
+		
 	end
 	
 	local rollCalc = 0
@@ -178,7 +214,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 end
 
-function sharpeye.GetMotionBlurValues( y, x, fwd, spin ) 
+function sharpeye.GetMotionBlurValues( y, x, fwd, spin )
 	if not sharpeye.IsEnabled() then return end
 	if not sharpeye.IsMotionEnabled() then return end
 	if not sharpeye.IsMotionBlurEnabled() then return end
@@ -191,6 +227,14 @@ function sharpeye.GetMotionBlurValues( y, x, fwd, spin )
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 
 	fwd = fwd + (clampedSpeedCustom ^ 2) * relativeSpeed * 0.005
+	
+	// LOOK AT THE END OF THINK HOOK
+	// For motion blur override based on PCS
+	//if sharpeye.EXT_IsPCSEnabled() then
+	//	if ply.CLHasDoneARoll then
+	//	 	print( ply.__pitch )
+	//	end
+	//end
 
 	return y, x, fwd, spin
 

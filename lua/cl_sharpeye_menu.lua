@@ -141,7 +141,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	sharpeye.Util_MakeCategory( refPanel, "General", 1 )
 	sharpeye.Util_AppendCheckBox( refPanel, "Enable" , "sharpeye_core_enable" )
-	sharpeye.Util_AppendCheckBox( refPanel, "Use Motion" , "sharpeye_core_motion" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Use Motion (Disable to fix gamemode)" , "sharpeye_core_motion" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Sounds" , "sharpeye_core_sound" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Crosshair" , "sharpeye_core_crosshair" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable motion with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
@@ -180,6 +180,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 50, true )
 		
 	end
+	
 	--Helper multiline
 	do
 		local GeneralCommandLabel = vgui.Create("DTextEntry")
@@ -201,9 +202,10 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
 		
 	end
+	inscript.Util_AppendLabel( refPanel, "You can quickly call the menu by binding \"+sharpeye_menu\" to one of your keys : The menu closes when you release the key.", 40, true )
 	
 	
-	sharpeye.Util_MakeCategory( refPanel, "Advanced", 0 )
+	sharpeye.Util_MakeCategory( refPanel, "Advanced / Extra", 0 )
 	
 	sharpeye.Util_AppendLabel( refPanel, "Machinima mode allows you to enable SharpeYe even if noclipping or inside a vehicle. Remember to disable it during normal gameplay.", 40 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Machinima mode" , "sharpeye_opt_machinimamode" )
@@ -214,12 +216,18 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use " .. SHARPEYE_NAME .. " Motion blur" , "sharpeye_opt_motionblur" )
 	
 	
-	sharpeye.Util_AppendLabel( refPanel, "If Machinima Mode is enabled, only Motion stays enabled.", 20 + 10, true )
-	sharpeye.Util_AppendCheckBox( refPanel, "Disable Motion and Motion blur in Third Person mode" , "sharpeye_opt_disableinthirdperson" )
+	sharpeye.Util_AppendLabel( refPanel, "If Machinima Mode is enabled, only Motion stays enabled in all cases.", 20 + 10 + 10, true )
+	
+	sharpeye.Util_AppendLabel( refPanel, "You can cross \"SharpeYe's Stamina\" and \"Perfected Climb SWEP Fatigue\" (by -[SB]- Spy and Kogitsune) using this.", 40 + 10, true )
+	sharpeye.Util_AppendCheckBox( refPanel, "Cross with Perfected Climb SWEP" , "sharpeye_ext_perfectedclimbswep" )
+	
+	//sharpeye.Util_AppendCheckBox( refPanel, "Disable Motion and Motion blur in Third Person mode" , "sharpeye_opt_disableinthirdperson" )
+	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Head motion not working ? [DEBUG]", 0)
-	sharpeye.Util_AppendLabel( refPanel, "WARNING : Make sure you are NOT holding the Toolgun or Physgun for testing.\nIf you encounter issues with head motion not working, please post this report :", 70, true )
+	sharpeye.Util_AppendLabel( refPanel, "WARNING : Make sure you are NOT holding the Toolgun or Physgun for testing.\nIf you encounter issues with head motion not working, then an addon is overriding SharpeYe. There is no way to fix it.", 100, true )
 	--Report multiline
+	/*
 	do
 		local DevtMultiline = vgui.Create("DTextEntry")
 		DevtMultiline:SetMultiline( true )
@@ -249,19 +257,34 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, DevtMultiline )
 		
 	end
+	*/
 	
-	sharpeye.Util_AppendLabel( refPanel, "If you are a developer and you know what you are doing, you can try to unhook some functions to figure out which one is the culprit :", 50, true )
+	sharpeye.Util_AppendLabel( refPanel, "If you are a developer and you know what you are doing, you can try to unhook some overrides. Warning, unhooking will break other addons. :", 70, true )
 	--Disabler
 	do
 		local counter = 0
-		for k,v in pairs( hook.GetTable()["CalcView"] ) do
+		local tCalcView = hook.GetTable()["CalcView"]
+		for k,v in pairs( tCalcView ) do
 			if not string.find( k , "sharpeye" ) then
 				counter = counter + 1
 				local DisablerButton = vgui.Create("DButton")
 				DisablerButton:SetText( "Unhook " .. k )
+				DisablerButton.__IsEnabled = true
+				DisablerButton.__Keyword = k
+				DisablerButton.__Reference = v
 				DisablerButton.DoClick = function()
-					hook.Remove("CalcView", k)
-					DisablerButton:SetDisabled( true )
+					if DisablerButton.__IsEnabled then
+						DisablerButton.__IsEnabled = false
+						hook.Remove("CalcView", DisablerButton.__Keyword)
+						DisablerButton:SetText( "Hook back " .. k )
+						
+					else
+						DisablerButton.__IsEnabled = true
+						hook.Add("CalcView", DisablerButton.__Keyword, DisablerButton.__Reference)
+						DisablerButton:SetText( "Unhook " .. k )
+					
+					end
+					--DisablerButton:SetDisabled( true )
 				end
 				
 				sharpeye.Util_AppendPanel( refPanel, DisablerButton )
@@ -330,7 +353,15 @@ function sharpeye.ShowMenu()
 	end
 	--sharpeye.DermaPanel:Center()
 	sharpeye.DermaPanel:MakePopup()
+	sharpeye.DermaPanel:SetKeyboardInputEnabled( false )
 	sharpeye.DermaPanel:SetVisible( true )
+end
+
+function sharpeye.HideMenu()
+	if not sharpeye.DermaPanel then
+		return
+	end
+	sharpeye.DermaPanel:SetVisible( false )
 end
 
 function sharpeye.DestroyMenu()
@@ -396,6 +427,8 @@ end
 function sharpeye.MountMenu()
 	concommand.Add( "sharpeye_menu", sharpeye.ShowMenu )
 	concommand.Add( "sharpeye_call_menu", sharpeye.ShowMenu )
+	concommand.Add( "+sharpeye_menu", sharpeye.ShowMenu )
+	concommand.Add( "-sharpeye_menu", sharpeye.HideMenu )
 	hook.Add( "PopulateToolMenu", "AddSharpeYePanel", sharpeye.AddPanel )
 end
 
@@ -404,6 +437,8 @@ function sharpeye.UnmountMenu()
 
 	concommand.Remove( "sharpeye_call_menu" )
 	concommand.Remove( "sharpeye_menu" )
+	concommand.Remove( "+sharpeye_menu" )
+	concommand.Remove( "-sharpeye_menu" )
 	hook.Remove( "PopulateToolMenu", "AddSharpeYePanel" )
 end
 
