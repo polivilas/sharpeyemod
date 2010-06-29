@@ -1,2 +1,2 @@
-1.10
+1.11
 Added Wind sounds. Disabling motion checkbox OR SharpeYe completely will allow compatibility with gamemode special cameras like Ascension. Added extra stamina functionnality with Perfected Climb SWEP. Added +sharpeye_menu bind command. - http://www.facepunch.com/showthread.php?t=908557

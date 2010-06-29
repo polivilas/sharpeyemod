@@ -202,7 +202,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
 		
 	end
-	inscript.Util_AppendLabel( refPanel, "You can quickly call the menu by binding \"+sharpeye_menu\" to one of your keys : The menu closes when you release the key.", 40, true )
+	sharpeye.Util_AppendLabel( refPanel, "You can quickly call the menu by binding \"+sharpeye_menu\" to one of your keys : The menu closes when you release the key.", 40, true )
 	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Advanced / Extra", 0 )
