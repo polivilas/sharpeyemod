@@ -23,6 +23,23 @@ function sharpeye.GetFootstepsVolume()
 	return math.Clamp(sharpeye.GetVarNumber("sharpeye_snd_footsteps_vol") * 0.1, 0, 1)
 end
 
+function sharpeye.GetWindVelocityIncap()
+	-- Default is 5, so 350
+	return 5 + math.Clamp( sharpeye.GetVarNumber("sharpeye_snd_windvelocityincap") * 50, 0, 16000)
+end
+
+function sharpeye.GetIsWindEnabled()
+	return sharpeye.GetVarNumber("sharpeye_snd_windenable") > 0
+end
+
+function sharpeye.GetIsWindEnabledOnGround()
+	return sharpeye.GetVarNumber("sharpeye_snd_windonground") > 0
+end
+
+function sharpeye.GetIsWindEnabledOnNoclip()
+	return sharpeye.GetVarNumber("sharpeye_snd_windonnoclip") > 0
+end
+
 function sharpeye.GetBreathingGender()
 	local mode = sharpeye.GetBreathingMode()
 	if mode == 0 then return 0 end
@@ -157,23 +174,35 @@ end
 function sharpeye.SoundWind()
 	if not sharpeye.IsEnabled() then return end
 	if not sharpeye.IsSoundEnabled() then return end
+	if not sharpeye.GetIsWindEnabled() then return end
+	
+	local ply = LocalPlayer()
 	
 	if not sharpeye_dat.wind_cached then
 		sharpeye_dat.wind_cached = {}
 		
 		for k,path in pairs(sharpeye_dat.wind) do
-			sharpeye_dat.wind_cached[k] = CreateSound( LocalPlayer(), path )
+			sharpeye_dat.wind_cached[k] = CreateSound( ply, path )
 		end
 		
 	end
 	
+	if not sharpeye.IsInVehicle() then
+		sharpeye_dat.wind_velocity = ply:GetVelocity():Length()
 	
-	sharpeye_dat.wind_velocity = LocalPlayer():GetVelocity():Length()
-	if (sharpeye_dat.wind_velocity > 256) then
-		local volume = math.Clamp( (sharpeye_dat.player_TimeOffGround * 0.5) ^ 2 , 0, 1) * sharpeye_dat.wind_velocity / 64
+	else
+		sharpeye_dat.wind_velocity = ply:GetVehicle():GetVelocity():Length()
+		
+	end
+	
+	local iVeloIncap = sharpeye.GetWindVelocityIncap()
+	if (sharpeye_dat.wind_velocity > iVeloIncap) then
+		local shouldForce = sharpeye.GetIsWindEnabledOnGround() or not ply:Alive()
+		local shouldNotPlay  = not sharpeye.GetIsWindEnabledOnNoclip() and sharpeye.IsNoclipping()
+		local volume = shouldNotPlay and 0 or shouldForce and 1 or math.Clamp( (sharpeye_dat.player_TimeOffGround * 0.5) ^ 2 , 0, 1) * sharpeye_dat.wind_velocity / 64
 		volume = (volume > 1) and 1 or volume
 		
-		local pitch = ( math.Clamp((sharpeye_dat.wind_velocity - 256) / 512, 0, 1) ) * 120 + 80
+		local pitch = ( math.Clamp((sharpeye_dat.wind_velocity - iVeloIncap) / (iVeloIncap * 2), 0, 1) ) * 120 + 80
 		if not sharpeye_dat.wind_IsPlaying then
 			sharpeye_dat.wind_cached[1]:PlayEx(volume, pitch)
 			sharpeye_dat.wind_IsPlaying = true

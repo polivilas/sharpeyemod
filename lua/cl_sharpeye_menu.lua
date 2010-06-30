@@ -142,6 +142,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_MakeCategory( refPanel, "General", 1 )
 	sharpeye.Util_AppendCheckBox( refPanel, "Enable" , "sharpeye_core_enable" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Motion (Disable to fix gamemode)" , "sharpeye_core_motion" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Motion uses First Person Deathcam", "sharpeye_opt_firstpersondeath" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Sounds" , "sharpeye_core_sound" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Crosshair" , "sharpeye_core_crosshair" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable motion with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
@@ -343,17 +344,21 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Dynamic Reticule Size",  "sharpeye_xhair_dynamicsize", 0, 8, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Sound : Footsteps Volume",  "sharpeye_snd_footsteps_vol", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Sound : Breathing Volume",  "sharpeye_snd_breathing_vol", 0, 10, 0 )
+	sharpeye.Util_AppendCheckBox( refPanel, "Wind : Enable",  "sharpeye_snd_windenable" )
+	sharpeye.Util_AppendSlider( refPanel, "Wind : Minimum velocity",  "sharpeye_snd_windvelocityincap", 0, 10, 0 )
+	sharpeye.Util_AppendCheckBox( refPanel, "Wind : Heard even on Ground",  "sharpeye_snd_windonground" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Wind : Heard even on Noclip",  "sharpeye_snd_windonnoclip" )
 	
 	sharpeye.Util_ApplyCategories( refPanel )
 end
 
-function sharpeye.ShowMenu()
+function sharpeye.ShowMenu( optbKeyboardShouldNotOverride )
 	if not sharpeye.DermaPanel then
 		sharpeye.BuildMenu()
 	end
 	--sharpeye.DermaPanel:Center()
 	sharpeye.DermaPanel:MakePopup()
-	sharpeye.DermaPanel:SetKeyboardInputEnabled( false )
+	sharpeye.DermaPanel:SetKeyboardInputEnabled( not optbKeyboardShouldNotOverride )
 	sharpeye.DermaPanel:SetVisible( true )
 end
 
@@ -427,7 +432,7 @@ end
 function sharpeye.MountMenu()
 	concommand.Add( "sharpeye_menu", sharpeye.ShowMenu )
 	concommand.Add( "sharpeye_call_menu", sharpeye.ShowMenu )
-	concommand.Add( "+sharpeye_menu", sharpeye.ShowMenu )
+	concommand.Add( "+sharpeye_menu", sharpeye.ShowMenu, true )
 	concommand.Add( "-sharpeye_menu", sharpeye.HideMenu )
 	hook.Add( "PopulateToolMenu", "AddSharpeYePanel", sharpeye.AddPanel )
 end

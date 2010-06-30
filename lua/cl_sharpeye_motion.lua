@@ -26,6 +26,10 @@ function sharpeye.UnhookMotion()
 	sharpeye_dat.motion_hooked = false
 end
 
+function sharpeye.IsFirstPersonDeathEnabled()
+	return (sharpeye.GetVarNumber("sharpeye_opt_firstpersondeath") > 0)
+end
+
 function sharpeye.IsMotionBlurEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_opt_motionblur") > 0)
 end
@@ -102,88 +106,115 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	view.angles = sharpeye_dat.player_view_med.angles
 	view.fov    = sharpeye_dat.player_view_med.fov
 	
-	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
-	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
-	
-	local fStamina = sharpeye.GetStamina()
-	local correction = math.Clamp( FrameTime() * 66 , 0 , 1	)
-	local shiftMod = sharpeye_dat.player_TimeShift + fStamina * sharpeye.Detail_GetRunningBobFrequency() * ( 1 + clampedSpeedCustom ) / 2 * correction
-	local distMod  = (1 + fStamina * 7 * ( 2 + clampedSpeedCustom ) / 3) * sharpeye.Detail_GetMasterMod()
-	local breatheMod  = (1 + fStamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2)
-	
-	sharpeye_dat.player_TimeShift = shiftMod
-	
-	view.origin.x = view.origin.x + sharpeye.Modulation(27, 1, shiftMod) * 1 * distMod
-	view.origin.y = view.origin.y + sharpeye.Modulation(16, 1, shiftMod) * 1 * distMod
-	view.origin.z = view.origin.z + sharpeye.Modulation(7 , 1, shiftMod) * 1 * distMod
-	
-	sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence * 0.90 * correction
-	--print(sharpeye_dat.player_PitchInfluence)
-	
-	if sharpeye_dat.player_TimeOffGroundWhenLanding > 0 then
-		local timeFactor = sharpeye_dat.player_TimeOffGroundWhenLanding
-		timeFactor = (timeFactor > 2) and 1 or (timeFactor / 2)
-		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + timeFactor * sharpeye.Detail_GetLandingAngle()
+	if sharpeye.InMachinimaMode() or not (sharpeye.IsFirstPersonDeathEnabled() and not LocalPlayer():Alive() and ValidEntity( LocalPlayer():GetRagdollEntity() ) ) then
 		
-	end
-	
-	-- Removed
-	--[[
-	if sharpeye.EXT_IsPCSEnabled() then
-		if not sharpeye_dat.EXT_RollSwitch and LocalPlayer().CLHasDoneARoll then
-			sharpeye_dat.EXT_RollSwitch = true
+		local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
+		local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
+		
+		local fStamina = sharpeye.GetStamina()
+		local correction = math.Clamp( FrameTime() * 66 , 0 , 1	)
+		local shiftMod = sharpeye_dat.player_TimeShift + fStamina * sharpeye.Detail_GetRunningBobFrequency() * ( 1 + clampedSpeedCustom ) / 2 * correction
+		local distMod  = (1 + fStamina * 7 * ( 2 + clampedSpeedCustom ) / 3) * sharpeye.Detail_GetMasterMod()
+		local breatheMod  = (1 + fStamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2)
+		
+		sharpeye_dat.player_TimeShift = shiftMod
+		
+		view.origin.x = view.origin.x + sharpeye.Modulation(27, 1, shiftMod) * 1 * distMod
+		view.origin.y = view.origin.y + sharpeye.Modulation(16, 1, shiftMod) * 1 * distMod
+		view.origin.z = view.origin.z + sharpeye.Modulation(7 , 1, shiftMod) * 1 * distMod
+		
+		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence * 0.90 * correction
+		--print(sharpeye_dat.player_PitchInfluence)
+		
+		if sharpeye_dat.player_TimeOffGroundWhenLanding > 0 then
+			local timeFactor = sharpeye_dat.player_TimeOffGroundWhenLanding
+			timeFactor = (timeFactor > 2) and 1 or (timeFactor / 2)
+			sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + timeFactor * sharpeye.Detail_GetLandingAngle()
 			
 		end
 		
-		if sharpeye_dat.EXT_RollSwitch and not LocalPlayer().CLHasDoneARoll then
-			sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + sharpeye.Detail_GetLandingAngle()
-			sharpeye_dat.EXT_RollSwitch = false
+		-- Removed
+		--[[
+		if sharpeye.EXT_IsPCSEnabled() then
+			if not sharpeye_dat.EXT_RollSwitch and LocalPlayer().CLHasDoneARoll then
+				sharpeye_dat.EXT_RollSwitch = true
+				
+			end
+			
+			if sharpeye_dat.EXT_RollSwitch and not LocalPlayer().CLHasDoneARoll then
+				sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + sharpeye.Detail_GetLandingAngle()
+				sharpeye_dat.EXT_RollSwitch = false
+				
+			end
+			
+		end
+		]]--
+		
+		local pitchMod = sharpeye_dat.player_PitchInfluence
+		-- This should not execute in Machinima Mode
+		if not sharpeye.IsNoclipping() then
+			pitchMod = pitchMod - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * sharpeye.Detail_GetLandingAngle() / 6) or 0)
 			
 		end
 		
-	end
-	]]--
-	
-	local pitchMod = sharpeye_dat.player_PitchInfluence
-	-- This should not execute in Machinima Mode
-	if not sharpeye.IsNoclipping() then
-		pitchMod = pitchMod - ((sharpeye_dat.player_TimeOffGround > 0) and ((1 + ((sharpeye_dat.player_TimeOffGround > 2) and 1 or (sharpeye_dat.player_TimeOffGround / 2))) * sharpeye.Detail_GetLandingAngle() / 6) or 0)
-		
-	end
-	
-	local rollCalc = 0
-	if (relativeSpeed > 1.8) then
-		local angleDiff = math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y)
-		if math.abs(angleDiff) < 110 then
-			rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2
-			--local angleProspect = (1 - (1 - math.abs(angleDiff) / 110 ) ^ 2 ) * ((angleDiff > 0) and 110 or -110)
-			--local angleProspect = ( 1 - (1 - math.abs(angleDiff) / 110 ) ^ 10 ) * ((angleDiff > 0) and 70 or -70)
-			--local cosProspect = math.cos( math.rad( angleProspect * 2 ) )
-			--print( angleDiff, angleProspect, cosProspect )
-			--cosProspect = (1 - (1 - math.abs(cosProspect)) ^ 2) * ((cosProspect > 0) and 1 or -1)
+		local rollCalc = 0
+		if (relativeSpeed > 1.8) then
+			local angleDiff = math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y)
+			if math.abs(angleDiff) < 110 then
+				rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2
+				--local angleProspect = (1 - (1 - math.abs(angleDiff) / 110 ) ^ 2 ) * ((angleDiff > 0) and 110 or -110)
+				--local angleProspect = ( 1 - (1 - math.abs(angleDiff) / 110 ) ^ 10 ) * ((angleDiff > 0) and 70 or -70)
+				--local cosProspect = math.cos( math.rad( angleProspect * 2 ) )
+				--print( angleDiff, angleProspect, cosProspect )
+				--cosProspect = (1 - (1 - math.abs(cosProspect)) ^ 2) * ((cosProspect > 0) and 1 or -1)
+				
+				--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2 * -cosProspect
+				--local angleProspect = (1 - (1 - math.abs(angleDiff) / 90 ) ^ 2 ) * ((angleDiff > 0) and 180 or -180)
+				--print( angleDiff * 2, angleProspect )
+				--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleProspect ) )
+				--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleDiff * 2 ) )
+				--rollCalc = (1 - ((1 - (angleDiff / 110)) ^ 2)) * 8
+			else
+				rollCalc = 0
+			end
 			
-			--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2 * -cosProspect
-			--local angleProspect = (1 - (1 - math.abs(angleDiff) / 90 ) ^ 2 ) * ((angleDiff > 0) and 180 or -180)
-			--print( angleDiff * 2, angleProspect )
-			--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleProspect ) )
-			--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleDiff * 2 ) )
-			--rollCalc = (1 - ((1 - (angleDiff / 110)) ^ 2)) * 8
 		else
 			rollCalc = 0
+			
 		end
+		sharpeye_dat.player_RollChange = sharpeye_dat.player_RollChange + (rollCalc - sharpeye_dat.player_RollChange) * math.Clamp( 0.2 * FrameTime() * 25 , 0 , 1 )
 		
-	else
-		rollCalc = 0
+		local precisionShot = ((math.Clamp(view.fov, 20, 75) - 15) / 60)
 		
-	end
-	sharpeye_dat.player_RollChange = sharpeye_dat.player_RollChange + (rollCalc - sharpeye_dat.player_RollChange) * math.Clamp( 0.2 * FrameTime() * 25 , 0 , 1 )
-	
-	local precisionShot = ((math.Clamp(view.fov, 20, 75) - 15) / 60)
-	
-	view.angles.p = view.angles.p + precisionShot * sharpeye.Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod
-	view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod
-	view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod - sharpeye_dat.player_RollChange
+		view.angles.p = view.angles.p + precisionShot * sharpeye.Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod
+		view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod
+		view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod - sharpeye_dat.player_RollChange
+		
+	else -- Player is dead and has a ragdoll
 
+		local ragdoll = LocalPlayer():GetRagdollEntity()
+		local attachment = ragdoll:GetAttachment( 1 )
+		
+		if not ragdoll.triedHeadSnap then
+			ragdoll.BuildBonePositions = function( self, numbones, numphysbones )
+				if not self.s__boneid then
+					self.s__boneid = ragdoll:LookupBone("ValveBiped.Bip01_Head1")
+				end
+				if self.s__boneid and self.s__boneid ~= -1 then
+					local matBone = ragdoll:GetBoneMatrix( self.s__boneid )
+					matBone:Scale( Vector( 0.01, 0.01, 0.01 ) )
+					ragdoll:SetBoneMatrix( self.s__boneid, matBone )
+					
+				end
+			end
+			ragdoll.triedHeadSnap = true
+			
+		end
+
+		view.origin = attachment.Pos - attachment.Ang:Forward() * 0.4
+		view.angles = attachment.Ang
+	
+	end
 	
 	local wep = ply:GetActiveWeapon()
 	if ( ValidEntity( wep ) ) then
@@ -222,19 +253,24 @@ function sharpeye.GetMotionBlurValues( y, x, fwd, spin )
 	if sharpeye.ShouldMotionDisableInThirdPerson() then return end
 	
 	local ply = LocalPlayer()
+	--local velocity = ply:GetVelocity()
+	--local velocityAngle = velocity:Angle()
+	--local eyeAngles = EyeAngles()
 	
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 
 	fwd = fwd + (clampedSpeedCustom ^ 2) * relativeSpeed * 0.005
+	--y = y + clampedSpeedCustom * math.sin(math.AngleDifference( velocityAngle.y, eyeAngles.y ) / 360) ^ 3
+	--x = x + clampedSpeedCustom * math.sin(math.AngleDifference( velocityAngle.p, eyeAngles.p ) / 360) ^ 3
 	
-	// LOOK AT THE END OF THINK HOOK
-	// For motion blur override based on PCS
-	//if sharpeye.EXT_IsPCSEnabled() then
-	//	if ply.CLHasDoneARoll then
-	//	 	print( ply.__pitch )
-	//	end
-	//end
+	if sharpeye.EXT_IsPCSEnabled() then
+		if ply.CLHasDoneARoll then
+			-- print( ply.__pitch )
+			--print( "PCS Motion Blur Override should be " .. (360 - ply.__pitch) / 360 )
+			x = x + (360 - ply.__pitch) / 360
+		end
+	end
 
 	return y, x, fwd, spin
 

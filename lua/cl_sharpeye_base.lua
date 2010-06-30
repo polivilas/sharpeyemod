@@ -327,7 +327,8 @@ function sharpeye.RevertDetails()
 	sharpeye.SetVar("sharpeye_detail_leaningangle" , "5")
 	sharpeye.SetVar("sharpeye_detail_landingangle" , "5")
 	sharpeye.SetVar("sharpeye_snd_footsteps_vol" , "5")
-	sharpeye.SetVar("sharpeye_snd_breathing_vol" , "5")
+	sharpeye.SetVar("sharpeye_snd_footsteps_vol" , "5")
+	sharpeye.SetVar("sharpeye_snd_windvelocityincap" , "5")
 	
 end
 
@@ -340,6 +341,7 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_core_motion", "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_sound" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_crosshair" , "1", true, false)
+	sharpeye.CreateVar("sharpeye_opt_firstpersondeath" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_breathing" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_disablewithtools" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_machinimamode" , "0", true, false)
@@ -364,6 +366,11 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_xhair_dynamicsize" , "8", true, false)
 	sharpeye.CreateVar("sharpeye_snd_footsteps_vol" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_snd_breathing_vol" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_snd_windenable" , "1", true, false)
+	sharpeye.CreateVar("sharpeye_snd_windvelocityincap" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_snd_windonground" , "0", true, false)
+	sharpeye.CreateVar("sharpeye_snd_windonnoclip" , "0", true, false)
+	
 	sharpeye.InitializeData()
 	
 	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
