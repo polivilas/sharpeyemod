@@ -219,6 +219,10 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	sharpeye.Util_AppendLabel( refPanel, "If Machinima Mode is enabled, only Motion stays enabled in all cases.", 20 + 10 + 10, true )
 	
+
+	sharpeye.Util_AppendLabel( refPanel, "Highspeed Deathcam allows the deathcam to be immediate when the player has a death ragdoll. This may cause issues on some gamemodes (simulate death).", 50 + 10, true )
+	sharpeye.Util_AppendCheckBox( refPanel, "First Person Deathcam - Highspeed Mode", "sharpeye_opt_firstpersondeath_highspeed" )
+	
 	sharpeye.Util_AppendLabel( refPanel, "You can cross \"SharpeYe's Stamina\" and \"Perfected Climb SWEP Fatigue\" (by -[SB]- Spy and Kogitsune) using this.", 40 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Cross with Perfected Climb SWEP" , "sharpeye_ext_perfectedclimbswep" )
 	

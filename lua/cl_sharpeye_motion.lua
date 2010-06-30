@@ -30,6 +30,10 @@ function sharpeye.IsFirstPersonDeathEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_opt_firstpersondeath") > 0)
 end
 
+function sharpeye.IsFirstPersonDeathHighSpeed()
+	return (sharpeye.GetVarNumber("sharpeye_opt_firstpersondeath_highspeed") > 0)
+end
+
 function sharpeye.IsMotionBlurEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_opt_motionblur") > 0)
 end
@@ -106,7 +110,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	view.angles = sharpeye_dat.player_view_med.angles
 	view.fov    = sharpeye_dat.player_view_med.fov
 	
-	if sharpeye.InMachinimaMode() or not (sharpeye.IsFirstPersonDeathEnabled() and not LocalPlayer():Alive() and ValidEntity( LocalPlayer():GetRagdollEntity() ) ) then
+	if sharpeye.InMachinimaMode() or not (sharpeye.IsFirstPersonDeathEnabled() and (sharpeye.IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and ValidEntity( LocalPlayer():GetRagdollEntity() ) ) then
 		
 		local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 		local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
