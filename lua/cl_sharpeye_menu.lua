@@ -145,7 +145,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendCheckBox( refPanel, "Motion uses First Person Deathcam", "sharpeye_opt_firstpersondeath" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Sounds" , "sharpeye_core_sound" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Crosshair" , "sharpeye_core_crosshair" )
-	sharpeye.Util_AppendCheckBox( refPanel, "Disable motion with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
 	sharpeye.Util_AppendLabel( refPanel, "Breathing mode :" )
 	--Breathing mode Choice
 	do
@@ -344,8 +344,21 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel(refPanel, CDetailsCrosshairColor)
 	end
 	
+	sharpeye.Util_AppendLabel( refPanel, "Crosshair Shadow color" )
+	--ShadXHair Color
+	do
+		local CDetailsCrosshairColor = vgui.Create("CtrlColor")
+		CDetailsCrosshairColor.Prefix = "sharpeye_xhair_shadcolor"
+		CDetailsCrosshairColor:SetConVarR(CDetailsCrosshairColor.Prefix .."_r")
+		CDetailsCrosshairColor:SetConVarG(CDetailsCrosshairColor.Prefix .."_g")
+		CDetailsCrosshairColor:SetConVarB(CDetailsCrosshairColor.Prefix .."_b")
+		CDetailsCrosshairColor:SetConVarA(CDetailsCrosshairColor.Prefix .."_a")
+		sharpeye.Util_AppendPanel(refPanel, CDetailsCrosshairColor)
+	end
+	
 	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Static Reticule Size",  "sharpeye_xhair_staticsize", 0, 8, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Dynamic Reticule Size",  "sharpeye_xhair_dynamicsize", 0, 8, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Dynamic Dropshadow Size",  "sharpeye_xhair_shadowsize", 0, 8, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Sound : Footsteps Volume",  "sharpeye_snd_footsteps_vol", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Sound : Breathing Volume",  "sharpeye_snd_breathing_vol", 0, 10, 0 )
 	sharpeye.Util_AppendCheckBox( refPanel, "Wind : Enable",  "sharpeye_snd_windenable" )

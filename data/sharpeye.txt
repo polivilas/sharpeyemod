@@ -1,2 +1,2 @@
-1.21
-Added First Person Deathcam option. Added Wind customization options. Added support for PCS Motion Blur on player rolls. -- 1.1 : Added Wind sounds. Disabling motion checkbox OR SharpeYe completely will allow compatibility with gamemode special cameras like Ascension. Added extra stamina functionnality with Perfected Climb SWEP. Added +sharpeye_menu bind command. - http://www.facepunch.com/showthread.php?t=908557
+1.3
+Added Crosshair Dropshadow option. Changed "Disable motion with tools" against "Disable bobbing with tools" to allow use of SharpeYe::Focus with tools. - http://www.facepunch.com/showthread.php?t=908557

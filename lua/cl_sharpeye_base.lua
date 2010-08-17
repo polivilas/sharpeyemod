@@ -71,7 +71,8 @@ function sharpeye.InitializeData()
 	
 	sharpeye_dat.crosshairshapes = {
 		"depthhud/linebow_crosshair.vmt",
-		"depthhud/X_CircleSolid.vmt"
+		"depthhud/X_CircleSolid.vmt",
+		"depthhud/X_CircleShadow.vmt"
 	}
 	
 	--sharpeye_day.player_RunSpeed = 100
@@ -363,8 +364,13 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_xhair_color_g" , "220", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_color_b" , "0", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_color_a" , "255", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_shadcolor_r" , "0", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_shadcolor_g" , "0", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_shadcolor_b" , "0", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_shadcolor_a" , "64", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_staticsize" , "8", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_dynamicsize" , "8", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_shadowsize" , "8", true, false)
 	sharpeye.CreateVar("sharpeye_snd_footsteps_vol" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_snd_breathing_vol" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_snd_windenable" , "1", true, false)

@@ -32,6 +32,11 @@ function sharpeye.GetCrosshairDynamicSize()
 	return (sharpeye.GetVarNumber("sharpeye_xhair_dynamicsize") / 8.0) * 4
 end
 
+function sharpeye.GetCrosshairShadowSize()
+	return (sharpeye.GetVarNumber("sharpeye_xhair_shadowsize") / 8.0) * 8
+end
+
+
 function sharpeye.HUDPaint()
 	if not sharpeye.IsEnabled() then return end
 	
@@ -62,17 +67,22 @@ function sharpeye.HUDPaint()
 		sharpeye_dat.crosshair.ch_y = sharpeye.HudSmooth(sharpeye_dat.crosshair.ch_y, sharpeye_dat.crosshair.tg_y, sharpeye_dat.crosshair.speed)
 		
 		-- Displaying
-		local staticSize = sharpeye.GetCrosshairStaticSize()
+		local staticSize  = sharpeye.GetCrosshairStaticSize()
 		local dynamicSize = sharpeye.GetCrosshairDynamicSize()
-		
-		sharpeye.SetDrawColorFromVar( "sharpeye_xhair_color" )
+		local shadowSize  = sharpeye.GetCrosshairShadowSize()
 		
 		if staticSize > 0 then
+			sharpeye.SetDrawColorFromVar( "sharpeye_xhair_color" )
 			surface.SetTexture(sharpeye_dat.crosshair.shape[1])
 			surface.DrawTexturedRectRotated(ScrW() * 0.5, ScrH() * 0.5, staticSize, staticSize, 0)
 		end
 
 		if not sharpeye.IsInVehicle() and LocalPlayer():Alive() and (dynamicSize > 0) then
+			sharpeye.SetDrawColorFromVar( "sharpeye_xhair_shadcolor" )
+			surface.SetTexture(sharpeye_dat.crosshair.shape[3])
+			surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.ch_x, sharpeye_dat.crosshair.ch_y, shadowSize, shadowSize, 0)
+			
+			sharpeye.SetDrawColorFromVar( "sharpeye_xhair_color" )
 			surface.SetTexture(sharpeye_dat.crosshair.shape[2])
 			surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.ch_x, sharpeye_dat.crosshair.ch_y, dynamicSize, dynamicSize, 0)
 		end

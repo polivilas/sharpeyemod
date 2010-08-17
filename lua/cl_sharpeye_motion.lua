@@ -93,7 +93,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 	if not sharpeye.IsEnabled() then return defaultReturn end
 	if not sharpeye.IsMotionEnabled() then return defaultReturn end
-	if not sharpeye.InMachinimaMode() and (sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableWithTools() or sharpeye.ShouldMotionDisableInThirdPerson()) then return defaultReturn end
+	if not sharpeye.InMachinimaMode() and (sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or --[[sharpeye.ShouldMotionDisableWithTools() or]] sharpeye.ShouldMotionDisableInThirdPerson()) then return defaultReturn end
 	
 
 	if not sharpeye_dat.player_view then
@@ -110,7 +110,8 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	view.angles = sharpeye_dat.player_view_med.angles
 	view.fov    = sharpeye_dat.player_view_med.fov
 	
-	if sharpeye.InMachinimaMode() or not (sharpeye.IsFirstPersonDeathEnabled() and (sharpeye.IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and ValidEntity( LocalPlayer():GetRagdollEntity() ) ) then
+	local toolMode = sharpeye.ShouldMotionDisableWithTools()
+	if sharpeye.InMachinimaMode() or not toolMode and ( not (sharpeye.IsFirstPersonDeathEnabled() and (sharpeye.IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and ValidEntity( LocalPlayer():GetRagdollEntity() ) ) ) then
 		
 		local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 		local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
@@ -194,7 +195,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod
 		view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod - sharpeye_dat.player_RollChange
 		
-	else -- Player is dead and has a ragdoll
+	elseif not toolMode then -- Player is dead and has a ragdoll
 
 		local ragdoll = LocalPlayer():GetRagdollEntity()
 		local attachment = ragdoll:GetAttachment( 1 )
