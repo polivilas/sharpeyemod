@@ -129,9 +129,7 @@ local VIEWMODEL_ZOOMTIME
 local VIEWMODEL_FCT_STATIONAIMON
 --local FOV_DEFAULT
 
-function sharpeye_focus:EvaluateMessyVars()
-	local pl = LocalPlayer()
-	
+function sharpeye_focus:EvaluateMessyVars()	
 	/*VIEWMODEL_AIMPOS       = pl:GetActiveWeapon().ViewModelAimPos or Vector(0,0,0)
 	VIEWMODEL_AIMANG       = nil
 	VIEWMODEL_DEGREEOFZOOM = pl:GetActiveWeapon().DegreeOfZoom or 1
@@ -149,7 +147,7 @@ function sharpeye_focus:EvaluateMessyVars()
 	VIEWMODEL_ZOOMTIME    = 0.2
 	
 	-- Useful out of the whole
-	VIEWMODEL_FLIP         = pl:GetActiveWeapon().ViewModelFlip or false
+	VIEWMODEL_FLIP         = LocalPlayer and LocalPlayer():GetActiveWeapon().ViewModelFlip or false
 	//VIEWMODEL_FCT_STATIONAIMON    = true //GRD
 	
 	--FOV_DEFAULT = GetConVarNumber("fov_desired") or 75
