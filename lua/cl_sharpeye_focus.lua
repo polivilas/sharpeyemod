@@ -63,7 +63,7 @@ function sharpeye_focus:Mount()
 	self.__fov = 75
 	self.__diligent = 0
 	
-	self:EvaluateMessyVars()
+	self:InitializeMessyVars()
 
 	
 end
@@ -129,6 +129,20 @@ local VIEWMODEL_ZOOMTIME
 local VIEWMODEL_FCT_STATIONAIMON
 --local FOV_DEFAULT
 
+function sharpeye_focus:InitializeMessyVars()	
+	VIEWMODEL_FOVTOSET     = GetConVarNumber("fov_desired") or 75
+	VIEWMODEL_FOV          = VIEWMODEL_FOVTOSET + sharpeye.GetVar( "sharpeye_detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
+	VIEWMODEL_MOUSESENSITIVITY = 1
+	VIEWMODEL_ZOOMTIME    = 0.2
+	
+	-- Useful out of the whole
+	VIEWMODEL_FLIP         = false
+	
+	self.allowedFromCentreX = sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
+	self.allowedFromCentreY = sharpeye.GetVar( "sharpeye_detail_focus_angley" )
+	self.dispFromEdge       = sharpeye.GetVar( "sharpeye_detail_focus_backing" ) --Default is 5 so 5.
+end
+
 function sharpeye_focus:EvaluateMessyVars()	
 	/*VIEWMODEL_AIMPOS       = pl:GetActiveWeapon().ViewModelAimPos or Vector(0,0,0)
 	VIEWMODEL_AIMANG       = nil
@@ -147,7 +161,7 @@ function sharpeye_focus:EvaluateMessyVars()
 	VIEWMODEL_ZOOMTIME    = 0.2
 	
 	-- Useful out of the whole
-	VIEWMODEL_FLIP         = LocalPlayer and LocalPlayer():GetActiveWeapon().ViewModelFlip or false
+	VIEWMODEL_FLIP         = LocalPlayer():GetActiveWeapon().ViewModelFlip or false
 	//VIEWMODEL_FCT_STATIONAIMON    = true //GRD
 	
 	--FOV_DEFAULT = GetConVarNumber("fov_desired") or 75
