@@ -70,8 +70,8 @@ function sharpeye.HUDPaint()
 			sharpeye_dat.crosshair.tdbv_x = ScrW() * 0.5
 			sharpeye_dat.crosshair.tdbv_y = ScrH() * 0.5
 			
-			sharpeye_dat.crosshair.dist = 0
-			sharpeye_dat.crosshair.tdist = 0
+			sharpeye_dat.crosshair.dist = -1
+			sharpeye_dat.crosshair.tdist = -1
 			
 			sharpeye_dat.crosshair.speed = 0.5
 			--sharpeye_dat.crosshair.focus = 0.1
