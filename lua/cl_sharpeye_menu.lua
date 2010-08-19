@@ -234,6 +234,37 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Weapon backing intensity on edges",  "sharpeye_detail_focus_backing", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Aim Simulation (Angle approximation)",  "sharpeye_detail_focus_aimsim", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Hand Shift (Weapon Yaw-Rotation)",  "sharpeye_detail_focus_handshiftx", 0, 10, 0 )
+	sharpeye.Util_AppendLabel( refPanel, "Use AS/HS preset :" )
+	--Breathing mode Choice
+	do
+		local GeneralBreathingMulti = vgui.Create( "DMultiChoice" )
+		GeneralBreathingMulti:AddChoice( "Custom" )
+		GeneralBreathingMulti:AddChoice( "Old School" )
+		GeneralBreathingMulti:AddChoice( "Hand Shift Optimized" )
+		
+		GeneralBreathingMulti.OnSelect = function(index, value, data)
+			if value == 2 then
+				sharpeye.SetVar( "sharpeye_detail_focus_aimsim" , 5 )
+				sharpeye.SetVar( "sharpeye_detail_focus_handshiftx" , 0 )
+			elseif value == 3 then
+				sharpeye.SetVar( "sharpeye_detail_focus_aimsim" , 8 )
+				sharpeye.SetVar( "sharpeye_detail_focus_handshiftx" , 4 )
+			end
+		end
+		
+		do
+			local as = sharpeye.GetVar("sharpeye_detail_focus_aimsim")
+			local hs = sharpeye.GetVar("sharpeye_detail_focus_handshiftx")
+			GeneralBreathingMulti:ChooseOptionID( ((as == 5) and (hs == 0)) and 2 or ((as == 8) and (hs == 4)) and 3 or 1 )
+		
+		end
+		
+		GeneralBreathingMulti:PerformLayout()
+		GeneralBreathingMulti:SizeToContents()
+		
+		sharpeye.Util_AppendPanel( refPanel, GeneralBreathingMulti )
+		
+	end
 	sharpeye.Util_AppendLabel( refPanel, "We recommend either (AimSim:8 and HandShift:4), or (AimSim:5 and HandShift:0)", 40, true )
 	sharpeye.Util_AppendLabel( refPanel, "SharpeYe::Focus is a derivative from Devenger's work, who is the author of the \"Twitch Weaponry\" SWEP pack in which ::Focus originates from.", 70, true )
 	
@@ -403,6 +434,11 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_ApplyCategories( refPanel )
 end
 
+
+function sharpeye.ShowMenuNoOverride( )
+	sharpeye.ShowMenu( true )
+end
+
 function sharpeye.ShowMenu( optbKeyboardShouldNotOverride )
 	if not sharpeye.DermaPanel then
 		sharpeye.BuildMenu()
@@ -481,9 +517,9 @@ end
 // MOUNT FCTS.
 
 function sharpeye.MountMenu()
-	concommand.Add( "sharpeye_menu", sharpeye.ShowMenu )
-	concommand.Add( "sharpeye_call_menu", sharpeye.ShowMenu )
-	concommand.Add( "+sharpeye_menu", sharpeye.ShowMenu, true )
+	concommand.Add( "sharpeye_menu", sharpeye.ShowMenuNoOverride )
+	concommand.Add( "sharpeye_call_menu", sharpeye.ShowMenuNoOverride )
+	concommand.Add( "+sharpeye_menu", sharpeye.ShowMenu )
 	concommand.Add( "-sharpeye_menu", sharpeye.HideMenu )
 	hook.Add( "PopulateToolMenu", "AddSharpeYePanel", sharpeye.AddPanel )
 end

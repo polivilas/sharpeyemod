@@ -18,6 +18,7 @@ if (CLIENT or SinglePlayer()) then
 	if (sharpeye and sharpeye.Unmount) then sharpeye.Unmount() end
 	sharpeye = {}
 	sharpeye_dat = {}
+	sharpeye_focus = {}
 	
 	include("cl_sharpeye_base.lua")
 	include("cl_sharpeye_motion.lua")

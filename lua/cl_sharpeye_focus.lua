@@ -19,7 +19,7 @@
 
 // ATTENTION PERSONNEL. sharpeye_focus USES METHODS.
 
-sharpeye_focus = {}
+--sharpeye_focus = {}
 
 function sharpeye.IsFocusEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_opt_focus") > 0)
@@ -42,40 +42,6 @@ function sharpeye.UnhookFocus()
 end
 
 ///
-
-function sharpeye_focus:Mount()	
-	concommand.Add("sharpeye_focus_toggle", function() sharpeye_focus:ToggleFocus() end)
-	concommand.Add("+sharpeye_focus",       function() sharpeye_focus:EnableFocus() end)
-	concommand.Add("-sharpeye_focus",       function() sharpeye_focus:DisableFocus() end)
-	
-	self.__hasfocus = false
-	self.__decotime = 0
-
-	self.__vm_origin = Vector(0,0,0)
-	self.__vm_angles = Angle(0,0,0)
-	self.__oriAngle  = Angle(0,0,0)
-	self.__anglecompar = Angle(0,0,0)
-	self.__bViewWasModified      = true --True for viewmodel angle initialization
-	self.__bViewWasModifiedTime  = 0
-	self.__bViewWasModifiedDelay = 0.2
-	
-	//TOMAKE
-	self.__fov = 75
-	self.__diligent = 0
-	self.__raccor_x = 0
-	self.__raccor_y = 0
-	
-	self:InitializeMessyVars()
-
-	
-end
-
-function sharpeye_focus:Unmount()
-	concommand.Remove("sharpeye_focus_toggle")
-	concommand.Remove("+sharpeye_focus")
-	concommand.Remove("-sharpeye_focus")
-	
-end
 
 function sharpeye_focus:ToggleFocus()
 	if not self.__hasfocus then
@@ -416,7 +382,50 @@ function sharpeye_focus:CreateMove( cmd )
 	end
 end
 
+function sharpeye_focus.CommandToggleFocus()
+	return sharpeye_focus:ToggleFocus()
+end
 
+function sharpeye_focus.CommandEnableFocus()
+	return sharpeye_focus:EnableFocus()
+end
 
+function sharpeye_focus.CommandDisableFocus()
+	return sharpeye_focus:DisableFocus()
+end
+
+function sharpeye_focus:Mount()
+	concommand.Add("sharpeye_focus_toggle", sharpeye_focus.CommandToggleFocus)
+	concommand.Add("+sharpeye_focus",       sharpeye_focus.CommandEnableFocus)
+	concommand.Add("-sharpeye_focus",       sharpeye_focus.CommandDisableFocus)
+	
+	self.__hasfocus = false
+	self.__decotime = 0
+
+	self.__vm_origin = Vector(0,0,0)
+	self.__vm_angles = Angle(0,0,0)
+	self.__oriAngle  = Angle(0,0,0)
+	self.__anglecompar = Angle(0,0,0)
+	self.__bViewWasModified      = true --True for viewmodel angle initialization
+	self.__bViewWasModifiedTime  = 0
+	self.__bViewWasModifiedDelay = 0.2
+	
+	//TOMAKE
+	self.__fov = 75
+	self.__diligent = 0
+	self.__raccor_x = 0
+	self.__raccor_y = 0
+	
+	self:InitializeMessyVars()
+
+	
+end
+
+function sharpeye_focus:Unmount()
+	concommand.Remove("sharpeye_focus_toggle")
+	concommand.Remove("+sharpeye_focus")
+	concommand.Remove("-sharpeye_focus")
+	
+end
 
 

@@ -403,7 +403,6 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_snd_windonnoclip" , "0", true, false)
 	
 	sharpeye.InitializeData()
-	sharpeye_focus:Mount()
 	
 	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
 		--If SinglePlayer, hook this server-side
@@ -423,6 +422,7 @@ function sharpeye.Mount()
 		if sharpeye.MountMenu then
 			sharpeye.MountMenu()
 		end
+		sharpeye_focus:Mount()
 		
 	end
 	

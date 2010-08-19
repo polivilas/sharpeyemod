@@ -1,2 +1,2 @@
-1.41
-Added integrated SharpeYe::Focus. Added Hand-shifting option. - http://www.facepunch.com/showthread.php?t=908557
+1.42
+Temporary fix for Focus not enabling properly. Added integrated SharpeYe::Focus. Added Hand-shifting option. - http://www.facepunch.com/showthread.php?t=908557
