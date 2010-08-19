@@ -233,6 +233,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Up-Down pan angles",       "sharpeye_detail_focus_angley", 8, 16, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Weapon backing intensity on edges",  "sharpeye_detail_focus_backing", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Aim Simulation",  "sharpeye_detail_focus_aimsim", 0, 10, 0 )
+	sharpeye.Util_AppendLabel( refPanel, "SharpeYe::Focus is a derivative from Devenger's work, who is the author of the \"Twitch Weaponry\" SWEP pack in which ::Focus originates from.", 70, true )
 	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Advanced / Extra", 0 )
