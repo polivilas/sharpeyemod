@@ -44,9 +44,9 @@ end
 ///
 
 function sharpeye_focus:Mount()	
-	concommand.Add("sharpeye_focus_toggle", function() self:ToggleFocus() end)
-	concommand.Add("+sharpeye_focus",       function() self:EnableFocus() end)
-	concommand.Add("-sharpeye_focus",       function() self:DisableFocus() end)
+	concommand.Add("sharpeye_focus_toggle", function() sharpeye_focus:ToggleFocus() end)
+	concommand.Add("+sharpeye_focus",       function() sharpeye_focus:EnableFocus() end)
+	concommand.Add("-sharpeye_focus",       function() sharpeye_focus:DisableFocus() end)
 	
 	self.__hasfocus = false
 	self.__decotime = 0
@@ -62,6 +62,8 @@ function sharpeye_focus:Mount()
 	//TOMAKE
 	self.__fov = 75
 	self.__diligent = 0
+	self.__raccor_x = 0
+	self.__raccor_y = 0
 	
 	self:InitializeMessyVars()
 
@@ -141,8 +143,10 @@ function sharpeye_focus:InitializeMessyVars()
 	self.allowedFromCentreX = sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
 	self.allowedFromCentreY = sharpeye.GetVar( "sharpeye_detail_focus_angley" )
 	self.dispFromEdge       = sharpeye.GetVar( "sharpeye_detail_focus_backing" ) --Default is 5 so 5.
+	self.handShiftX         = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5 --Default is 5 so 2.5.
 end
 
+// NOTE TO SELF : CLEANUP THIS SH--
 function sharpeye_focus:EvaluateMessyVars()	
 	/*VIEWMODEL_AIMPOS       = pl:GetActiveWeapon().ViewModelAimPos or Vector(0,0,0)
 	VIEWMODEL_AIMANG       = nil
@@ -170,6 +174,7 @@ function sharpeye_focus:EvaluateMessyVars()
 	self.allowedFromCentreX = sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
 	self.allowedFromCentreY = sharpeye.GetVar( "sharpeye_detail_focus_angley" )
 	self.dispFromEdge       = sharpeye.GetVar( "sharpeye_detail_focus_backing" ) --Default is 5 so 5.
+	self.handShiftX         = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5 --Default is 5 so 2.5.
 	
 end
 
@@ -219,6 +224,8 @@ function sharpeye_focus:AppendCalcView( view )
 			angles:RotateAroundAxis( angles:Up(), 		VIEWMODEL_AIMANG.y * VIEWMODEL_DEGREEOFZOOM ) 
 			angles:RotateAroundAxis( angles:Forward(), 	VIEWMODEL_AIMANG.r * VIEWMODEL_DEGREEOFZOOM ) 
 		end*/
+		// NOTE TO SELF : Are NormalizeAngle really useful there ?
+		// SERIOUSLY ? I DONT REMEMBER WHY I ADDED THEM SO I BETTER REMOVE THEM.
 		if view.vm_angles then
 			angles:RotateAroundAxis( angles:Right(), 	math.NormalizeAngle(view.vm_angles.p - self.__oriAngle.p) )
 			angles:RotateAroundAxis( angles:Up(), 		math.NormalizeAngle(view.vm_angles.y - self.__oriAngle.y) ) 
@@ -251,8 +258,11 @@ function sharpeye_focus:AppendCalcView( view )
 		
 		local pos = view.vm_origin or view.origin
 		local Forward 	= angles:Forward()
-		self.__diligent = math.Clamp(math.abs((diff_y - self.lockedViewAng.y)/self.allowedFromCentreX) + math.abs((diff_p - self.lockedViewAng.p)/self.allowedFromCentreY), 0, 1)
-		pos = pos - Forward * self.__diligent * self.dispFromEdge
+		local Right 	= angles:Right()
+		self.__raccor_x = (diff_y - self.lockedViewAng.y)/self.allowedFromCentreX
+		self.__raccor_y = (diff_p - self.lockedViewAng.p)/self.allowedFromCentreY
+		self.__diligent = math.Clamp(math.abs(self.__raccor_x) + math.abs(self.__raccor_y), 0, 1)
+		pos = pos - Forward * self.__diligent * self.dispFromEdge + Right * self.__raccor_x * self.handShiftX
 		view.vm_origin = pos
 		
 		self.__y_ref = nil
@@ -289,7 +299,8 @@ function sharpeye_focus:AppendCalcView( view )
 		
 		local pos = view.vm_origin or view.origin
 		local Forward = view.vm_angles:Forward()
-		view.vm_origin = pos - Forward * self.__diligent * self.dispFromEdge * ratio
+		local Right   = view.vm_angles:Right()
+		view.vm_origin = pos - Forward * self.__diligent * self.dispFromEdge * ratio + Right * self.__raccor_x * self.handShiftX * ratio
 		
 		--[[
 		self.__vm_origin.x = view.vm_origin.x
@@ -360,7 +371,7 @@ function sharpeye_focus:CreateMove( cmd )
 				self.lockedViewAng.p = angles.p + self.allowedFromCentreY
 			end
 			cmd:SetViewAngles (angles)
-		//	
+		//	Plus predict the divide by zero if this chunk of code was actually played out
 		/*elseif self.lockedViewAng then
 			--cmd:SetViewAngles (self.lockedViewAng)
 			--self.lockedViewAng = false
