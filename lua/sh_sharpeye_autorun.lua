@@ -12,6 +12,7 @@ if SHARPEYE_DEBUG == nil then
 end
 
 SHARPEYE_NAME = "SharpeYe"
+SHARPEYE_FOCUS_NAME = "SharpeYe :: Focus"
 
 if (CLIENT or SinglePlayer()) then
 	if (sharpeye and sharpeye.Unmount) then sharpeye.Unmount() end
@@ -20,6 +21,7 @@ if (CLIENT or SinglePlayer()) then
 	
 	include("cl_sharpeye_base.lua")
 	include("cl_sharpeye_motion.lua")
+	include("cl_sharpeye_focus.lua")
 	include("cl_sharpeye_sound.lua")
 	include("cl_sharpeye_vision.lua")
 	include("cl_sharpeye_compatibility.lua")

@@ -13,7 +13,6 @@ include( 'CtrlColor.lua' )
 /////////////////////////////////////////////////////////////////////////
 //// DERMA PANEL .
 
-
 function sharpeye.Util_FrameGetExpandTable( myPanel )
 	local expandTable = {}
 	
@@ -136,7 +135,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	local MY_VERSION, SVN_VERSION, DOWNLOAD_LINK = sharpeye.GetVersionData()
 	
-	sharpeye.DermaPanel = sharpeye.Util_MakeFrame( 256, ScrH() * 0.7 )
+	sharpeye.DermaPanel = sharpeye.Util_MakeFrame( 256, ScrH() * 0.80 )
 	local refPanel = sharpeye.DermaPanel
 	
 	sharpeye.Util_MakeCategory( refPanel, "General", 1 )
@@ -146,6 +145,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Sounds" , "sharpeye_core_sound" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Crosshair" , "sharpeye_core_crosshair" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing completely" , "sharpeye_opt_disablebobbing" )
 	sharpeye.Util_AppendLabel( refPanel, "Breathing mode :" )
 	--Breathing mode Choice
 	do
@@ -203,21 +203,48 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
 		
 	end
-	sharpeye.Util_AppendLabel( refPanel, "You can quickly call the menu by binding \"+sharpeye_menu\" to one of your keys : The menu closes when you release the key.", 40, true )
+	
+	
+	sharpeye.Util_MakeCategory( refPanel, SHARPEYE_FOCUS_NAME, 0 )
+	sharpeye.Util_AppendCheckBox( refPanel, "Allow "..SHARPEYE_FOCUS_NAME , "sharpeye_opt_focus" )
+	do
+		local GeneralTextLabelMessage = "The binding \"+sharpeye_focus\" allows you to enter "..SHARPEYE_FOCUS_NAME.." mode (with a 'hold key' action).\nExample : To assign it to the key 'v', type in the console :"
+		sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 70, true )
+		
+	end
+	do
+		local GeneralCommandLabel = vgui.Create("DTextEntry")
+		GeneralCommandLabel:SetText( "bind \"v\" \"+sharpeye_focus\"" )
+		GeneralCommandLabel:SetEditable( false )
+		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
+	end
+	do
+		local GeneralTextLabelMessage = "You can also use toggle mode (like the Crossbow zoom) using \"sharpeye_focus_toggle\" command.\nExample : To assign it to the key 'v', type in the console :"
+		sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 70, true )
+		
+	end
+	do
+		local GeneralCommandLabel = vgui.Create("DTextEntry")
+		GeneralCommandLabel:SetText( "bind \"v\" \"sharpeye_focus_toggle\"" )
+		GeneralCommandLabel:SetEditable( false )
+		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
+	end
+	sharpeye.Util_AppendSlider( refPanel, "Left-Right pan angles",    "sharpeye_detail_focus_anglex", 8, 32, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Up-Down pan angles",       "sharpeye_detail_focus_angley", 8, 16, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Weapon backing intensity on edges",  "sharpeye_detail_focus_backing", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Aim Simulation",  "sharpeye_detail_focus_aimsim", 0, 10, 0 )
 	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Advanced / Extra", 0 )
+	sharpeye.Util_AppendLabel( refPanel, "You can quickly call the menu by binding \"+sharpeye_menu\" to one of your keys : The menu closes when you release the key.", 40, true )
 	
-	sharpeye.Util_AppendLabel( refPanel, "Machinima mode allows you to enable SharpeYe even if noclipping or inside a vehicle. Remember to disable it during normal gameplay.", 40 + 10, true )
+	sharpeye.Util_AppendLabel( refPanel, "Machinima mode allows you to enable SharpeYe bobbing even if noclipping or inside a vehicle. Remember to disable it during normal gameplay.", 40 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Machinima mode" , "sharpeye_opt_machinimamode" )
 	
 	sharpeye.Util_AppendSlider( refPanel, "Master Scale", "sharpeye_detail_mastermod", 0, 10, 0 )
 	
 	sharpeye.Util_AppendLabel( refPanel, SHARPEYE_NAME .. " has an integrated Motion blur extension to hub with Source Engine motion blur. However, experienced users may want to use the integrated Source \"Forward motion blur\" and disable this one.", 60 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use " .. SHARPEYE_NAME .. " Motion blur" , "sharpeye_opt_motionblur" )
-	
-	
-	sharpeye.Util_AppendLabel( refPanel, "If Machinima Mode is enabled, only Motion stays enabled in all cases.", 20 + 10 + 10, true )
 	
 
 	sharpeye.Util_AppendLabel( refPanel, "Highspeed Deathcam allows the deathcam to be immediate when the player has a death ragdoll. This may cause issues on some gamemodes (simulate death).", 50 + 10, true )
@@ -300,8 +327,40 @@ function sharpeye.BuildMenu( opt_tExpand )
 		end
 	end
 	
+	sharpeye.Util_MakeCategory( refPanel, "Crosshair", 0 )
+	sharpeye.Util_AppendLabel( refPanel, "Crosshair color" )
+	--XHair Color
+	do
+		local CDetailsCrosshairColor = vgui.Create("CtrlColor")
+		CDetailsCrosshairColor.Prefix = "sharpeye_xhair_color"
+		CDetailsCrosshairColor:SetConVarR(CDetailsCrosshairColor.Prefix .."_r")
+		CDetailsCrosshairColor:SetConVarG(CDetailsCrosshairColor.Prefix .."_g")
+		CDetailsCrosshairColor:SetConVarB(CDetailsCrosshairColor.Prefix .."_b")
+		CDetailsCrosshairColor:SetConVarA(CDetailsCrosshairColor.Prefix .."_a")
+		sharpeye.Util_AppendPanel(refPanel, CDetailsCrosshairColor)
+	end
 	
-	sharpeye.Util_MakeCategory( refPanel, "Details and Crosshair", 0 )
+	sharpeye.Util_AppendLabel( refPanel, "Crosshair Shadow color" )
+	--ShadXHair Color
+	do
+		local CDetailsCrosshairColor = vgui.Create("CtrlColor")
+		CDetailsCrosshairColor.Prefix = "sharpeye_xhair_shadcolor"
+		CDetailsCrosshairColor:SetConVarR(CDetailsCrosshairColor.Prefix .."_r")
+		CDetailsCrosshairColor:SetConVarG(CDetailsCrosshairColor.Prefix .."_g")
+		CDetailsCrosshairColor:SetConVarB(CDetailsCrosshairColor.Prefix .."_b")
+		CDetailsCrosshairColor:SetConVarA(CDetailsCrosshairColor.Prefix .."_a")
+		sharpeye.Util_AppendPanel(refPanel, CDetailsCrosshairColor)
+	end
+	
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Static Reticule Size",  "sharpeye_xhair_staticsize", 0, 8, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Dynamic Reticule Size",  "sharpeye_xhair_dynamicsize", 0, 8, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Dynamic Dropshadow Size",  "sharpeye_xhair_shadowsize", 0, 8, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Size",  "sharpeye_xhair_focussize", 0, 8, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Dropshadow Size",  "sharpeye_xhair_focusshadowsize", 0, 8, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Spin",  "sharpeye_xhair_focusspin", -4, 4, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Base Angle",  "sharpeye_xhair_focusangle", 0, 32, 0 )
+	
+	sharpeye.Util_MakeCategory( refPanel, "Details", 0 )
 	--Revert button
 	do
 		local CDetailsRevertButton = vgui.Create("DButton")
@@ -331,34 +390,6 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Basis : Healthy Level",  "sharpeye_basis_healthylevel", 0, 100, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Basis : Health-based Behavior",  "sharpeye_basis_healthbased", 0, 10, 0 )
 	
-
-	sharpeye.Util_AppendLabel( refPanel, "Crosshair color" )
-	--XHair Color
-	do
-		local CDetailsCrosshairColor = vgui.Create("CtrlColor")
-		CDetailsCrosshairColor.Prefix = "sharpeye_xhair_color"
-		CDetailsCrosshairColor:SetConVarR(CDetailsCrosshairColor.Prefix .."_r")
-		CDetailsCrosshairColor:SetConVarG(CDetailsCrosshairColor.Prefix .."_g")
-		CDetailsCrosshairColor:SetConVarB(CDetailsCrosshairColor.Prefix .."_b")
-		CDetailsCrosshairColor:SetConVarA(CDetailsCrosshairColor.Prefix .."_a")
-		sharpeye.Util_AppendPanel(refPanel, CDetailsCrosshairColor)
-	end
-	
-	sharpeye.Util_AppendLabel( refPanel, "Crosshair Shadow color" )
-	--ShadXHair Color
-	do
-		local CDetailsCrosshairColor = vgui.Create("CtrlColor")
-		CDetailsCrosshairColor.Prefix = "sharpeye_xhair_shadcolor"
-		CDetailsCrosshairColor:SetConVarR(CDetailsCrosshairColor.Prefix .."_r")
-		CDetailsCrosshairColor:SetConVarG(CDetailsCrosshairColor.Prefix .."_g")
-		CDetailsCrosshairColor:SetConVarB(CDetailsCrosshairColor.Prefix .."_b")
-		CDetailsCrosshairColor:SetConVarA(CDetailsCrosshairColor.Prefix .."_a")
-		sharpeye.Util_AppendPanel(refPanel, CDetailsCrosshairColor)
-	end
-	
-	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Static Reticule Size",  "sharpeye_xhair_staticsize", 0, 8, 0 )
-	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Dynamic Reticule Size",  "sharpeye_xhair_dynamicsize", 0, 8, 0 )
-	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Dynamic Dropshadow Size",  "sharpeye_xhair_shadowsize", 0, 8, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Sound : Footsteps Volume",  "sharpeye_snd_footsteps_vol", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Sound : Breathing Volume",  "sharpeye_snd_breathing_vol", 0, 10, 0 )
 	sharpeye.Util_AppendCheckBox( refPanel, "Wind : Enable",  "sharpeye_snd_windenable" )

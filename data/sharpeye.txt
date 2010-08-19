@@ -1,2 +1,2 @@
-1.3
-Added Crosshair Dropshadow option. Changed "Disable motion with tools" against "Disable bobbing with tools" to allow use of SharpeYe::Focus with tools. - http://www.facepunch.com/showthread.php?t=908557
+1.4
+Added integrated SharpeYe::Focus. - http://www.facepunch.com/showthread.php?t=908557

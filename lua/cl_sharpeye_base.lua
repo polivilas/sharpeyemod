@@ -72,7 +72,9 @@ function sharpeye.InitializeData()
 	sharpeye_dat.crosshairshapes = {
 		"depthhud/linebow_crosshair.vmt",
 		"depthhud/X_CircleSolid.vmt",
-		"depthhud/X_CircleShadow.vmt"
+		"depthhud/X_CircleShadow.vmt",
+		"depthhud/focus.vmt",
+		"depthhud/focusshadow.vmt"
 	}
 	
 	--sharpeye_day.player_RunSpeed = 100
@@ -103,6 +105,7 @@ function sharpeye.InitializeData()
 	sharpeye_dat.breathing_WasBreathing = false
 	
 	sharpeye_dat.motion_hooked = false
+	sharpeye_dat.focus_hooked = false
 	
 	sharpeye_dat.EXT_RollSwitch = false
 	
@@ -233,6 +236,7 @@ function sharpeye.Think( )
 	if not sharpeye.IsEnabled() then
 		-- There's already a check in UnhookMotion
 		sharpeye.UnhookMotion()
+		sharpeye.UnhookFocus()
 		return
 	end
 	
@@ -240,9 +244,18 @@ function sharpeye.Think( )
 		-- There's already a check in there
 		sharpeye.HookMotion()
 		
+		if sharpeye.IsFocusEnabled() then
+			sharpeye.HookFocus()
+			
+		else
+			sharpeye.UnhookFocus()
+			
+		end
+		
 	else
 		-- There's already a check in there
 		sharpeye.UnhookMotion()
+		sharpeye.UnhookFocus()
 		-- Can't collapse with IsEnabled due to return
 		
 	end
@@ -342,10 +355,12 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_core_motion", "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_sound" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_crosshair" , "1", true, false)
+	sharpeye.CreateVar("sharpeye_opt_focus", "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_firstpersondeath" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_firstpersondeath_highspeed" , "0", true, false)
 	sharpeye.CreateVar("sharpeye_opt_breathing" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_disablewithtools" , "1", true, false)
+	sharpeye.CreateVar("sharpeye_opt_disablebobbing" , "0", true, false)
 	sharpeye.CreateVar("sharpeye_opt_machinimamode" , "0", true, false)
 	sharpeye.CreateVar("sharpeye_opt_motionblur", "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_disableinthirdperson", "1", true, false)
@@ -356,6 +371,10 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_detail_runningbobfreq" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_detail_leaningangle" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_detail_landingangle" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_detail_focus_anglex" , "20", true, false)
+	sharpeye.CreateVar("sharpeye_detail_focus_angley" , "12", true, false)
+	sharpeye.CreateVar("sharpeye_detail_focus_backing" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_detail_focus_aimsim" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_basis_runspeed" , "100", true, false)
 	sharpeye.CreateVar("sharpeye_basis_staminarecover" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_basis_healthylevel" , "100", true, false)
@@ -371,6 +390,10 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_xhair_staticsize" , "8", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_dynamicsize" , "8", true, false)
 	sharpeye.CreateVar("sharpeye_xhair_shadowsize" , "8", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_focussize" , "8", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_focusshadowsize" , "8", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_focusspin" , "2", true, false)
+	sharpeye.CreateVar("sharpeye_xhair_focusangle" , "0", true, false)
 	sharpeye.CreateVar("sharpeye_snd_footsteps_vol" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_snd_breathing_vol" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_snd_windenable" , "1", true, false)
@@ -379,6 +402,7 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_snd_windonnoclip" , "0", true, false)
 	
 	sharpeye.InitializeData()
+	sharpeye_focus:Mount()
 	
 	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
 		--If SinglePlayer, hook this server-side
@@ -409,6 +433,8 @@ function sharpeye.Unmount()
 	print("")
 	print("] Unmounting " .. SHARPEYE_NAME .. " ... [")
 
+	local bOkay, strErr = pcall(function()
+	
 	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
 		hook.Remove("PlayerFootstep", "sharpeye_PlayerFootstep")
 		
@@ -417,19 +443,30 @@ function sharpeye.Unmount()
 	if CLIENT then
 		hook.Remove("Think", "sharpeye_Think")
 		sharpeye.UnhookMotion()
+		sharpeye.UnhookFocus()
 		--hook.Remove("CalcView", "sharpeye_CalcView")
 		hook.Remove("GetMotionBlurValues", "sharpeye_GetMotionBlurValues")
 		hook.Remove("HUDPaint", "sharpeye_HUDPaint")
 		hook.Remove("Initialize", "sharpeye_Initialize")
 		concommand.Remove( "sharpeye_call_forcesolvecompatibilities")
-			
+
+		sharpeye_focus:Unmount()
+		
 		if sharpeye.UnmountMenu then
 			sharpeye.UnmountMenu()
 		end
 	end
 	
+	end)
+	
+	if not bOkay then
+		print("[<<< " .. SHARPEYE_NAME .. " failed to unmount properly : " .. tostring(strErr) .. " ]")
+		
+	end
+	
 	sharpeye = nil
 	sharpeye_dat = nil
+	sharpeye_focus = nil
 	
 	print("[ " .. SHARPEYE_NAME .. " is now unmounted. ]")
 	print("")

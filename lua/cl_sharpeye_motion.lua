@@ -43,11 +43,17 @@ function sharpeye.IsInThirdPersonMode()
 	--return GAMEMODE:ShouldDrawLocalPlayer()
 end
 
+--[[
 function sharpeye.ShouldMotionDisableInThirdPerson()
 	return ((sharpeye.GetVarNumber("sharpeye_opt_disableinthirdperson") > 0) and sharpeye.IsInThirdPersonMode())
 end
+]]
 
-function sharpeye.ShouldMotionDisableWithTools()
+function sharpeye.ShouldBobbingDisableCompletely()
+	return (sharpeye.GetVarNumber("sharpeye_opt_disablebobbing") > 0) 
+end
+
+function sharpeye.ShouldBobbingDisableWithTools()
 	return ((sharpeye.GetVarNumber("sharpeye_opt_disablewithtools") > 0) and sharpeye.IsUsingSandboxTools())
 end
 
@@ -78,22 +84,25 @@ function sharpeye.Detail_GetRunningBobFrequency()
 end
 
 function sharpeye.CalcView( ply, origin, angles, fov )
+	// Disabled Compatibility Module
+	/*
 	if not sharpeye_dat.player_view_med then
 		sharpeye_dat.player_view_med = {}
 	end
 	sharpeye_dat.player_view_med.origin = origin
 	sharpeye_dat.player_view_med.angles = angles
 	sharpeye_dat.player_view_med.fov    = fov
+	
 	local bCustomChanged = sharpeye.ProcessCompatibleCalcView( ply, origin, angles, fov, sharpeye_dat.player_view_med )
 	origin = sharpeye_dat.player_view_med.origin
 	angles = sharpeye_dat.player_view_med.angles
 	fov    = sharpeye_dat.player_view_med.fov
 	
-	local defaultReturn = bCustomChanged and sharpeye_dat.player_view_med or nil
+	local defaultReturn = bCustomChanged and sharpeye_dat.player_view_med or nil*/
 	
 	if not sharpeye.IsEnabled() then return defaultReturn end
 	if not sharpeye.IsMotionEnabled() then return defaultReturn end
-	if not sharpeye.InMachinimaMode() and (sharpeye.IsNoclipping() or sharpeye.IsInVehicle() or --[[sharpeye.ShouldMotionDisableWithTools() or]] sharpeye.ShouldMotionDisableInThirdPerson()) then return defaultReturn end
+	if not sharpeye.InMachinimaMode() and (sharpeye.IsInVehicle() --[[or sharpeye.ShouldMotionDisableInThirdPerson()]]) then return defaultReturn end
 	
 
 	if not sharpeye_dat.player_view then
@@ -106,12 +115,17 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	sharpeye_dat.player_oriangle.r = angles.r
 	
 	local view = sharpeye_dat.player_view
-	view.origin = sharpeye_dat.player_view_med.origin
+	// Disabled Compatibility Module
+	/*view.origin = sharpeye_dat.player_view_med.origin
 	view.angles = sharpeye_dat.player_view_med.angles
-	view.fov    = sharpeye_dat.player_view_med.fov
+	view.fov    = sharpeye_dat.player_view_med.fov*/
+	view.origin = origin
+	view.angles = angles
+	view.fov    = fov
 	
-	local toolMode = sharpeye.ShouldMotionDisableWithTools()
-	if sharpeye.InMachinimaMode() or not toolMode and ( not (sharpeye.IsFirstPersonDeathEnabled() and (sharpeye.IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and ValidEntity( LocalPlayer():GetRagdollEntity() ) ) ) then
+	
+	local ragdollMode = sharpeye.IsFirstPersonDeathEnabled() and (sharpeye.IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and ValidEntity( LocalPlayer():GetRagdollEntity() )
+	if not sharpeye.ShouldBobbingDisableCompletely() and (sharpeye.InMachinimaMode() or (not sharpeye.IsNoclipping() and not sharpeye.ShouldBobbingDisableWithTools() and not ragdollMode)) then
 		
 		local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 		local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
@@ -138,23 +152,6 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 			
 		end
 		
-		-- Removed
-		--[[
-		if sharpeye.EXT_IsPCSEnabled() then
-			if not sharpeye_dat.EXT_RollSwitch and LocalPlayer().CLHasDoneARoll then
-				sharpeye_dat.EXT_RollSwitch = true
-				
-			end
-			
-			if sharpeye_dat.EXT_RollSwitch and not LocalPlayer().CLHasDoneARoll then
-				sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence + sharpeye.Detail_GetLandingAngle()
-				sharpeye_dat.EXT_RollSwitch = false
-				
-			end
-			
-		end
-		]]--
-		
 		local pitchMod = sharpeye_dat.player_PitchInfluence
 		-- This should not execute in Machinima Mode
 		if not sharpeye.IsNoclipping() then
@@ -167,20 +164,10 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 			local angleDiff = math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y)
 			if math.abs(angleDiff) < 110 then
 				rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2
-				--local angleProspect = (1 - (1 - math.abs(angleDiff) / 110 ) ^ 2 ) * ((angleDiff > 0) and 110 or -110)
-				--local angleProspect = ( 1 - (1 - math.abs(angleDiff) / 110 ) ^ 10 ) * ((angleDiff > 0) and 70 or -70)
-				--local cosProspect = math.cos( math.rad( angleProspect * 2 ) )
-				--print( angleDiff, angleProspect, cosProspect )
-				--cosProspect = (1 - (1 - math.abs(cosProspect)) ^ 2) * ((cosProspect > 0) and 1 or -1)
-				
-				--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2 * -cosProspect
-				--local angleProspect = (1 - (1 - math.abs(angleDiff) / 90 ) ^ 2 ) * ((angleDiff > 0) and 180 or -180)
-				--print( angleDiff * 2, angleProspect )
-				--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleProspect ) )
-				--rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * sharpeye.Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1)^2 * -math.cos( math.rad( angleDiff * 2 ) )
-				--rollCalc = (1 - ((1 - (angleDiff / 110)) ^ 2)) * 8
+
 			else
 				rollCalc = 0
+				
 			end
 			
 		else
@@ -195,7 +182,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod
 		view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod - sharpeye_dat.player_RollChange
 		
-	elseif not toolMode then -- Player is dead and has a ragdoll
+	elseif ragdollMode then -- Player is dead and has a ragdoll
 
 		local ragdoll = LocalPlayer():GetRagdollEntity()
 		local attachment = ragdoll:GetAttachment( 1 )
@@ -242,8 +229,12 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		
 	end
 	
-	if sharpeye_focus and sharpeye_focus:IsEnabled() then
+	--if sharpeye_focus then
 		sharpeye_focus:AppendCalcView( view )
+	--end
+	
+	if sharpeye_drops and sharpeye_drops:IsEnabled() then
+		sharpeye_drops:AppendCalcView( view )
 	end
 	
 	return view
@@ -255,7 +246,7 @@ function sharpeye.GetMotionBlurValues( y, x, fwd, spin )
 	if not sharpeye.IsMotionEnabled() then return end
 	if not sharpeye.IsMotionBlurEnabled() then return end
 	if sharpeye.IsInVehicle() then return end
-	if sharpeye.ShouldMotionDisableInThirdPerson() then return end
+	--[[if sharpeye.ShouldMotionDisableInThirdPerson() then return end]]
 	
 	local ply = LocalPlayer()
 	--local velocity = ply:GetVelocity()
