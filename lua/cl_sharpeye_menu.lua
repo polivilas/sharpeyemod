@@ -234,6 +234,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Weapon backing intensity on edges",  "sharpeye_detail_focus_backing", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Aim Simulation (Angle approximation)",  "sharpeye_detail_focus_aimsim", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Hand Shift (Weapon Yaw-Rotation)",  "sharpeye_detail_focus_handshiftx", 0, 10, 0 )
+	sharpeye.Util_AppendLabel( refPanel, "We recommend either (AimSim:8 and HandShift:4), or (AimSim:5 and HandShift:0)", 40, true )
 	sharpeye.Util_AppendLabel( refPanel, "SharpeYe::Focus is a derivative from Devenger's work, who is the author of the \"Twitch Weaponry\" SWEP pack in which ::Focus originates from.", 70, true )
 	
 	
