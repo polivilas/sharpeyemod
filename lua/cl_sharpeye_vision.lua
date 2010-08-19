@@ -115,6 +115,7 @@ function sharpeye.HUDPaint()
 			local rdist = (1024 - math.Clamp( sharpeye_dat.crosshair.dist, 192, 512 )) * 0.015
 			local speSpell = sharpeye_dat.crosshair.dist < 0 and (1 + sharpeye_dat.crosshair.dist) or 1
 			rdist = rdist * speSpell
+			local drawFocus = hasFocus and (rdist > 0)
 			
 			sharpeye.SetDrawColorFromVar( "sharpeye_xhair_shadcolor" )
 			if hasDynamic then
@@ -122,7 +123,7 @@ function sharpeye.HUDPaint()
 				surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.ch_x, sharpeye_dat.crosshair.ch_y, shadowSize, shadowSize, 0)
 			end
 			
-			if hasFocus then
+			if drawFocus then
 				surface.SetTexture(sharpeye_dat.crosshair.shape[5])
 				surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.dbv_x, sharpeye_dat.crosshair.dbv_y, focusShadowSize*rdist, focusShadowSize*rdist, focusSpin)
 			end
@@ -133,7 +134,7 @@ function sharpeye.HUDPaint()
 				surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.ch_x, sharpeye_dat.crosshair.ch_y, dynamicSize, dynamicSize, 0)
 			end
 			
-			if hasFocus then
+			if drawFocus then
 				surface.SetTexture(sharpeye_dat.crosshair.shape[4])
 				surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.dbv_x, sharpeye_dat.crosshair.dbv_y, focusSize*rdist, focusSize*rdist, focusSpin)
 			end
