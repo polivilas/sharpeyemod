@@ -110,6 +110,7 @@ function sharpeye_focus:InitializeMessyVars()
 	self.allowedFromCentreY = sharpeye.GetVar( "sharpeye_detail_focus_angley" )
 	self.dispFromEdge       = sharpeye.GetVar( "sharpeye_detail_focus_backing" ) --Default is 5 so 5.
 	self.handShiftX         = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5 --Default is 5 so 2.5.
+	self.smooth             = 1 - sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.9 --Default is 5 so 2.5.
 end
 
 // NOTE TO SELF : CLEANUP THIS SH--
@@ -141,6 +142,7 @@ function sharpeye_focus:EvaluateMessyVars()
 	self.allowedFromCentreY = sharpeye.GetVar( "sharpeye_detail_focus_angley" )
 	self.dispFromEdge       = sharpeye.GetVar( "sharpeye_detail_focus_backing" ) --Default is 5 so 5.
 	self.handShiftX         = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5 --Default is 5 so 2.5.
+	self.smooth             = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.1)*0.95 --Default is 5 so 2.5.
 	
 end
 
@@ -183,34 +185,41 @@ function sharpeye_focus:AppendCalcView( view )
 		local diff_p = angles.p
 		local diff_y = angles.y
 		
-		if VIEWMODEL_FLIP then angles.y = usefulViewAng.y + (usefulViewAng.y - angles.y) end
-		/*local VIEWMODEL_AIMANG = view.vm_angles
-		if VIEWMODEL_AIMANG then
-			angles:RotateAroundAxis( angles:Right(), 	VIEWMODEL_AIMANG.p * VIEWMODEL_DEGREEOFZOOM ) 
-			angles:RotateAroundAxis( angles:Up(), 		VIEWMODEL_AIMANG.y * VIEWMODEL_DEGREEOFZOOM ) 
-			angles:RotateAroundAxis( angles:Forward(), 	VIEWMODEL_AIMANG.r * VIEWMODEL_DEGREEOFZOOM ) 
-		end*/
-		// NOTE TO SELF : Are NormalizeAngle really useful there ?
-		// SERIOUSLY ? I DONT REMEMBER WHY I ADDED THEM SO I BETTER REMOVE THEM.
+		if VIEWMODEL_FLIP then
+			angles.y = usefulViewAng.y + (usefulViewAng.y - angles.y)
+		end
 		if view.vm_angles then
-			angles:RotateAroundAxis( angles:Right(), 	math.NormalizeAngle(view.vm_angles.p - self.__oriAngle.p) )
-			angles:RotateAroundAxis( angles:Up(), 		math.NormalizeAngle(view.vm_angles.y - self.__oriAngle.y) ) 
-			angles:RotateAroundAxis( angles:Forward(),  math.NormalizeAngle(view.vm_angles.r - self.__oriAngle.r) )
+			angles:RotateAroundAxis( angles:Right(), 	view.vm_angles.p - self.__oriAngle.p )
+			angles:RotateAroundAxis( angles:Up(), 		view.vm_angles.y - self.__oriAngle.y ) 
+			angles:RotateAroundAxis( angles:Forward(),  view.vm_angles.r - self.__oriAngle.r )
 		end
 		
-		--[[
-		view.vm_angles = angles
-		self.__vm_angles.p = view.vm_angles.p
-		self.__vm_angles.y = view.vm_angles.y
-		self.__vm_angles.r = view.vm_angles.r]]
+		--if not self.__bViewWasModified and (CurTime() - self.__bViewWasModifiedTime) > self.__bViewWasModifiedDelay then
+		if not self.__bViewWasModified then
+			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
+			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
 		
-		if not self.__bViewWasModified and (CurTime() - self.__bViewWasModifiedTime) > self.__bViewWasModifiedDelay then			
-			self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, angles.p, math.AngleDifference( self.__vm_angles.p, angles.p )*0.05*1/RealFrameTime() )
-			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, angles.y, math.AngleDifference( self.__vm_angles.y, angles.y )*0.05*1/RealFrameTime() )
-			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, angles.r, math.AngleDifference( self.__vm_angles.r, angles.r )*0.05*1/RealFrameTime() )
+			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*RealFrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*RealFrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*RealFrameTime()/0.03*self.smooth)
+			
+			self.__vm_angles.p = usefulViewAng.p + self.__vm_angles_delta.p
+			self.__vm_angles.y = usefulViewAng.y + self.__vm_angles_delta.y
+			self.__vm_angles.r = usefulViewAng.r + self.__vm_angles_delta.r
+			
+			/*self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, angles.p, math.AngleDifference( self.__vm_angles.p, angles.p )*RealFrameTime()/0.03 )
+			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, angles.y, math.AngleDifference( self.__vm_angles.y, angles.y )*RealFrameTime()/0.03 )
+			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, angles.r, math.AngleDifference( self.__vm_angles.r, angles.r )*RealFrameTime()/0.03 )*/
 
-		else
+		else		
 			self.__bViewWasModified = false
+			
+			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
+		
+			self.__vm_angles_delta.p = ap
+			self.__vm_angles_delta.y = ay
+			self.__vm_angles_delta.r = ar
+			
 			self.__vm_angles.p = angles.p
 			self.__vm_angles.y = angles.y
 			self.__vm_angles.r = angles.r
@@ -232,13 +241,6 @@ function sharpeye_focus:AppendCalcView( view )
 		view.vm_origin = pos
 		
 		self.__y_ref = nil
-		
-		--OriginShift, TBD.
-		--[[
-		self.__vm_origin.x = view.vm_origin.x
-		self.__vm_origin.y = view.vm_origin.y
-		self.__vm_origin.z = view.vm_origin.z
-		]]
 
 	elseif self:IsApproach() then
 		local ratio = self:ApproachRatio()
@@ -254,9 +256,13 @@ function sharpeye_focus:AppendCalcView( view )
 		if view.vm_angles then
 			self.__vm_angles.y = self.__vm_angles.y - yAnglePatch
 			
-			self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*3 )
-			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*3 )
-			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*3 )
+			--self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*3 )
+			--self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*3 )
+			--self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*3 )
+			--print(RealFrameTime())
+			self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*RealFrameTime()/0.03*7 )
+			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*RealFrameTime()/0.03*7 )
+			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*RealFrameTime()/0.03*7 )
 			
 			view.vm_angles.p = self.__vm_angles.p 
 			view.vm_angles.y = self.__vm_angles.y
@@ -267,21 +273,6 @@ function sharpeye_focus:AppendCalcView( view )
 		local Forward = view.vm_angles:Forward()
 		local Right   = view.vm_angles:Right()
 		view.vm_origin = pos - Forward * self.__diligent * self.dispFromEdge * ratio + Right * self.__raccor_x * self.handShiftX * ratio
-		
-		--[[
-		self.__vm_origin.x = view.vm_origin.x
-		self.__vm_origin.y = view.vm_origin.y
-		self.__vm_origin.z = view.vm_origin.z
-		]]
-		
-		--OriginShift, TBD. Not used, use diligent instead
-		--[[
-		if view.vm_origin then
-			view.vm_origin.x = math.EaseInOut( ratio, view.vm_origin.x, self.__vm_origin.x )
-			view.vm_origin.y = math.EaseInOut( ratio, view.vm_origin.y, self.__vm_origin.y )
-			view.vm_origin.z = math.EaseInOut( ratio, view.vm_origin.z, self.__vm_origin.z )
-		end
-		]]
 		
 	end
 	
@@ -404,6 +395,7 @@ function sharpeye_focus:Mount()
 
 	self.__vm_origin = Vector(0,0,0)
 	self.__vm_angles = Angle(0,0,0)
+	self.__vm_angles_delta = Angle(0,0,0)
 	self.__oriAngle  = Angle(0,0,0)
 	self.__anglecompar = Angle(0,0,0)
 	self.__bViewWasModified      = true --True for viewmodel angle initialization

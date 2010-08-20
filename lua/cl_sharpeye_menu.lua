@@ -232,6 +232,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Left-Right pan angles",    "sharpeye_detail_focus_anglex", 8, 32, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Up-Down pan angles",       "sharpeye_detail_focus_angley", 8, 16, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Weapon backing intensity on edges",  "sharpeye_detail_focus_backing", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Smoothing",  "sharpeye_detail_focus_smoothing", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Aim Simulation (Angle approximation)",  "sharpeye_detail_focus_aimsim", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Hand Shift (Weapon X-Perspective)",  "sharpeye_detail_focus_handshiftx", 0, 10, 0 )
 	sharpeye.Util_AppendLabel( refPanel, "Use AS/HS preset :" )
@@ -265,17 +266,16 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, GeneralBreathingMulti )
 		
 	end
-	sharpeye.Util_AppendLabel( refPanel, "We recommend either (AimSim:8 and HandShift:4), or (AimSim:5 and HandShift:0)", 40, true )
 	sharpeye.Util_AppendLabel( refPanel, "SharpeYe::Focus is a derivative from Devenger's work, who is the author of the \"Twitch Weaponry\" SWEP pack in which ::Focus originates from.", 70, true )
 	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Advanced / Extra", 0 )
 	sharpeye.Util_AppendLabel( refPanel, "You can quickly call the menu by binding \"+sharpeye_menu\" to one of your keys : The menu closes when you release the key.", 40, true )
 	
+	sharpeye.Util_AppendSlider( refPanel, "Master Scale", "sharpeye_detail_mastermod", 0, 10, 0 )
+	
 	sharpeye.Util_AppendLabel( refPanel, "Machinima mode allows you to enable SharpeYe bobbing even if noclipping or inside a vehicle. Remember to disable it during normal gameplay.", 40 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Machinima mode" , "sharpeye_opt_machinimamode" )
-	
-	sharpeye.Util_AppendSlider( refPanel, "Master Scale", "sharpeye_detail_mastermod", 0, 10, 0 )
 	
 	sharpeye.Util_AppendLabel( refPanel, SHARPEYE_NAME .. " has an integrated Motion blur extension to hub with Source Engine motion blur. However, experienced users may want to use the integrated Source \"Forward motion blur\" and disable this one.", 60 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use " .. SHARPEYE_NAME .. " Motion blur" , "sharpeye_opt_motionblur" )
