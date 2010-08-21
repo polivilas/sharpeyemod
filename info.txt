@@ -1,12 +1,12 @@
 "AddonInfo"
 {
-	"name"		"SharpeYe SVN"
-	"version"	"SVN"
+	"name"		"SharpeYe"
+	"version"	"1.4"
 	"up_date"	"13th March 2010"
 	"author_name"	"Hurricaaane"
 	"author_url"	"http://www.youtube.com/user/Hurricaaane"
 	
-	"info"		"Advanced Head-bobbing and HUD overlay."
+	"info"		"Advanced Head-Motion simulator and haptic senses."
 
 	//
 	// !!!!! This is important !!!!!

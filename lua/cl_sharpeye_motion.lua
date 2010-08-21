@@ -208,30 +208,34 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 	end
 	
+	--WEAPON TAP
 	local wep = ply:GetActiveWeapon()
 	if ( ValidEntity( wep ) ) then
 	
 		local func = wep.GetViewModelPosition
 		if ( func ) then
 			view.vm_origin, view.vm_angles = func( wep, view.origin*1, view.angles*1 )
-			view.vm_angles = view.vm_angles + (sharpeye_dat.player_oriangle - view.angles)
 			
 		else
 			view.vm_origin = nil
-			view.vm_angles = sharpeye_dat.player_oriangle
+			view.vm_angles = view.angles*1
 		end
 		
 		local func = wep.CalcView
 		if ( func ) then view.origin, view.angles, view.fov = func( wep, ply, view.origin*1, view.angles*1, view.fov ) end
 	else
 		view.vm_origin = nil
-		view.vm_angles = sharpeye_dat.player_oriangle
+		view.vm_angles = view.angles*1
 		
 	end
+	view.vm_angle_aimdelta = sharpeye_dat.player_oriangle - view.angles
 	
 	--if sharpeye_focus then
 		sharpeye_focus:AppendCalcView( view )
 	--end
+	
+	--WEAPON TAP END : ADD BOB
+	view.vm_angles = view.vm_angles + view.vm_angle_aimdelta
 	
 	if sharpeye_drops and sharpeye_drops:IsEnabled() then
 		sharpeye_drops:AppendCalcView( view )

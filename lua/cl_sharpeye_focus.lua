@@ -234,8 +234,8 @@ function sharpeye_focus:AppendCalcView( view )
 		local pos = view.vm_origin or view.origin
 		local Forward 	= angles:Forward()
 		local Right 	= angles:Right()
-		self.__raccor_x = (diff_y - self.lockedViewAng.y)/self.allowedFromCentreX
-		self.__raccor_y = (diff_p - self.lockedViewAng.p)/self.allowedFromCentreY
+		self.__raccor_x = (diff_y - usefulViewAng.y)/self.allowedFromCentreX
+		self.__raccor_y = (diff_p - usefulViewAng.p)/self.allowedFromCentreY
 		self.__diligent = math.Clamp(math.abs(self.__raccor_x) + math.abs(self.__raccor_y), 0, 1)
 		pos = pos - Forward * self.__diligent * self.dispFromEdge + Right * self.__raccor_x * self.handShiftX
 		view.vm_origin = pos

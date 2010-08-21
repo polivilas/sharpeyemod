@@ -1,2 +1,2 @@
-1.43
-Added Focus smoothing option. - http://www.facepunch.com/showthread.php?t=908557
+1.431
+Enhanced internal algorighm. Fixed edge case. Added Focus smoothing option. - http://www.facepunch.com/showthread.php?t=908557
