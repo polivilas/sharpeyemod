@@ -53,6 +53,7 @@ function sharpeye.GetCrosshairFocusAngle()
 end
 
 function sharpeye.HUDShouldDraw( sName )
+	if not sharpeye.IsEnabled() then return end
 	if sharpeye.IsCrosshairEnabled() and sName == "CHudCrosshair" then
 		return false
 	end
