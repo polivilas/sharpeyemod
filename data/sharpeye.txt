@@ -1,2 +1,2 @@
 1.44
-Added "Disable Motion in Third Person" option. Added Focus smoothing option. - http://www.facepunch.com/showthread.php?t=908557
+Added "Disable Motion in Third Person" option. Half-Life crosshair is now disabled if SharpeYe Crosshair is enabled. Added Focus smoothing option. - http://www.facepunch.com/showthread.php?t=908557
