@@ -118,7 +118,7 @@ function sharpeye.HUDPaint()
 
 		local hasDynamic = (dynamicSize > 0)
 		local hasFocus   = (focusSize > 0)
-		local focusSpin = hasFocus and (sharpeye_dat.crosshair.dist * sharpeye.GetCrosshairFocusSpin() + sharpeye.GetCrosshairFocusAngle()) or 0
+		local focusSpin = hasFocus and (((sharpeye_dat.crosshair.dist > 192) and (sharpeye_dat.crosshair.dist - 192) or 0) * sharpeye.GetCrosshairFocusSpin() + sharpeye.GetCrosshairFocusAngle()) or 0
 		if not sharpeye.IsInVehicle() and LocalPlayer():Alive() and (hasDynamic or hasFocus) then
 			local rdist = (1024 - math.Clamp( sharpeye_dat.crosshair.dist, 192, 512 )) * 0.015
 			local speSpell = sharpeye_dat.crosshair.dist < 0 and (1 + sharpeye_dat.crosshair.dist) or 1

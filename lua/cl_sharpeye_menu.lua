@@ -391,7 +391,8 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Size",  "sharpeye_xhair_focussize", 0, 8, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Dropshadow Size",  "sharpeye_xhair_focusshadowsize", 0, 8, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Spin",  "sharpeye_xhair_focusspin", -4, 4, 0 )
-	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Base Angle",  "sharpeye_xhair_focusangle", 0, 32, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Base Angle",  "sharpeye_xhair_focusangle", 0, 7, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Base Angle (Extend)",  "sharpeye_xhair_focusangle", 0, 32, 0 )
 	
 	sharpeye.Util_MakeCategory( refPanel, "Details", 0 )
 	--Revert button
