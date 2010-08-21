@@ -1,2 +1,2 @@
-1.431
-Enhanced internal algorighm. Fixed edge case. Added Focus smoothing option. - http://www.facepunch.com/showthread.php?t=908557
+1.44
+Added "Disable Motion in Third Person" option. Added Focus smoothing option. - http://www.facepunch.com/showthread.php?t=908557

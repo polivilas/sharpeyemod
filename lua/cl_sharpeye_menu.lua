@@ -141,9 +141,10 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_MakeCategory( refPanel, "General", 1 )
 	sharpeye.Util_AppendCheckBox( refPanel, "Enable" , "sharpeye_core_enable" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Motion (Disable to fix gamemode)" , "sharpeye_core_motion" )
-	sharpeye.Util_AppendCheckBox( refPanel, "Motion uses First Person Deathcam", "sharpeye_opt_firstpersondeath" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Use First Person Deathcam", "sharpeye_opt_firstpersondeath" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Sounds" , "sharpeye_core_sound" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Crosshair" , "sharpeye_core_crosshair" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Disable Motion in Third Person mode" , "sharpeye_opt_disableinthirdperson" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing completely" , "sharpeye_opt_disablebobbing" )
 	sharpeye.Util_AppendLabel( refPanel, "Breathing mode :" )
@@ -286,8 +287,6 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	sharpeye.Util_AppendLabel( refPanel, "You can cross \"SharpeYe's Stamina\" and \"Perfected Climb SWEP Fatigue\" (by -[SB]- Spy and Kogitsune) using this.", 40 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Cross with Perfected Climb SWEP" , "sharpeye_ext_perfectedclimbswep" )
-	
-	//sharpeye.Util_AppendCheckBox( refPanel, "Disable Motion and Motion blur in Third Person mode" , "sharpeye_opt_disableinthirdperson" )
 	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Head motion not working ? [DEBUG]", 0)

@@ -14,6 +14,7 @@ end
 function sharpeye.HookMotion()
 	if sharpeye_dat.motion_hooked then return end
 	hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
+	hook.Add("PostPlayerDraw", "sharpeye_PostPlayerDraw", sharpeye.PostPlayerDraw)
 	
 	sharpeye_dat.motion_hooked = true
 	
@@ -22,6 +23,7 @@ end
 function sharpeye.UnhookMotion()
 	if not sharpeye_dat.motion_hooked then return end
 	hook.Remove("CalcView", "sharpeye_CalcView")
+	hook.Add("PostPlayerDraw", "sharpeye_PostPlayerDraw")
 	
 	sharpeye_dat.motion_hooked = false
 end
@@ -39,15 +41,14 @@ function sharpeye.IsMotionBlurEnabled()
 end
 
 function sharpeye.IsInThirdPersonMode()
-	return false
+	--return false
+	return sharpeye_dat.hasDrawnLocalPlayer
 	--return GAMEMODE:ShouldDrawLocalPlayer()
 end
 
---[[
 function sharpeye.ShouldMotionDisableInThirdPerson()
 	return ((sharpeye.GetVarNumber("sharpeye_opt_disableinthirdperson") > 0) and sharpeye.IsInThirdPersonMode())
 end
-]]
 
 function sharpeye.ShouldBobbingDisableCompletely()
 	return (sharpeye.GetVarNumber("sharpeye_opt_disablebobbing") > 0) 
@@ -83,6 +84,14 @@ function sharpeye.Detail_GetRunningBobFrequency()
 	return 0.06 + (sharpeye.GetVarNumber("sharpeye_detail_runningbobfreq") * 0.1) * 0.2
 end
 
+function sharpeye.PostPlayerDraw( ply )
+	if ply == LocalPlayer() then
+		sharpeye_dat.hasDrawnLocalPlayer = true
+		
+	end
+	
+end
+
 function sharpeye.CalcView( ply, origin, angles, fov )
 	// Disabled Compatibility Module
 	/*
@@ -102,7 +111,10 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 	if not sharpeye.IsEnabled() then return defaultReturn end
 	if not sharpeye.IsMotionEnabled() then return defaultReturn end
-	if not sharpeye.InMachinimaMode() and (sharpeye.IsInVehicle() --[[or sharpeye.ShouldMotionDisableInThirdPerson()]]) then return defaultReturn end
+	if not sharpeye.InMachinimaMode() and (sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableInThirdPerson()) then
+		sharpeye_dat.hasDrawnLocalPlayer = false
+		return defaultReturn
+	end
 	
 
 	if not sharpeye_dat.player_view then
@@ -250,7 +262,7 @@ function sharpeye.GetMotionBlurValues( y, x, fwd, spin )
 	if not sharpeye.IsMotionEnabled() then return end
 	if not sharpeye.IsMotionBlurEnabled() then return end
 	if sharpeye.IsInVehicle() then return end
-	--[[if sharpeye.ShouldMotionDisableInThirdPerson() then return end]]
+	if sharpeye.ShouldMotionDisableInThirdPerson() then return end
 	
 	local ply = LocalPlayer()
 	--local velocity = ply:GetVelocity()
