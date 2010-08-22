@@ -77,6 +77,11 @@ function sharpeye.InitializeData()
 		"depthhud/focusshadow.vmt"
 	}
 	
+	sharpeye_dat.overlays = {
+		"sharpeye/sharpeye_tunnel"
+	}
+	sharpeye_dat.main_overlay = "sharpeye/sharpeye_tunnel"
+	
 	--sharpeye_day.player_RunSpeed = 100
 	sharpeye_dat.player_LastRelSpeed = 0
 	sharpeye_dat.player_LastWaterLevel = 0
@@ -333,16 +338,15 @@ end
 
 function sharpeye.RevertDetails()
 	sharpeye.SetVar("sharpeye_detail_breathebobdist" , "5")
-	sharpeye.SetVar("sharpeye_detail_breathebobdist" , "5")
 	sharpeye.SetVar("sharpeye_detail_runningbobfreq" , "5")
-	sharpeye.SetVar("sharpeye_basis_runspeed" , "100")
-	sharpeye.SetVar("sharpeye_basis_staminarecover" , "5")
-	sharpeye.SetVar("sharpeye_basis_healthbased" , "5")
-	sharpeye.SetVar("sharpeye_basis_healthylevel" , "100")
 	sharpeye.SetVar("sharpeye_detail_leaningangle" , "5")
 	sharpeye.SetVar("sharpeye_detail_landingangle" , "5")
+	sharpeye.SetVar("sharpeye_basis_runspeed" , "100")
+	sharpeye.SetVar("sharpeye_basis_staminarecover" , "5")
+	sharpeye.SetVar("sharpeye_basis_healthylevel" , "100")
+	sharpeye.SetVar("sharpeye_basis_healthbased" , "5")
 	sharpeye.SetVar("sharpeye_snd_footsteps_vol" , "5")
-	sharpeye.SetVar("sharpeye_snd_footsteps_vol" , "5")
+	sharpeye.SetVar("sharpeye_snd_breathing_vol" , "5")
 	sharpeye.SetVar("sharpeye_snd_windvelocityincap" , "5")
 	
 end
@@ -356,6 +360,7 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_core_motion", "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_sound" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_crosshair" , "1", true, false)
+	sharpeye.CreateVar("sharpeye_core_overlay" , "0", true, false)
 	sharpeye.CreateVar("sharpeye_opt_focus", "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_firstpersondeath" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_firstpersondeath_highspeed" , "0", true, false)
@@ -419,6 +424,7 @@ function sharpeye.Mount()
 		hook.Add("GetMotionBlurValues", "sharpeye_GetMotionBlurValues", sharpeye.GetMotionBlurValues)
 		hook.Add("HUDShouldDraw", "sharpeye_HUDShouldDraw", sharpeye.HUDShouldDraw)
 		hook.Add("HUDPaint", "sharpeye_HUDPaint", sharpeye.HUDPaint)
+		hook.Add("RenderScreenspaceEffects", "sharpeye_RenderScreenspaceEffects", sharpeye.RenderScreenspaceEffects)
 		hook.Add("Initialize", "sharpeye_Initialize", sharpeye.GamemodeInitialize)
 		concommand.Add( "sharpeye_call_forcesolvecompatibilities", sharpeye.ForceSolveCompatilibityIssues)
 		
@@ -450,6 +456,7 @@ function sharpeye.Unmount()
 		sharpeye.UnhookFocus()
 		--hook.Remove("CalcView", "sharpeye_CalcView")
 		hook.Remove("GetMotionBlurValues", "sharpeye_GetMotionBlurValues")
+		hook.Remove("RenderScreenspaceEffects", "sharpeye_RenderScreenspaceEffects")
 		hook.Remove("HUDPaint", "sharpeye_HUDPaint")
 		hook.Remove("HUDShouldDraw", "sharpeye_HUDShouldDraw")
 		hook.Remove("Initialize", "sharpeye_Initialize")

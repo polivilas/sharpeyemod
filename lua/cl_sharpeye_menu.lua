@@ -144,6 +144,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use First Person Deathcam", "sharpeye_opt_firstpersondeath" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Sounds" , "sharpeye_core_sound" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use Crosshair" , "sharpeye_core_crosshair" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Use Tunnel" , "sharpeye_core_overlay" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable Motion in Third Person mode" , "sharpeye_opt_disableinthirdperson" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing completely" , "sharpeye_opt_disablebobbing" )
@@ -280,7 +281,6 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	sharpeye.Util_AppendLabel( refPanel, SHARPEYE_NAME .. " has an integrated Motion blur extension to hub with Source Engine motion blur. However, experienced users may want to use the integrated Source \"Forward motion blur\" and disable this one.", 60 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Use " .. SHARPEYE_NAME .. " Motion blur" , "sharpeye_opt_motionblur" )
-	
 
 	sharpeye.Util_AppendLabel( refPanel, "Highspeed Deathcam allows the deathcam to be immediate when the player has a death ragdoll. This may cause issues on some gamemodes (simulate death).", 50 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "First Person Deathcam - Highspeed Mode", "sharpeye_opt_firstpersondeath_highspeed" )
@@ -395,16 +395,6 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Crosshair : Focus Base Angle (Extend)",  "sharpeye_xhair_focusangle", 0, 32, 0 )
 	
 	sharpeye.Util_MakeCategory( refPanel, "Details", 0 )
-	--Revert button
-	do
-		local CDetailsRevertButton = vgui.Create("DButton")
-		CDetailsRevertButton:SetText( "Revert to Defaults" )
-		CDetailsRevertButton.DoClick = function()
-			sharpeye.RevertDetails( )
-		end
-		
-		sharpeye.Util_AppendPanel( refPanel, CDetailsRevertButton )
-	end
 	
 	// PRESETS : STYLE
 	--[[
@@ -430,6 +420,17 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Wind : Minimum velocity",  "sharpeye_snd_windvelocityincap", 0, 10, 0 )
 	sharpeye.Util_AppendCheckBox( refPanel, "Wind : Heard even on Ground",  "sharpeye_snd_windonground" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Wind : Heard even on Noclip",  "sharpeye_snd_windonnoclip" )
+	
+	--Revert button
+	do
+		local CDetailsRevertButton = vgui.Create("DButton")
+		CDetailsRevertButton:SetText( "Revert to Defaults" )
+		CDetailsRevertButton.DoClick = function()
+			sharpeye.RevertDetails( )
+		end
+		
+		sharpeye.Util_AppendPanel( refPanel, CDetailsRevertButton )
+	end
 	
 	sharpeye.Util_ApplyCategories( refPanel )
 end

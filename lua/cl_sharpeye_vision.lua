@@ -11,6 +11,10 @@ function sharpeye.IsCrosshairEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_core_crosshair") > 0)
 end
 
+function sharpeye.IsOverlayEnabled()
+	return (sharpeye.GetVarNumber("sharpeye_core_overlay") > 0)
+end
+
 function sharpeye.HudSmooth( fCurrent, fTarget, fSmooth )
 	return fCurrent + (fTarget - fCurrent) * math.Clamp( fSmooth * FrameTime() * 25 , 0 , 1 )
 end
@@ -187,3 +191,12 @@ function sharpeye.HUDPaint()
 	end
 
 end
+
+function sharpeye.RenderScreenspaceEffects()
+	if not sharpeye.IsEnabled() then return end
+	if not sharpeye.IsOverlayEnabled() or not GAMEMODE:PostProcessPermitted( "material overlay" ) then return end
+
+	DrawMaterialOverlay( sharpeye_dat.main_overlay, 0);
+			
+end
+
