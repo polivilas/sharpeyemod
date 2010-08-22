@@ -55,6 +55,7 @@ end
 function sharpeye_focus:EnableFocus()
 	if self.__hasfocus then return end
 	self.__hasfocus = true
+	self.__raccor_x_quo = 0
 	self.__bViewWasModified = true
 	
 end
@@ -129,7 +130,7 @@ function sharpeye_focus:EvaluateMessyVars()
 	VIEWMODEL_FOVTOSET     = GetConVarNumber("fov_desired") or 75
 	VIEWMODEL_FOV          = VIEWMODEL_FOVTOSET + sharpeye.GetVar( "sharpeye_detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
 	VIEWMODEL_MOUSESENSITIVITY = 1
-	VIEWMODEL_ZOOMTIME    = 0.2
+	VIEWMODEL_ZOOMTIME    = 0.4
 	
 	-- Useful out of the whole
 	VIEWMODEL_FLIP         = LocalPlayer():GetActiveWeapon().ViewModelFlip or false
@@ -236,8 +237,11 @@ function sharpeye_focus:AppendCalcView( view )
 		local Right 	= angles:Right()
 		self.__raccor_x = (diff_y - usefulViewAng.y)/self.allowedFromCentreX
 		self.__raccor_y = (diff_p - usefulViewAng.p)/self.allowedFromCentreY
+		
 		self.__diligent = math.Clamp(math.abs(self.__raccor_x) + math.abs(self.__raccor_y), 0, 1)
-		pos = pos - Forward * self.__diligent * self.dispFromEdge + Right * self.__raccor_x * self.handShiftX
+		
+		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * RealFrameTime()/0.03*self.smooth
+		pos = pos - Forward * self.__diligent * self.dispFromEdge + Right * self.__raccor_x_quo * self.handShiftX * (VIEWMODEL_FLIP and -1 or 1)
 		view.vm_origin = pos
 		
 		self.__y_ref = nil
@@ -272,7 +276,7 @@ function sharpeye_focus:AppendCalcView( view )
 		local pos = view.vm_origin or view.origin
 		local Forward = view.vm_angles:Forward()
 		local Right   = view.vm_angles:Right()
-		view.vm_origin = pos - Forward * self.__diligent * self.dispFromEdge * ratio + Right * self.__raccor_x * self.handShiftX * ratio
+		view.vm_origin = pos - Forward * self.__diligent * self.dispFromEdge * ratio^2 + Right * self.__raccor_x_quo * self.handShiftX * (VIEWMODEL_FLIP and -1 or 1) * ratio^2
 		
 	end
 	
@@ -407,6 +411,7 @@ function sharpeye_focus:Mount()
 	self.__diligent = 0
 	self.__raccor_x = 0
 	self.__raccor_y = 0
+	self.__raccor_x_quo = 0
 	
 	self:InitializeMessyVars()
 
