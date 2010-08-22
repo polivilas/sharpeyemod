@@ -84,6 +84,10 @@ function sharpeye.Detail_GetRunningBobFrequency()
 	return 0.06 + (sharpeye.GetVarNumber("sharpeye_detail_runningbobfreq") * 0.1) * 0.2
 end
 
+function sharpeye.Detail_GetPermablurAmount()
+	return (sharpeye.GetVarNumber("sharpeye_detail_permablur") * 0.005)
+end
+
 function sharpeye.PostPlayerDraw( ply )
 	if ply == LocalPlayer() then
 		sharpeye_dat.hasDrawnLocalPlayer = true
@@ -272,7 +276,7 @@ function sharpeye.GetMotionBlurValues( y, x, fwd, spin )
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 
-	fwd = fwd + (clampedSpeedCustom ^ 2) * relativeSpeed * 0.005
+	fwd = fwd + (clampedSpeedCustom ^ 2) * relativeSpeed * 0.005 + sharpeye.Detail_GetPermablurAmount()
 	--y = y + clampedSpeedCustom * math.sin(math.AngleDifference( velocityAngle.y, eyeAngles.y ) / 360) ^ 3
 	--x = x + clampedSpeedCustom * math.sin(math.AngleDifference( velocityAngle.p, eyeAngles.p ) / 360) ^ 3
 	
