@@ -15,7 +15,7 @@ local DOWNLOAD_LINK = nil
 local RECEIVED_RESPONSE = false
 
 function sharpeye_internal.IsUsingCloud()
-	return sharpeye_cloud and sharpeye.IsUsingCloud and sharpeye_cloud:IsUsingCloud() or nil
+	return sharpeye_cloud and sharpeye_cloud.IsUsingCloud and sharpeye_cloud:IsUsingCloud() or nil
 end
 
 function sharpeye_internal.HasReceivedResponse()
