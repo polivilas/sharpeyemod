@@ -83,7 +83,7 @@ function sharpeye.Util_MakeFrame( width, height )
 	
 	myPanel:SetPos( ScrW() * 0.5 - width * 0.5 , ScrH() * 0.5 - height * 0.5 )
 	myPanel:SetSize( width, height )
-	myPanel:SetTitle( SHARPEYE_NAME )
+	myPanel:SetTitle( SHARPEYE_NAME .. (sharpeye_internal.IsUsingCloud and sharpeye_internal.IsUsingCloud() and " over Cloud" or "" ) )
 	myPanel:SetVisible( false )
 	myPanel:SetDraggable( true )
 	myPanel:ShowCloseButton( true )

@@ -12,6 +12,8 @@ if sharpeye_cloud then pcall(function() sharpeye_cloud.Unmount() end) end
 sharpeye_cloud = {}
 sharpeye_cloudloader_version = 1.0
 
+local SHARPEYE_IsUsingCloud = false
+
 local SHARPEYE_CloudReceiverTimeoutDelay = 5
 
 local SHARPEYE_CloudReceiverQueried    = 0
@@ -26,6 +28,12 @@ local SHARPEYE_CloudFileList = {}
 local SHARPEYE_CloudSubContents = {}
 local SHARPEYE_Origin = "http://sharpeyemod.googlecode.com/svn/trunk/lua/"
 local SHARPEYE_Start  = "cd_sharpeye_includelist.lua"
+
+
+function sharpeye_cloud.IsUsingCloud()
+	return SHARPEYE_IsUsingCloud
+	
+end
 
 function sharpeye_cloud.BuildBase()
 	pcall(function() if sharpeye and sharpeye.Unmount then sharpeye.Unmount() end end)
@@ -138,6 +146,7 @@ function sharpeye_cloud.InternalCompose()
 end
 
 function sharpeye_cloud.AttemptMount()
+	SHARPEYE_IsUsingCloud = true
 	local bCouldLoad = false
 
 	local strBivalErr = ""
@@ -191,6 +200,7 @@ function sharpeye_cloud.Abort()
 end
 
 function sharpeye_cloud.LoadLocale()
+	SHARPEYE_IsUsingCloud = false
 	sharpeye_cloud.BuildBase()
 	
 	ADDON_PROP = {}
