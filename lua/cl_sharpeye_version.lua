@@ -4,33 +4,47 @@
 //                                            //
 // http://www.youtube.com/user/Hurricaaane    //
 //--------------------------------------------//
-// Version                                    //
+// Version II                                 //
 ////////////////////////////////////////////////
 
-local MY_VERSION = tonumber(string.Explode( "\n", file.Read("sharpeye.txt"))[1])
-local SVN_VERSION = nil
-local DOWNLOAD_LINK = nil
+sharpeye_internal = {}
 
-function sharpeye.GetVersionData()
-	return MY_VERSION, SVN_VERSION, DOWNLOAD_LINK
+local MY_VERSION = tonumber(string.Explode( "\n", file.Read("sharpeye.txt"))[1])
+local ONLINE_VERSION = nil
+local DOWNLOAD_LINK = nil
+local RECEIVED_RESPONSE = false
+
+function sharpeye_internal.HasReceivedResponse()
+	return RECEIVED_RESPONSE
 end
 
-function sharpeye.GetVersion( contents , size )
+function sharpeye_internal.GetVersionData()
+	return MY_VERSION, ONLINE_VERSION, DOWNLOAD_LINK
+end
+
+function sharpeye_internal.ReceiveVersion( args, contents , size )
+	
 	--Taken from RabidToaster Achievements mod.
 	local split = string.Explode( "\n", contents )
 	local version = tonumber( split[ 1 ] or "" )
 	
 	if ( !version ) then
-		SVN_VERSION = -1
+		ONLINE_VERSION = -1
 		return
 	end
 	
-	SVN_VERSION = version
+	ONLINE_VERSION = version
 	
 	if ( split[ 2 ] ) then
 		DOWNLOAD_LINK = split[ 2 ]
 	end
 	
-	--print( MY_VERSION , SVN_VERSION , DOWNLOAD_LINK )
+	RECEIVED_RESPONSE = true
+	if args and args[1] then args[1]() end
+	
 end
-http.Get( "http://sharpeyemod.googlecode.com/svn/trunk/data/sharpeye.txt", "", sharpeye.GetVersion )
+
+function sharpeye_internal.QueryVersion( funcCallback )
+	http.Get( "http://sharpeyemod.googlecode.com/svn/trunk/data/sharpeye.txt", "", sharpeye_internal.ReceiveVersion, funcCallback )
+	
+end

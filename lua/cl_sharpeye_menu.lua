@@ -130,10 +130,36 @@ function sharpeye.Util_ApplyCategories( myPanel )
 	
 end
 
+function sharpeye.MenuCall_ReloadFromCloud()
+	if sharpeye_cloud then
+		sharpeye_cloud:Ask()
+	end
+	
+end
+
+function sharpeye.MenuCall_ReloadFromLocale()
+	if sharpeye_cloud then
+		sharpeye_cloud:LoadLocale()
+	end
+	
+end
+
 function sharpeye.BuildMenu( opt_tExpand )
 	if sharpeye.DermaPanel then sharpeye.DermaPanel:Remove() end
 	
-	local MY_VERSION, SVN_VERSION, DOWNLOAD_LINK = sharpeye.GetVersionData()
+	local bCanGetVersion = sharpeye_internal ~= nil
+	local MY_VERSION, ONLINE_VERSION, DOWNLOAD_LINK
+	local ONLINE_VERSION_READ = -1
+	if bCanGetVersion then
+		MY_VERSION, ONLINE_VERSION, DOWNLOAD_LINK = sharpeye_internal.GetVersionData()
+		
+		if ONLINE_VERSION == -1 then
+			ONLINE_VERSION_READ = "<offline>"
+		else
+			ONLINE_VERSION_READ = tostring( ONLINE_VERSION )
+		end
+		
+	end
 	
 	sharpeye.DermaPanel = sharpeye.Util_MakeFrame( 256, ScrH() * 0.80 )
 	local refPanel = sharpeye.DermaPanel
@@ -173,11 +199,11 @@ function sharpeye.BuildMenu( opt_tExpand )
 	--Helper label
 	do
 		local GeneralTextLabelMessage = "The command \"sharpeye_menu\" calls this menu.\n"
-		if not (MY_VERSION and SVN_VERSION and (MY_VERSION < SVN_VERSION)) then
+		if bCanGetVersion and not (MY_VERSION and ONLINE_VERSION and (MY_VERSION < ONLINE_VERSION)) then
 			GeneralTextLabelMessage = GeneralTextLabelMessage .. "Example : To assign " .. SHARPEYE_NAME .. " menu to F10, type in the console :"
 			
 		else
-			GeneralTextLabelMessage = GeneralTextLabelMessage .. "Your version is "..MY_VERSION.." and the updated one is "..SVN_VERSION.." ! You should update !"
+			GeneralTextLabelMessage = GeneralTextLabelMessage .. "Your version is "..MY_VERSION.." and the updated one is "..ONLINE_VERSION.." ! You should update !"
 			
 		end
 		sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 50, true )
@@ -187,7 +213,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	--Helper multiline
 	do
 		local GeneralCommandLabel = vgui.Create("DTextEntry")
-		local hasUpdate = (MY_VERSION and SVN_VERSION and (MY_VERSION < SVN_VERSION) and DOWNLOAD_LINK)
+		local hasUpdate = (MY_VERSION and ONLINE_VERSION and (MY_VERSION < ONLINE_VERSION) and DOWNLOAD_LINK)
 		
 		if not hasUpdate then
 			GeneralCommandLabel:SetText( "bind \"F10\" \"sharpeye_menu\"" )
@@ -431,6 +457,23 @@ function sharpeye.BuildMenu( opt_tExpand )
 		end
 		
 		sharpeye.Util_AppendPanel( refPanel, CDetailsRevertButton )
+	end
+
+	sharpeye.Util_MakeCategory( refPanel, "Cloud" .. (bCanGetVersion and (" [ v" .. tostring(MY_VERSION) .. " >> v" .. tostring(ONLINE_VERSION_READ) .. " ]") or " Version" ), 0 )
+	-- Reload from Cloud Button
+	do
+		local CReload = vgui.Create("DButton")
+		CReload:SetText( "Reload from Cloud" )
+		CReload.DoClick = sharpeye.MenuCall_ReloadFromCloud
+		sharpeye.Util_AppendPanel( refPanel, CReload )
+	end
+	
+	-- Reload from Locale Button
+	if sharpeye_internal then
+		local CReload = vgui.Create("DButton")
+		CReload:SetText( "Reload from Locale" )
+		CReload.DoClick = sharpeye.MenuCall_ReloadFromLocale
+		sharpeye.Util_AppendPanel( refPanel, CReload )
 	end
 	
 	sharpeye.Util_ApplyCategories( refPanel )

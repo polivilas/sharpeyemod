@@ -19,8 +19,6 @@
 
 // ATTENTION PERSONNEL. sharpeye_focus USES METHODS.
 
---sharpeye_focus = {}
-
 function sharpeye.IsFocusEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_opt_focus") > 0)
 end

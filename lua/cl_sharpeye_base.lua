@@ -7,6 +7,8 @@
 // Base                                       //
 ////////////////////////////////////////////////
 
+sharpeye_focus = {}
+
 -- Initialization
 function sharpeye.InitializeData() 
 	sharpeye_dat.footsteps = {
