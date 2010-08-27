@@ -1,2 +1,2 @@
-1.51
-Made SharpeYe ready for BlackOps' "GMod Legs 2.0" next addon update. Tweaked Third Person detection process.  - http://www.facepunch.com/showthread.php?t=908557
+1.55
+Made BlackOps' "GMod Legs >2.2" compatible wiuth Focus. Enhanced return algorithm.  - http://www.facepunch.com/showthread.php?t=908557

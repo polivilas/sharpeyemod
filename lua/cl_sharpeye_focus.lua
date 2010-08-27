@@ -272,9 +272,22 @@ function sharpeye_focus:AppendCalcView( view )
 			--self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*3 )
 			--self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*3 )
 			--print(RealFrameTime())
-			self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*RealFrameTime()/0.03*7 )
+			
+			/*self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*RealFrameTime()/0.03*7 )
 			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*RealFrameTime()/0.03*7 )
-			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*RealFrameTime()/0.03*7 )
+			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*RealFrameTime()/0.03*7 )*/
+			
+			local ap,ay,ar = math.AngleDifference(view.vm_angles.p, self.__vm_angles.p), math.AngleDifference(view.vm_angles.y, self.__vm_angles.y), math.AngleDifference(view.vm_angles.r, self.__vm_angles.r)
+			--local ap,ay,ar = math.AngleDifference(self.__vm_angles.p, view.vm_angles.p), math.AngleDifference(self.__vm_angles.y, view.vm_angles.y), math.AngleDifference(self.__vm_angles.r, view.vm_angles.r)
+			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
+		
+			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*RealFrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*RealFrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*RealFrameTime()/0.03*self.smooth)
+			
+			self.__vm_angles.p = view.vm_angles.p + self.__vm_angles_delta.p
+			self.__vm_angles.y = view.vm_angles.y + self.__vm_angles_delta.y
+			self.__vm_angles.r = view.vm_angles.r + self.__vm_angles_delta.r
 			
 			view.vm_angles.p = self.__vm_angles.p 
 			view.vm_angles.y = self.__vm_angles.y
