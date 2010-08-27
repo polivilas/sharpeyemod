@@ -208,17 +208,17 @@ function sharpeye_focus:AppendCalcView( view )
 			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
 			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
 		
-			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*RealFrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*RealFrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*RealFrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*FrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*FrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*FrameTime()/0.03*self.smooth)
 			
 			self.__vm_angles.p = usefulViewAng.p + self.__vm_angles_delta.p
 			self.__vm_angles.y = usefulViewAng.y + self.__vm_angles_delta.y
 			self.__vm_angles.r = usefulViewAng.r + self.__vm_angles_delta.r
 			
-			/*self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, angles.p, math.AngleDifference( self.__vm_angles.p, angles.p )*RealFrameTime()/0.03 )
-			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, angles.y, math.AngleDifference( self.__vm_angles.y, angles.y )*RealFrameTime()/0.03 )
-			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, angles.r, math.AngleDifference( self.__vm_angles.r, angles.r )*RealFrameTime()/0.03 )*/
+			/*self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, angles.p, math.AngleDifference( self.__vm_angles.p, angles.p )*FrameTime()/0.03 )
+			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, angles.y, math.AngleDifference( self.__vm_angles.y, angles.y )*FrameTime()/0.03 )
+			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, angles.r, math.AngleDifference( self.__vm_angles.r, angles.r )*FrameTime()/0.03 )*/
 
 		else		
 			self.__bViewWasModified = false
@@ -248,7 +248,7 @@ function sharpeye_focus:AppendCalcView( view )
 		
 		self.__diligent = math.Clamp(math.abs(self.__raccor_x) + math.abs(self.__raccor_y), 0, 1)
 		
-		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * RealFrameTime()/0.03*self.smooth
+		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * FrameTime()/0.03*self.smooth
 		pos = pos - Forward * self.__diligent * self.dispFromEdge + Right * self.__raccor_x_quo * self.handShiftX * (VIEWMODEL_FLIP and -1 or 1)
 		view.vm_origin = pos
 		
@@ -271,19 +271,19 @@ function sharpeye_focus:AppendCalcView( view )
 			--self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*3 )
 			--self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*3 )
 			--self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*3 )
-			--print(RealFrameTime())
+			--print(FrameTime())
 			
-			/*self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*RealFrameTime()/0.03*7 )
-			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*RealFrameTime()/0.03*7 )
-			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*RealFrameTime()/0.03*7 )*/
+			/*self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*FrameTime()/0.03*7 )
+			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*FrameTime()/0.03*7 )
+			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*FrameTime()/0.03*7 )*/
 			
 			local ap,ay,ar = math.AngleDifference(view.vm_angles.p, self.__vm_angles.p), math.AngleDifference(view.vm_angles.y, self.__vm_angles.y), math.AngleDifference(view.vm_angles.r, self.__vm_angles.r)
 			--local ap,ay,ar = math.AngleDifference(self.__vm_angles.p, view.vm_angles.p), math.AngleDifference(self.__vm_angles.y, view.vm_angles.y), math.AngleDifference(self.__vm_angles.r, view.vm_angles.r)
 			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
 		
-			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*RealFrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*RealFrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*RealFrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*FrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*FrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*FrameTime()/0.03*self.smooth)
 			
 			self.__vm_angles.p = view.vm_angles.p + self.__vm_angles_delta.p
 			self.__vm_angles.y = view.vm_angles.y + self.__vm_angles_delta.y
