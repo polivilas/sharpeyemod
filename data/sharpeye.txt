@@ -1,2 +1,2 @@
-1.5
-Added Cloud features. - http://www.facepunch.com/showthread.php?t=908557
+1.51
+Made SharpeYe ready for BlackOps' "GMod Legs 2.0" next addon update. Tweaked Third Person detection process.  - http://www.facepunch.com/showthread.php?t=908557
