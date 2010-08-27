@@ -100,7 +100,7 @@ function sharpeye_focus:InitializeMessyVars()
 	VIEWMODEL_FOVTOSET     = GetConVarNumber("fov_desired") or 75
 	VIEWMODEL_FOV          = VIEWMODEL_FOVTOSET + sharpeye.GetVar( "sharpeye_detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
 	VIEWMODEL_MOUSESENSITIVITY = 1
-	VIEWMODEL_ZOOMTIME    = 0.2
+	VIEWMODEL_ZOOMTIME    = 0.5
 	
 	-- Useful out of the whole
 	VIEWMODEL_FLIP         = false
@@ -281,9 +281,9 @@ function sharpeye_focus:AppendCalcView( view )
 			--local ap,ay,ar = math.AngleDifference(self.__vm_angles.p, view.vm_angles.p), math.AngleDifference(self.__vm_angles.y, view.vm_angles.y), math.AngleDifference(self.__vm_angles.r, view.vm_angles.r)
 			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
 		
-			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*FrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*FrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*FrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*FrameTime()/0.03*self.smooth*0.5)
+			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*FrameTime()/0.03*self.smooth*0.5)
+			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*FrameTime()/0.03*self.smooth*0.5)
 			
 			self.__vm_angles.p = view.vm_angles.p + self.__vm_angles_delta.p
 			self.__vm_angles.y = view.vm_angles.y + self.__vm_angles_delta.y
