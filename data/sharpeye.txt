@@ -1,2 +1,2 @@
 1.551
-Made BlackOps' "GMod Legs >2.2" compatible wiuth Focus. Fixed smoothing rendering errors from framerate-startmovie applications. Enhanced return algorithm.  - http://www.facepunch.com/showthread.php?t=908557
+Made BlackOps' "GMod Legs >2.2" compatible with Focus. Fixed smoothing rendering errors from framerate-startmovie applications. Enhanced return algorithm.  - http://www.facepunch.com/showthread.php?t=908557
