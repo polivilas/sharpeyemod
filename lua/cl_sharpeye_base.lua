@@ -115,7 +115,7 @@ function sharpeye.InitializeData()
 	sharpeye_dat.focus_hooked = false
 	
 	sharpeye_dat.EXT_RollSwitch = false
-	sharpeye_dat.hasDrawnLocalPlayer = false
+	//sharpeye_dat.hasDrawnLocalPlayer = false
 	
 	
 	for _,subtable in pairs(sharpeye_dat.soundtables) do

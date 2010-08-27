@@ -14,7 +14,7 @@ end
 function sharpeye.HookMotion()
 	if sharpeye_dat.motion_hooked then return end
 	hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
-	hook.Add("PostPlayerDraw", "sharpeye_PostPlayerDraw", sharpeye.PostPlayerDraw)
+	//hook.Add("PostPlayerDraw", "sharpeye_PostPlayerDraw", sharpeye.PostPlayerDraw)
 	
 	sharpeye_dat.motion_hooked = true
 	
@@ -23,7 +23,7 @@ end
 function sharpeye.UnhookMotion()
 	if not sharpeye_dat.motion_hooked then return end
 	hook.Remove("CalcView", "sharpeye_CalcView")
-	hook.Add("PostPlayerDraw", "sharpeye_PostPlayerDraw")
+	//hook.Add("PostPlayerDraw", "sharpeye_PostPlayerDraw")
 	
 	sharpeye_dat.motion_hooked = false
 end
@@ -41,8 +41,9 @@ function sharpeye.IsMotionBlurEnabled()
 end
 
 function sharpeye.IsInThirdPersonMode()
+	return (GetViewEntity() ~= LocalPlayer()) or LocalPlayer():ShouldDrawLocalPlayer()
 	--return false
-	return sharpeye_dat.hasDrawnLocalPlayer
+	--return sharpeye_dat.hasDrawnLocalPlayer
 	--return GAMEMODE:ShouldDrawLocalPlayer()
 end
 
@@ -88,13 +89,13 @@ function sharpeye.Detail_GetPermablurAmount()
 	return (sharpeye.GetVarNumber("sharpeye_detail_permablur") * 0.005)
 end
 
-function sharpeye.PostPlayerDraw( ply )
+/*function sharpeye.PostPlayerDraw( ply )
 	if ply == LocalPlayer() then
 		sharpeye_dat.hasDrawnLocalPlayer = true
 		
 	end
 	
-end
+end*/
 
 function sharpeye.CalcView( ply, origin, angles, fov )
 	// Disabled Compatibility Module
@@ -116,7 +117,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	if not sharpeye.IsEnabled() then return defaultReturn end
 	if not sharpeye.IsMotionEnabled() then return defaultReturn end
 	if not sharpeye.InMachinimaMode() and (sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableInThirdPerson()) then
-		sharpeye_dat.hasDrawnLocalPlayer = false
+		//sharpeye_dat.hasDrawnLocalPlayer = false
 		return defaultReturn
 	end
 	

@@ -155,6 +155,16 @@ function sharpeye_focus:ApproachRatio()
 	
 end
 
+-- BlackOps' Legs addon compatibility test
+function sharpeye_focus:GetBiaisedViewAngles()
+	if not sharpeye.IsEnabled()      then return nil end
+	if not sharpeye.IsFocusEnabled() then return nil end
+	if not sharpeye.HasFocus()       then return nil end
+	
+	return self.lockedViewAng or nil
+
+end
+
 function sharpeye_focus:AppendCalcView( view )
 	if not sharpeye.IsFocusEnabled() then return end
 	
