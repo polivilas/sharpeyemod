@@ -68,6 +68,11 @@ function sharpeye_focus:DisableFocus()
 
 end
 
+function sharpeye_focus:IsRelaxEnabled()
+	return (sharpeye.GetVarNumber("sharpeye_opt_relax") > 0) and not sharpeye.IsInThirdPersonMode()
+	
+end
+
 function sharpeye_focus:HasFocus()
 	return self.__hasfocus
 	
@@ -98,6 +103,8 @@ local FOCUS_SMOOTHWEAPON
 local FOCUS_SMOOTHLOOK
 
 function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
+	local relaxMode = sharpeye_focus:IsRelaxEnabled() and not self:HasFocus()
+	
 	FOCUS_FOVTOSET     = GetConVarNumber("fov_desired") or 75
 	FOCUS_FOV          = FOCUS_FOVTOSET + sharpeye.GetVar( "sharpeye_detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
 	FOCUS_MOUSESENSITIVITY = 1
@@ -105,8 +112,8 @@ function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
 	
 	FOCUS_FLIP         = optbNoPlayer and false or LocalPlayer():GetActiveWeapon().ViewModelFlip
 
-	FOCUS_LIMITANGLE_X = sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
-	FOCUS_LIMITANGLE_Y = sharpeye.GetVar( "sharpeye_detail_focus_angley" )
+	FOCUS_LIMITANGLE_X = relaxMode and 0 or sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
+	FOCUS_LIMITANGLE_Y = relaxMode and 0 or sharpeye.GetVar( "sharpeye_detail_focus_angley" )
 	FOCUS_BACKING       = sharpeye.GetVar( "sharpeye_detail_focus_backing" )                -- Default is 5 so 5.
 	FOCUS_HANDSHIFT     = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5       -- Default is 5 so 2.5.
 	FOCUS_SMOOTHWEAPON  = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.1) * 0.95  -- Default is 5 so 2.5.
@@ -139,7 +146,7 @@ function sharpeye_focus:AppendCalcView( view )
 	if not sharpeye.IsFocusEnabled() then return end
 	
 	self:EvaluateConfigVars()
-	if self:HasFocus() then
+	if self:HasFocus() or sharpeye_focus:IsRelaxEnabled() then
 		local smoothFactorWeapon = FrameTime() / 0.03 * FOCUS_SMOOTHWEAPON
 		local smoothFactorLook = FrameTime() / 0.03 * FOCUS_SMOOTHLOOK
 		
@@ -162,7 +169,7 @@ function sharpeye_focus:AppendCalcView( view )
 			
 		end
 		
-		if self.__bViewWasModified then
+		if self.__bViewWasModified and not sharpeye_focus:IsRelaxEnabled() then
 			self.__smoothCameraAngles.p = actualViewAng.p
 			self.__smoothCameraAngles.y = actualViewAng.y
 			self.__smoothCameraAngles.r = actualViewAng.r

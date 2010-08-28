@@ -174,6 +174,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable Motion in Third Person mode" , "sharpeye_opt_disableinthirdperson" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing completely" , "sharpeye_opt_disablebobbing" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Allow Relax mode" , "sharpeye_opt_relax" )
 	sharpeye.Util_AppendLabel( refPanel, "Breathing mode :" )
 	--Breathing mode Choice
 	do
@@ -235,6 +236,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	sharpeye.Util_MakeCategory( refPanel, SHARPEYE_FOCUS_NAME, 0 )
 	sharpeye.Util_AppendCheckBox( refPanel, "Allow "..SHARPEYE_FOCUS_NAME , "sharpeye_opt_focus" )
+	sharpeye.Util_AppendCheckBox( refPanel, "Allow Relax mode" , "sharpeye_opt_relax" )
 	do
 		local GeneralTextLabelMessage = "The binding \"+sharpeye_focus\" allows you to enter "..SHARPEYE_FOCUS_NAME.." mode (with a 'hold key' action).\nExample : To assign it to the key 'v', type in the console :"
 		sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 70, true )

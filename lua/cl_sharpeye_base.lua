@@ -115,7 +115,6 @@ function sharpeye.InitializeData()
 	sharpeye_dat.focus_hooked = false
 	
 	sharpeye_dat.EXT_RollSwitch = false
-	//sharpeye_dat.hasDrawnLocalPlayer = false
 	
 	
 	for _,subtable in pairs(sharpeye_dat.soundtables) do
@@ -364,6 +363,7 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_core_crosshair" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_core_overlay" , "0", true, false)
 	sharpeye.CreateVar("sharpeye_opt_focus", "1", true, false)
+	sharpeye.CreateVar("sharpeye_opt_relax", "0", true, false)
 	sharpeye.CreateVar("sharpeye_opt_firstpersondeath" , "1", true, false)
 	sharpeye.CreateVar("sharpeye_opt_firstpersondeath_highspeed" , "0", true, false)
 	sharpeye.CreateVar("sharpeye_opt_breathing" , "1", true, false)

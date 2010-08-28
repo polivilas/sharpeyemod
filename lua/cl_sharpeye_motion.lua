@@ -14,7 +14,6 @@ end
 function sharpeye.HookMotion()
 	if sharpeye_dat.motion_hooked then return end
 	hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
-	//hook.Add("PostPlayerDraw", "sharpeye_PostPlayerDraw", sharpeye.PostPlayerDraw)
 	
 	sharpeye_dat.motion_hooked = true
 	
@@ -23,7 +22,6 @@ end
 function sharpeye.UnhookMotion()
 	if not sharpeye_dat.motion_hooked then return end
 	hook.Remove("CalcView", "sharpeye_CalcView")
-	//hook.Add("PostPlayerDraw", "sharpeye_PostPlayerDraw")
 	
 	sharpeye_dat.motion_hooked = false
 end
@@ -44,7 +42,7 @@ function sharpeye.IsInThirdPersonMode()
 	return (GetViewEntity() ~= LocalPlayer()) or LocalPlayer():ShouldDrawLocalPlayer()
 	--return false
 	--return sharpeye_dat.hasDrawnLocalPlayer
-	--return GAMEMODE:ShouldDrawLocalPlayer()
+	--return GAMEMODE:ShouldDrawLocalPlayer() -- LocalPlayer():ShouldDrawLocalPlayer() was undocumented back then
 end
 
 function sharpeye.ShouldMotionDisableInThirdPerson()
@@ -85,17 +83,17 @@ function sharpeye.Detail_GetRunningBobFrequency()
 	return 0.06 + (sharpeye.GetVarNumber("sharpeye_detail_runningbobfreq") * 0.1) * 0.2
 end
 
+function sharpeye.Detail_GetSlightDistorsionIntensity()
+	return 1
+end
+
+function sharpeye.Detail_GetRunningDistorsionIntensity()
+	return 1
+end
+
 function sharpeye.Detail_GetPermablurAmount()
 	return (sharpeye.GetVarNumber("sharpeye_detail_permablur") * 0.005)
 end
-
-/*function sharpeye.PostPlayerDraw( ply )
-	if ply == LocalPlayer() then
-		sharpeye_dat.hasDrawnLocalPlayer = true
-		
-	end
-	
-end*/
 
 function sharpeye.CalcView( ply, origin, angles, fov )
 	// Disabled Compatibility Module
@@ -119,7 +117,6 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	if not sharpeye.IsEnabled() then return defaultReturn end
 	if not sharpeye.IsMotionEnabled() then return defaultReturn end
 	if not sharpeye.InMachinimaMode() and (sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableInThirdPerson()) then
-		//sharpeye_dat.hasDrawnLocalPlayer = false
 		return defaultReturn
 	end
 	
@@ -142,6 +139,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	-- EKUSUTARA : DONT USE
 	--sharpeye_dat.player_view = GAMEMODE:CalcView( ply, origin, angles, fov )
 	--local view = sharpeye_dat.player_view
+	
 	-- EKUSUTARA 
 	local view = GAMEMODE:CalcView( ply, origin, angles, fov )
 	
