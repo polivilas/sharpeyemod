@@ -261,6 +261,8 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Up-Down pan angles",       "sharpeye_detail_focus_angley", 8, 16, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Weapon backing intensity on edges",  "sharpeye_detail_focus_backing", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Smoothing",  "sharpeye_detail_focus_smoothing", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Smooth Look",  "sharpeye_detail_focus_smoothlook", 0, 10, 0 )
+	
 	sharpeye.Util_AppendSlider( refPanel, "Aim Simulation (Angle approximation)",  "sharpeye_detail_focus_aimsim", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Hand Shift (Weapon X-Perspective)",  "sharpeye_detail_focus_handshiftx", 0, 10, 0 )
 	sharpeye.Util_AppendLabel( refPanel, "Use AS/HS preset :" )

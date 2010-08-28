@@ -114,6 +114,8 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 	local defaultReturn = bCustomChanged and sharpeye_dat.player_view_med or nil*/
 	
+	local defaultReturn = nil
+	
 	if not sharpeye.IsEnabled() then return defaultReturn end
 	if not sharpeye.IsMotionEnabled() then return defaultReturn end
 	if not sharpeye.InMachinimaMode() and (sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableInThirdPerson()) then
@@ -122,8 +124,14 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	end
 	
 
-	if not sharpeye_dat.player_view then
-		sharpeye_dat.player_view = {}
+	-- EKUSUTARA : DONT USE
+	--if not sharpeye_dat.player_view then
+	--	sharpeye_dat.player_view = {}
+	--	sharpeye_dat.player_oriangle = Angle(0,0,0)
+	--end
+	
+	-- EKUSUTARA 
+	if not sharpeye_dat.player_oriangle then
 		sharpeye_dat.player_oriangle = Angle(0,0,0)
 	end
 	
@@ -131,9 +139,11 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	sharpeye_dat.player_oriangle.y = angles.y
 	sharpeye_dat.player_oriangle.r = angles.r
 	
-	-- EKUSUTARA
-	sharpeye_dat.player_view = GAMEMODE:CalcView( ply, origin, angles, fov )
-	local view = sharpeye_dat.player_view
+	-- EKUSUTARA : DONT USE
+	--sharpeye_dat.player_view = GAMEMODE:CalcView( ply, origin, angles, fov )
+	--local view = sharpeye_dat.player_view
+	-- EKUSUTARA 
+	local view = GAMEMODE:CalcView( ply, origin, angles, fov )
 	
 	
 	// Disabled Compatibility Module
@@ -161,9 +171,9 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		
 		sharpeye_dat.player_TimeShift = shiftMod
 		
-		view.origin.x = view.origin.x + sharpeye.Modulation(27, 1, shiftMod) * 1 * distMod
-		view.origin.y = view.origin.y + sharpeye.Modulation(16, 1, shiftMod) * 1 * distMod
-		view.origin.z = view.origin.z + sharpeye.Modulation(7 , 1, shiftMod) * 1 * distMod
+		view.origin.x = view.origin.x + sharpeye.Modulation(27, 1, shiftMod) * distMod
+		view.origin.y = view.origin.y + sharpeye.Modulation(16, 1, shiftMod) * distMod
+		view.origin.z = view.origin.z + sharpeye.Modulation(7 , 1, shiftMod) * distMod
 		
 		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence * 0.90 * correction
 		--print(sharpeye_dat.player_PitchInfluence)

@@ -128,7 +128,7 @@ function sharpeye_focus:EvaluateMessyVars()
 	VIEWMODEL_FOVTOSET     = GetConVarNumber("fov_desired") or 75
 	VIEWMODEL_FOV          = VIEWMODEL_FOVTOSET + sharpeye.GetVar( "sharpeye_detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
 	VIEWMODEL_MOUSESENSITIVITY = 1
-	VIEWMODEL_ZOOMTIME    = 0.4
+	VIEWMODEL_ZOOMTIME    = 1.0
 	
 	-- Useful out of the whole
 	VIEWMODEL_FLIP         = LocalPlayer():GetActiveWeapon().ViewModelFlip or false
@@ -142,6 +142,7 @@ function sharpeye_focus:EvaluateMessyVars()
 	self.dispFromEdge       = sharpeye.GetVar( "sharpeye_detail_focus_backing" ) --Default is 5 so 5.
 	self.handShiftX         = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5 --Default is 5 so 2.5.
 	self.smooth             = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.1)*0.95 --Default is 5 so 2.5.
+	self.smoothlook         = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothlook" ) * 0.1)*0.95 --Default is 5 so 2.5.
 	
 end
 
@@ -175,15 +176,38 @@ function sharpeye_focus:AppendCalcView( view )
 		self.__oriAngle.y = view.angles.y
 		self.__oriAngle.r = view.angles.r
 		local angles = view.angles
-		local usefulViewAng
+		local actualViewAng
 		if self.lockedViewAng then
 			self.computeViewAng = self.lockedViewAng - self.computeViewAng + angles
-			usefulViewAng = self.computeViewAng
+			actualViewAng = self.computeViewAng
 		else
-			usefulViewAng = angles
+			actualViewAng = angles
 			
 		end
+		
+		
+		
+		
+		
+		if self.__bViewWasModified then
+			self.__previousUseAngles.p = actualViewAng.p
+			self.__previousUseAngles.y = actualViewAng.y
+			self.__previousUseAngles.r = actualViewAng.r
+			
+		else
+			local tp,ty,tr = math.AngleDifference(self.__previousUseAngles.p, actualViewAng.p), math.AngleDifference(self.__previousUseAngles.y, actualViewAng.y), math.AngleDifference(self.__previousUseAngles.r, actualViewAng.r)
+		
+			self.__previousUseAngles.p = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.p, actualViewAng.p, tp*FrameTime()/0.03*self.smoothlook))
+			self.__previousUseAngles.y = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.y, actualViewAng.y, ty*FrameTime()/0.03*self.smoothlook))
+			self.__previousUseAngles.r = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.r, actualViewAng.r, tr*FrameTime()/0.03*self.smoothlook))
+			
+		end
+		local usefulViewAng = self.__previousUseAngles
 		view.angles = usefulViewAng
+		
+		
+		
+		
 		
 		local pl = LocalPlayer()
 		
@@ -258,6 +282,18 @@ function sharpeye_focus:AppendCalcView( view )
 		local ratio = self:ApproachRatio()
 		local aratio = 1 - ratio
 		
+		
+		local tp,ty,tr = math.AngleDifference(self.__previousUseAngles.p, view.angles.p), math.AngleDifference(self.__previousUseAngles.y, view.angles.y), math.AngleDifference(self.__previousUseAngles.r, view.angles.r)
+	
+		self.__previousUseAngles.p = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.p, view.angles.p, tp*FrameTime()/0.03*self.smoothlook))
+		self.__previousUseAngles.y = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.y, view.angles.y, ty*FrameTime()/0.03*self.smoothlook))
+		self.__previousUseAngles.r = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.r, view.angles.r, tr*FrameTime()/0.03*self.smoothlook))
+		
+		view.angles.p = self.__previousUseAngles.p
+		view.angles.y = self.__previousUseAngles.y
+		view.angles.r = self.__previousUseAngles.r
+		
+		
 		if not self.__y_ref then
 			self.__y_ref = view.vm_angles.y
 		end
@@ -277,7 +313,7 @@ function sharpeye_focus:AppendCalcView( view )
 			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*FrameTime()/0.03*7 )
 			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*FrameTime()/0.03*7 )*/
 			
-			local ap,ay,ar = math.AngleDifference(view.vm_angles.p, self.__vm_angles.p), math.AngleDifference(view.vm_angles.y, self.__vm_angles.y), math.AngleDifference(view.vm_angles.r, self.__vm_angles.r)
+			/*local ap,ay,ar = math.AngleDifference(view.vm_angles.p, self.__vm_angles.p), math.AngleDifference(view.vm_angles.y, self.__vm_angles.y), math.AngleDifference(view.vm_angles.r, self.__vm_angles.r)
 			--local ap,ay,ar = math.AngleDifference(self.__vm_angles.p, view.vm_angles.p), math.AngleDifference(self.__vm_angles.y, view.vm_angles.y), math.AngleDifference(self.__vm_angles.r, view.vm_angles.r)
 			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
 		
@@ -289,6 +325,21 @@ function sharpeye_focus:AppendCalcView( view )
 			self.__vm_angles.y = view.vm_angles.y + self.__vm_angles_delta.y
 			self.__vm_angles.r = view.vm_angles.r + self.__vm_angles_delta.r
 			
+			view.vm_angles.p = self.__vm_angles.p 
+			view.vm_angles.y = self.__vm_angles.y
+			view.vm_angles.r = self.__vm_angles.r*/
+			
+			local ap,ay,ar = math.AngleDifference(view.vm_angles.p, self.__previousUseAngles.p), math.AngleDifference(view.vm_angles.y, self.__previousUseAngles.y), math.AngleDifference(view.vm_angles.r, self.__previousUseAngles.r)
+			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
+		
+			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*FrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*FrameTime()/0.03*self.smooth)
+			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*FrameTime()/0.03*self.smooth)
+			
+			self.__vm_angles.p = self.__previousUseAngles.p + self.__vm_angles_delta.p
+			self.__vm_angles.y = self.__previousUseAngles.y + self.__vm_angles_delta.y
+			self.__vm_angles.r = self.__previousUseAngles.r + self.__vm_angles_delta.r
+
 			view.vm_angles.p = self.__vm_angles.p 
 			view.vm_angles.y = self.__vm_angles.y
 			view.vm_angles.r = self.__vm_angles.r
@@ -417,7 +468,7 @@ function sharpeye_focus:Mount()
 	
 	self.__hasfocus = false
 	self.__decotime = 0
-
+	
 	self.__vm_origin = Vector(0,0,0)
 	self.__vm_angles = Angle(0,0,0)
 	self.__vm_angles_delta = Angle(0,0,0)
@@ -426,6 +477,8 @@ function sharpeye_focus:Mount()
 	self.__bViewWasModified      = true --True for viewmodel angle initialization
 	self.__bViewWasModifiedTime  = 0
 	self.__bViewWasModifiedDelay = 0.2
+	
+	self.__previousUseAngles = Angle(0,0,0)
 	
 	//TOMAKE
 	self.__fov = 75
