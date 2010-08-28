@@ -53,7 +53,6 @@ end
 function sharpeye_focus:EnableFocus()
 	if self.__hasfocus then return end
 	self.__hasfocus = true
-	self.__raccor_x_quo = 0
 	self.__bViewWasModified = true
 	
 end
@@ -84,83 +83,53 @@ function sharpeye_focus:SimilarizeAngles(ang1, ang2)
 	end
 end
 
-//local VIEWMODEL_AIMPOS
-//local VIEWMODEL_AIMANG
-local VIEWMODEL_FLIP
-//local VIEWMODEL_DEGREEOFZOOM
-local VIEWMODEL_FOVTOSET
-local VIEWMODEL_FOV
-local VIEWMODEL_EDGEFOV
-local VIEWMODEL_MOUSESENSITIVITY
-local VIEWMODEL_ZOOMTIME
-local VIEWMODEL_FCT_STATIONAIMON
 --local FOV_DEFAULT
+local FOCUS_FOVTOSET
+local FOCUS_FOV
+local FOCUS_MOUSESENSITIVITY
+local FOCUS_ZOOMTIME
 
-function sharpeye_focus:InitializeMessyVars()	
-	VIEWMODEL_FOVTOSET     = GetConVarNumber("fov_desired") or 75
-	VIEWMODEL_FOV          = VIEWMODEL_FOVTOSET + sharpeye.GetVar( "sharpeye_detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
-	VIEWMODEL_MOUSESENSITIVITY = 1
-	VIEWMODEL_ZOOMTIME    = 0.5
-	
-	-- Useful out of the whole
-	VIEWMODEL_FLIP         = false
-	
-	self.allowedFromCentreX = sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
-	self.allowedFromCentreY = sharpeye.GetVar( "sharpeye_detail_focus_angley" )
-	self.dispFromEdge       = sharpeye.GetVar( "sharpeye_detail_focus_backing" ) --Default is 5 so 5.
-	self.handShiftX         = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5 --Default is 5 so 2.5.
-	self.smooth             = 1 - sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.9 --Default is 5 so 2.5.
-end
+local FOCUS_LIMITANGLE_CSTBASE = 35
+local FOCUS_LIMITANGLE_X
+local FOCUS_LIMITANGLE_Y
+local FOCUS_BACKING
+local FOCUS_HANDSHIFT
+local FOCUS_SMOOTHWEAPON
+local FOCUS_SMOOTHLOOK
 
-// NOTE TO SELF : CLEANUP THIS SH--
-function sharpeye_focus:EvaluateMessyVars()	
-	/*VIEWMODEL_AIMPOS       = pl:GetActiveWeapon().ViewModelAimPos or Vector(0,0,0)
-	VIEWMODEL_AIMANG       = nil
-	VIEWMODEL_DEGREEOFZOOM = pl:GetActiveWeapon().DegreeOfZoom or 1
-	VIEWMODEL_FOVTOSET     = pl:GetActiveWeapon().FOVToSet or GetConVarNumber("fov_desired") or 75
-	VIEWMODEL_FOV          = pl:GetActiveWeapon().FOVToSet or 90
-	VIEWMODEL_MOUSESENSITIVITY    = pl:GetActiveWeapon().MouseSensitivity or 1
-	VIEWMODEL_ZOOMTIME    = 0.2*/
+function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
+	FOCUS_FOVTOSET     = GetConVarNumber("fov_desired") or 75
+	FOCUS_FOV          = FOCUS_FOVTOSET + sharpeye.GetVar( "sharpeye_detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
+	FOCUS_MOUSESENSITIVITY = 1
+	FOCUS_ZOOMTIME         = 1.0
 	
-	//VIEWMODEL_AIMPOS       = pl:GetActiveWeapon().ViewModelAimPos or Vector(0,0,0)
-	//VIEWMODEL_AIMANG       = nil
-	//VIEWMODEL_DEGREEOFZOOM = pl:GetActiveWeapon().DegreeOfZoom or 0
-	VIEWMODEL_FOVTOSET     = GetConVarNumber("fov_desired") or 75
-	VIEWMODEL_FOV          = VIEWMODEL_FOVTOSET + sharpeye.GetVar( "sharpeye_detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
-	VIEWMODEL_MOUSESENSITIVITY = 1
-	VIEWMODEL_ZOOMTIME    = 1.0
-	
-	-- Useful out of the whole
-	VIEWMODEL_FLIP         = LocalPlayer():GetActiveWeapon().ViewModelFlip or false
-	//VIEWMODEL_FCT_STATIONAIMON    = true //GRD
-	
-	--FOV_DEFAULT = GetConVarNumber("fov_desired") or 75
-	
+	FOCUS_FLIP         = optbNoPlayer and false or LocalPlayer():GetActiveWeapon().ViewModelFlip
 
-	self.allowedFromCentreX = sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
-	self.allowedFromCentreY = sharpeye.GetVar( "sharpeye_detail_focus_angley" )
-	self.dispFromEdge       = sharpeye.GetVar( "sharpeye_detail_focus_backing" ) --Default is 5 so 5.
-	self.handShiftX         = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5 --Default is 5 so 2.5.
-	self.smooth             = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.1)*0.95 --Default is 5 so 2.5.
-	self.smoothlook         = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothlook" ) * 0.1)*0.95 --Default is 5 so 2.5.
+	FOCUS_LIMITANGLE_X = sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
+	FOCUS_LIMITANGLE_Y = sharpeye.GetVar( "sharpeye_detail_focus_angley" )
+	FOCUS_BACKING       = sharpeye.GetVar( "sharpeye_detail_focus_backing" )                -- Default is 5 so 5.
+	FOCUS_HANDSHIFT     = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5       -- Default is 5 so 2.5.
+	FOCUS_SMOOTHWEAPON  = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.1) * 0.95  -- Default is 5 so 2.5.
+	FOCUS_SMOOTHLOOK    = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothlook" ) * 0.1) * 0.95 -- Default is 5 so 2.5.
 	
 end
 
 function sharpeye_focus:IsApproach()
-	return (CurTime() - self.__decotime) < VIEWMODEL_ZOOMTIME
+	return (CurTime() - self.__decotime) < FOCUS_ZOOMTIME
 	
 end
 
 function sharpeye_focus:ApproachRatio()
-	return 1 - (CurTime() - self.__decotime) / VIEWMODEL_ZOOMTIME
+	return 1 - (CurTime() - self.__decotime) / FOCUS_ZOOMTIME
 	
 end
 
 -- BlackOps' Legs addon compatibility test
 function sharpeye_focus:GetBiaisViewAngles()
-	if not sharpeye.IsEnabled()      then return nil end
-	if not sharpeye.IsFocusEnabled() then return nil end
-	if not self:HasFocus()       then return nil end
+	if not sharpeye.IsEnabled() or not sharpeye.IsFocusEnabled() or not self:HasFocus() then
+		return nil
+		
+	end
 	
 	return self.lockedViewAng or nil
 
@@ -169,82 +138,91 @@ end
 function sharpeye_focus:AppendCalcView( view )
 	if not sharpeye.IsFocusEnabled() then return end
 	
-	self:EvaluateMessyVars()
+	self:EvaluateConfigVars()
 	if self:HasFocus() then
-
+		local smoothFactorWeapon = FrameTime() / 0.03 * FOCUS_SMOOTHWEAPON
+		local smoothFactorLook = FrameTime() / 0.03 * FOCUS_SMOOTHLOOK
+		
+		-- Step 1 : Save original angles for viewmodel rotation fix (models that use custom angles)
 		self.__oriAngle.p = view.angles.p
 		self.__oriAngle.y = view.angles.y
 		self.__oriAngle.r = view.angles.r
+		
+		-- We'll use angles as a synonym for view.angles (Reference)
 		local angles = view.angles
+		
+		-- Find the actual view angles : The camera angle we want to reach.
 		local actualViewAng
 		if self.lockedViewAng then
 			self.computeViewAng = self.lockedViewAng - self.computeViewAng + angles
 			actualViewAng = self.computeViewAng
+			
 		else
 			actualViewAng = angles
 			
 		end
 		
-		
-		
-		
-		
 		if self.__bViewWasModified then
-			self.__previousUseAngles.p = actualViewAng.p
-			self.__previousUseAngles.y = actualViewAng.y
-			self.__previousUseAngles.r = actualViewAng.r
+			self.__smoothCameraAngles.p = actualViewAng.p
+			self.__smoothCameraAngles.y = actualViewAng.y
+			self.__smoothCameraAngles.r = actualViewAng.r
 			
-		else
-			local tp,ty,tr = math.AngleDifference(self.__previousUseAngles.p, actualViewAng.p), math.AngleDifference(self.__previousUseAngles.y, actualViewAng.y), math.AngleDifference(self.__previousUseAngles.r, actualViewAng.r)
-		
-			self.__previousUseAngles.p = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.p, actualViewAng.p, tp*FrameTime()/0.03*self.smoothlook))
-			self.__previousUseAngles.y = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.y, actualViewAng.y, ty*FrameTime()/0.03*self.smoothlook))
-			self.__previousUseAngles.r = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.r, actualViewAng.r, tr*FrameTime()/0.03*self.smoothlook))
+		else -- Else, approach it using a smoothing of the delta of the angles smoothed.
+			local tp,ty,tr = math.AngleDifference(self.__smoothCameraAngles.p, actualViewAng.p), math.AngleDifference(self.__smoothCameraAngles.y, actualViewAng.y), math.AngleDifference(self.__smoothCameraAngles.r, actualViewAng.r)
+			
+			-- Normalize the output angles : It causes issues with the viewmodel otherwise.
+			self.__smoothCameraAngles.p = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.p, actualViewAng.p, tp * smoothFactorLook) )
+			self.__smoothCameraAngles.y = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.y, actualViewAng.y, ty * smoothFactorLook) )
+			self.__smoothCameraAngles.r = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.r, actualViewAng.r, tr * smoothFactorLook) )
 			
 		end
-		local usefulViewAng = self.__previousUseAngles
+		
+		
+		
+		-- Now set the camera angles, and set a new logical reference.
+		local usefulViewAng = self.__smoothCameraAngles
 		view.angles = usefulViewAng
 		
+		-- REMEMBER : "angle" variable is a reference to what view.angle referenced BEFORE.
+		--
+		--[[ Using view.angles = usefulViewAng, we ONLY set a nes reference to this table index.
+			That means even though we could think :
+
+			angles = view.angles
+			view.angles = usefulViewAng
+
+			actually:
+			angles != usefulViewAng. Because WE SWAPPED REFERENCES. We are manipulating structural objects.
+		]]
+		--
+		-- That means, don't think we can simplify loads of code because angles seem to be equal to usefulViewAng.
 		
 		
 		
-		
+		-- Since CalcView is executed, the player exists. (which is not the case when the addon is loaded up in locale force mode)
 		local pl = LocalPlayer()
 		
 		self:SimilarizeAngles(angles, usefulViewAng)
 		
-		local fovratio = VIEWMODEL_FOVTOSET / VIEWMODEL_FOV
+		-- Fov is variable from aimsimulation.
+		local fovratio = FOCUS_FOVTOSET / FOCUS_FOV
 		angles = (angles * fovratio) + (usefulViewAng * (1 - fovratio))
 		local diff_p = angles.p
 		local diff_y = angles.y
 		
-		if VIEWMODEL_FLIP then
+		-- CS:S models needs to have YAW flipped.
+		if FOCUS_FLIP then
 			angles.y = usefulViewAng.y + (usefulViewAng.y - angles.y)
 		end
+		
+		-- Rotate for SWEPs with custom angles.
 		if view.vm_angles then
 			angles:RotateAroundAxis( angles:Right(), 	view.vm_angles.p - self.__oriAngle.p )
 			angles:RotateAroundAxis( angles:Up(), 		view.vm_angles.y - self.__oriAngle.y ) 
 			angles:RotateAroundAxis( angles:Forward(),  view.vm_angles.r - self.__oriAngle.r )
 		end
 		
-		--if not self.__bViewWasModified and (CurTime() - self.__bViewWasModifiedTime) > self.__bViewWasModifiedDelay then
-		if not self.__bViewWasModified then
-			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
-			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
-		
-			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*FrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*FrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*FrameTime()/0.03*self.smooth)
-			
-			self.__vm_angles.p = usefulViewAng.p + self.__vm_angles_delta.p
-			self.__vm_angles.y = usefulViewAng.y + self.__vm_angles_delta.y
-			self.__vm_angles.r = usefulViewAng.r + self.__vm_angles_delta.r
-			
-			/*self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, angles.p, math.AngleDifference( self.__vm_angles.p, angles.p )*FrameTime()/0.03 )
-			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, angles.y, math.AngleDifference( self.__vm_angles.y, angles.y )*FrameTime()/0.03 )
-			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, angles.r, math.AngleDifference( self.__vm_angles.r, angles.r )*FrameTime()/0.03 )*/
-
-		else		
+		if self.__bViewWasModified then -- If first frame then Snap.
 			self.__bViewWasModified = false
 			
 			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
@@ -257,98 +235,91 @@ function sharpeye_focus:AppendCalcView( view )
 			self.__vm_angles.y = angles.y
 			self.__vm_angles.r = angles.r
 			
+			self.__raccor_x_quo = 0
+			
+		else -- Else, approach the deltas from model to the centre view using a smoothing of the delta of the remaining angle.
+			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
+			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
+		
+			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp * smoothFactorWeapon )
+			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy * smoothFactorWeapon )
+			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr * smoothFactorWeapon )
+			
+			self.__vm_angles.p = usefulViewAng.p + self.__vm_angles_delta.p
+			self.__vm_angles.y = usefulViewAng.y + self.__vm_angles_delta.y
+			self.__vm_angles.r = usefulViewAng.r + self.__vm_angles_delta.r
+			
 		end
 		
-		view.vm_angles.p = self.__vm_angles.p
+		/*view.vm_angles.p = self.__vm_angles.p 
 		view.vm_angles.y = self.__vm_angles.y
-		view.vm_angles.r = self.__vm_angles.r
+		view.vm_angles.r = self.__vm_angles.r*/
+		view.vm_angles = self.__vm_angles
 		
 		
 		local pos = view.vm_origin or view.origin
 		local Forward 	= angles:Forward()
 		local Right 	= angles:Right()
-		self.__raccor_x = (diff_y - usefulViewAng.y)/self.allowedFromCentreX
-		self.__raccor_y = (diff_p - usefulViewAng.p)/self.allowedFromCentreY
+		--self.__raccor_x = (diff_y - usefulViewAng.y)/FOCUS_LIMITANGLE_X
+		--self.__raccor_y = (diff_p - usefulViewAng.p)/FOCUS_LIMITANGLE_Y
+		self.__raccor_x = math.NormalizeAngle(diff_y - usefulViewAng.y) / FOCUS_LIMITANGLE_CSTBASE
+		self.__raccor_y = math.NormalizeAngle(diff_p - usefulViewAng.p) / FOCUS_LIMITANGLE_CSTBASE
 		
-		self.__diligent = math.Clamp(math.abs(self.__raccor_x) + math.abs(self.__raccor_y), 0, 1)
+		self.__diligent = (self.__raccor_x^2 + self.__raccor_y^2)^0.5
 		
-		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * FrameTime()/0.03*self.smooth
-		pos = pos - Forward * self.__diligent * self.dispFromEdge + Right * self.__raccor_x_quo * self.handShiftX * (VIEWMODEL_FLIP and -1 or 1)
+		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * smoothFactorWeapon
+		pos = pos - Forward * self.__diligent * FOCUS_BACKING + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1)
 		view.vm_origin = pos
 		
 		self.__y_ref = nil
 
 	elseif self:IsApproach() then
 		local ratio = self:ApproachRatio()
-		local aratio = 1 - ratio
+		local ratioSq = ratio ^ 2
+		local spratio = 1 + (1 - ratioSq) * 0.5
+		
+		local smoothFactorWeapon = FrameTime() / 0.03 * FOCUS_SMOOTHWEAPON * spratio
+		local smoothFactorLook = FrameTime() / 0.03 * FOCUS_SMOOTHLOOK * spratio
 		
 		
-		local tp,ty,tr = math.AngleDifference(self.__previousUseAngles.p, view.angles.p), math.AngleDifference(self.__previousUseAngles.y, view.angles.y), math.AngleDifference(self.__previousUseAngles.r, view.angles.r)
-	
-		self.__previousUseAngles.p = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.p, view.angles.p, tp*FrameTime()/0.03*self.smoothlook))
-		self.__previousUseAngles.y = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.y, view.angles.y, ty*FrameTime()/0.03*self.smoothlook))
-		self.__previousUseAngles.r = math.NormalizeAngle(math.ApproachAngle( self.__previousUseAngles.r, view.angles.r, tr*FrameTime()/0.03*self.smoothlook))
+		local angles = view.angles -- Redundant, but we do the analogy with the code before
+		local actualViewAng = view.angles
+		local tp,ty,tr = math.AngleDifference(self.__smoothCameraAngles.p, actualViewAng.p), math.AngleDifference(self.__smoothCameraAngles.y, actualViewAng.y), math.AngleDifference(self.__smoothCameraAngles.r, actualViewAng.r)
 		
-		view.angles.p = self.__previousUseAngles.p
-		view.angles.y = self.__previousUseAngles.y
-		view.angles.r = self.__previousUseAngles.r
+		self.__smoothCameraAngles.p = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.p, actualViewAng.p, tp * smoothFactorLook) )
+		self.__smoothCameraAngles.y = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.y, actualViewAng.y, ty * smoothFactorLook) )
+		self.__smoothCameraAngles.r = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.r, actualViewAng.r, tr * smoothFactorLook) )
 		
+		/*view.angles.p = self.__smoothCameraAngles.p
+		view.angles.y = self.__smoothCameraAngles.y
+		view.angles.r = self.__smoothCameraAngles.r*/
 		
-		if not self.__y_ref then
-			self.__y_ref = view.vm_angles.y
-		end
-		local yAnglePatch = math.AngleDifference( self.__y_ref, view.vm_angles.y )
-		self.__y_ref = view.vm_angles.y
+		local usefulViewAng = self.__smoothCameraAngles
+		view.angles = usefulViewAng
 		
-		--if VIEWMODEL_FLIP then print("Flipped models unsupported") end
 		if view.vm_angles then
-			self.__vm_angles.y = self.__vm_angles.y - yAnglePatch
-			
-			--self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*3 )
-			--self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*3 )
-			--self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*3 )
-			--print(FrameTime())
-			
-			/*self.__vm_angles.p = math.ApproachAngle( self.__vm_angles.p, view.vm_angles.p, aratio*FrameTime()/0.03*7 )
-			self.__vm_angles.y = math.ApproachAngle( self.__vm_angles.y, view.vm_angles.y, aratio*FrameTime()/0.03*7 )
-			self.__vm_angles.r = math.ApproachAngle( self.__vm_angles.r, view.vm_angles.r, aratio*FrameTime()/0.03*7 )*/
-			
-			/*local ap,ay,ar = math.AngleDifference(view.vm_angles.p, self.__vm_angles.p), math.AngleDifference(view.vm_angles.y, self.__vm_angles.y), math.AngleDifference(view.vm_angles.r, self.__vm_angles.r)
-			--local ap,ay,ar = math.AngleDifference(self.__vm_angles.p, view.vm_angles.p), math.AngleDifference(self.__vm_angles.y, view.vm_angles.y), math.AngleDifference(self.__vm_angles.r, view.vm_angles.r)
+			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
 			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
 		
-			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*FrameTime()/0.03*self.smooth*0.5)
-			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*FrameTime()/0.03*self.smooth*0.5)
-			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*FrameTime()/0.03*self.smooth*0.5)
+			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp * smoothFactorWeapon ) * ratioSq
+			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy * smoothFactorWeapon ) * ratioSq
+			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr * smoothFactorWeapon ) * ratioSq
 			
-			self.__vm_angles.p = view.vm_angles.p + self.__vm_angles_delta.p
-			self.__vm_angles.y = view.vm_angles.y + self.__vm_angles_delta.y
-			self.__vm_angles.r = view.vm_angles.r + self.__vm_angles_delta.r
-			
-			view.vm_angles.p = self.__vm_angles.p 
+			self.__vm_angles.p = usefulViewAng.p + self.__vm_angles_delta.p
+			self.__vm_angles.y = usefulViewAng.y + self.__vm_angles_delta.y
+			self.__vm_angles.r = usefulViewAng.r + self.__vm_angles_delta.r
+
+			/*view.vm_angles.p = self.__vm_angles.p 
 			view.vm_angles.y = self.__vm_angles.y
 			view.vm_angles.r = self.__vm_angles.r*/
+			view.vm_angles = self.__vm_angles
 			
-			local ap,ay,ar = math.AngleDifference(view.vm_angles.p, self.__previousUseAngles.p), math.AngleDifference(view.vm_angles.y, self.__previousUseAngles.y), math.AngleDifference(view.vm_angles.r, self.__previousUseAngles.r)
-			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
-		
-			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp*FrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy*FrameTime()/0.03*self.smooth)
-			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr*FrameTime()/0.03*self.smooth)
-			
-			self.__vm_angles.p = self.__previousUseAngles.p + self.__vm_angles_delta.p
-			self.__vm_angles.y = self.__previousUseAngles.y + self.__vm_angles_delta.y
-			self.__vm_angles.r = self.__previousUseAngles.r + self.__vm_angles_delta.r
-
-			view.vm_angles.p = self.__vm_angles.p 
-			view.vm_angles.y = self.__vm_angles.y
-			view.vm_angles.r = self.__vm_angles.r
 		end
 		
 		local pos = view.vm_origin or view.origin
 		local Forward = view.vm_angles:Forward()
 		local Right   = view.vm_angles:Right()
-		view.vm_origin = pos - Forward * self.__diligent * self.dispFromEdge * ratio^2 + Right * self.__raccor_x_quo * self.handShiftX * (VIEWMODEL_FLIP and -1 or 1) * ratio^2
+		view.vm_origin = pos - Forward * self.__diligent * FOCUS_BACKING * ratioSq + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) * ratioSq
 		
 	end
 	
@@ -358,18 +329,14 @@ end
 local lastRealViewAng = false
 
 function sharpeye_focus:CreateMove( cmd )
-	self:EvaluateMessyVars()
+	self:EvaluateConfigVars()
 	if self:HasFocus() then
 		local pl = LocalPlayer()
 	
 		self.computeViewAng = cmd:GetViewAngles()
-	
-		--LocalPlayer():GetActiveWeapon():Thinkie()
 		
-		--LocalPlayer():AddTWRecoil(cmd)
-		
-		// Since this is always TRUE then remove the whole useless block
-		//if VIEWMODEL_FCT_STATIONAIMON then
+		///
+		do -- Enclose Theme
 			if not self.lockedViewAng then
 				self.lockedViewAng = cmd:GetViewAngles()
 				self.lockedViewAngOffset = Angle (0,0,0)
@@ -383,7 +350,7 @@ function sharpeye_focus:CreateMove( cmd )
 			if lastRealViewAng then
 				self:SimilarizeAngles (lastRealViewAng, angles)
 				local diff = angles - lastRealViewAng
-				diff = diff * VIEWMODEL_MOUSESENSITIVITY
+				diff = diff * FOCUS_MOUSESENSITIVITY
 				angles = lastRealViewAng + diff
 			end
 			
@@ -392,53 +359,27 @@ function sharpeye_focus:CreateMove( cmd )
 			--
 			self:SimilarizeAngles (self.lockedViewAng, angles)
 			local ydiff = (angles.y - self.lockedViewAng.y)
-			if ydiff > self.allowedFromCentreX then
-				self.lockedViewAng.y = angles.y - self.allowedFromCentreX
-			elseif ydiff < -self.allowedFromCentreX then
-				self.lockedViewAng.y = angles.y + self.allowedFromCentreX
+			if ydiff > FOCUS_LIMITANGLE_X then
+				self.lockedViewAng.y = angles.y - FOCUS_LIMITANGLE_X
+			elseif ydiff < -FOCUS_LIMITANGLE_X then
+				self.lockedViewAng.y = angles.y + FOCUS_LIMITANGLE_X
 			end
 			local pdiff = (angles.p - self.lockedViewAng.p)
-			if pdiff > self.allowedFromCentreY then
-				self.lockedViewAng.p = angles.p - self.allowedFromCentreY
-			elseif pdiff < -self.allowedFromCentreY then
-				self.lockedViewAng.p = angles.p + self.allowedFromCentreY
+			if pdiff > FOCUS_LIMITANGLE_Y then
+				self.lockedViewAng.p = angles.p - FOCUS_LIMITANGLE_Y
+			elseif pdiff < -FOCUS_LIMITANGLE_Y then
+				self.lockedViewAng.p = angles.p + FOCUS_LIMITANGLE_Y
 			end
 			cmd:SetViewAngles (angles)
-		//	Plus predict the divide by zero if this chunk of code was actually played out
-		/*elseif self.lockedViewAng then
-			--cmd:SetViewAngles (self.lockedViewAng)
-			--self.lockedViewAng = false
-			--lastRealViewAng = false
-			local angles = cmd:GetViewAngles()
 			
-			if lastRealViewAng then
-				self:SimilarizeAngles (lastRealViewAng, angles)
-				local diff = angles - lastRealViewAng
-				--diff = diff * (LocalPlayer():GetActiveWeapon().MouseSensitivity or 1)
-				self.lockedViewAng = self.lockedViewAng + diff
-			end
-			
-			if not returnJourney then
-				self:SimilarizeAngles (self.lockedViewAng, angles)
-				returnJourney = self.lockedViewAng - angles
-				returnJourney = returnJourney * (1/VIEWMODEL_DEGREEOFZOOM)
-			end
-			
-			if VIEWMODEL_DEGREEOFZOOM > 0 then
-				angles = angles + (returnJourney * (FrameTime() / VIEWMODEL_ZOOMTIME))
-				cmd:SetViewAngles (angles)
-				lastRealViewAng = angles
-			else
-				self.lockedViewAng = false
-				lastRealViewAng = false
-				returnJourney = false
-			end
-		end*/
+		end
+		///
+		
 		if self.lockedViewAng and ( self.__anglecompar ~= self.lockedViewAng ) then
 			 self.__bViewWasModifiedTime = CurTime()
 
 		end
-		--LocalPlayer():SetFOV(VIEWMODEL_FOVTOSET or nil)
+		--LocalPlayer():SetFOV(FOCUS_FOVTOSET or nil)
 		
 	else
 		if self.lockedViewAng then
@@ -478,16 +419,14 @@ function sharpeye_focus:Mount()
 	self.__bViewWasModifiedTime  = 0
 	self.__bViewWasModifiedDelay = 0.2
 	
-	self.__previousUseAngles = Angle(0,0,0)
+	self.__smoothCameraAngles = Angle(0,0,0)
 	
-	//TOMAKE
-	self.__fov = 75
 	self.__diligent = 0
 	self.__raccor_x = 0
 	self.__raccor_y = 0
 	self.__raccor_x_quo = 0
 	
-	self:InitializeMessyVars()
+	self:EvaluateConfigVars( true )
 
 	
 end

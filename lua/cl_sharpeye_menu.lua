@@ -296,6 +296,8 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, GeneralBreathingMulti )
 		
 	end
+	sharpeye.Util_AppendSlider( refPanel, "Left-Right pan angles (Extended)",    "sharpeye_detail_focus_anglex", 0, 60, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Up-Down pan angles (Extended)",       "sharpeye_detail_focus_angley", 0, 60, 0 )
 	sharpeye.Util_AppendLabel( refPanel, "SharpeYe::Focus is a derivative from Devenger's work, who is the author of the \"Twitch Weaponry\" SWEP pack in which ::Focus originates from.", 70, true )
 	
 	

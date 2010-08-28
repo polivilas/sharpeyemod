@@ -1,2 +1,2 @@
-1.56
-Added Smooth Look. Changed return algorithm. Attempt to make compatible : BlackOps' "GMod Legs >2.2" ; Wizey's "Dive Roll" ; Spacebuild . MAY break SharpeYe. - http://www.facepunch.com/showthread.php?t=908557
+1.562
+Changed some algorithms. Added Smooth Look. Attempt to make compatible : BlackOps' "GMod Legs >2.2" ; Wizey's "Dive Roll" ; Spacebuild . MAY break SharpeYe. - http://www.facepunch.com/showthread.php?t=908557
