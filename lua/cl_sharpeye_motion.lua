@@ -212,6 +212,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		view.angles.p = view.angles.p + precisionShot * sharpeye.Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod
 		view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod
 		view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod - sharpeye_dat.player_RollChange
+		view.angles.p = math.Clamp(view.angles.p, -89.99, 89.99)
 		
 	elseif ragdollMode then -- Player is dead and has a ragdoll
 
