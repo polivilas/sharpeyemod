@@ -260,13 +260,13 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Left-Right pan angles",    "sharpeye_detail_focus_anglex", 8, 32, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Up-Down pan angles",       "sharpeye_detail_focus_angley", 8, 16, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Weapon backing intensity on edges",  "sharpeye_detail_focus_backing", 0, 10, 0 )
-	sharpeye.Util_AppendSlider( refPanel, "Smoothing",  "sharpeye_detail_focus_smoothing", 0, 10, 0 )
-	sharpeye.Util_AppendSlider( refPanel, "Smooth Look",  "sharpeye_detail_focus_smoothlook", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Viewmodel visual smoothing",  "sharpeye_detail_focus_smoothing", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Camera visual smoothing",  "sharpeye_detail_focus_smoothlook", 0, 10, 0 )
 	
 	sharpeye.Util_AppendSlider( refPanel, "Aim Simulation (Angle approximation)",  "sharpeye_detail_focus_aimsim", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Hand Shift (Weapon X-Perspective)",  "sharpeye_detail_focus_handshiftx", 0, 10, 0 )
 	sharpeye.Util_AppendLabel( refPanel, "Use AS/HS preset :" )
-	--Breathing mode Choice
+	--FocusPreset mode Choice
 	do
 		local GeneralBreathingMulti = vgui.Create( "DMultiChoice" )
 		GeneralBreathingMulti:AddChoice( "Custom" )
@@ -296,8 +296,19 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, GeneralBreathingMulti )
 		
 	end
+	
 	sharpeye.Util_AppendSlider( refPanel, "Left-Right pan angles (Extended)",    "sharpeye_detail_focus_anglex", 0, 60, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Up-Down pan angles (Extended)",       "sharpeye_detail_focus_angley", 0, 60, 0 )
+	--ToggleFocus button
+	do
+		local CDetailsRevertButton = vgui.Create("DButton")
+		CDetailsRevertButton:SetText( "Toggle Focus" )
+		CDetailsRevertButton.DoClick = function()
+			if sharpeye_focus and sharpeye_focus.ToggleFocus then sharpeye_focus:ToggleFocus() end
+		end
+		
+		sharpeye.Util_AppendPanel( refPanel, CDetailsRevertButton )
+	end
 	sharpeye.Util_AppendLabel( refPanel, "SharpeYe::Focus is a derivative from Devenger's work, who is the author of the \"Twitch Weaponry\" SWEP pack in which ::Focus originates from.", 70, true )
 	
 	
