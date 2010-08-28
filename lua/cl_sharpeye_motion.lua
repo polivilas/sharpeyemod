@@ -131,14 +131,20 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	sharpeye_dat.player_oriangle.y = angles.y
 	sharpeye_dat.player_oriangle.r = angles.r
 	
+	-- EKUSUTARA
+	sharpeye_dat.player_view = GAMEMODE:CalcView( ply, origin, angles, fov )
 	local view = sharpeye_dat.player_view
+	
+	
 	// Disabled Compatibility Module
 	/*view.origin = sharpeye_dat.player_view_med.origin
 	view.angles = sharpeye_dat.player_view_med.angles
 	view.fov    = sharpeye_dat.player_view_med.fov*/
-	view.origin = origin
-	view.angles = angles
-	view.fov    = fov
+	
+	-- EKUSUTARA : DONT USE
+	--view.origin = origin
+	--view.angles = angles
+	--view.fov    = fov
 	
 	
 	local ragdollMode = sharpeye.IsFirstPersonDeathEnabled() and (sharpeye.IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and ValidEntity( LocalPlayer():GetRagdollEntity() )
