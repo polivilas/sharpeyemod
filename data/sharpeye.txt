@@ -1,2 +1,2 @@
-1.567
-Fixed issues in which Relax Mode would perform useless pans after CalcView wouldn't have been executed. Added Relax mode (Try it !). Added Smooth Look. Fix : Pitch clamping. - http://www.facepunch.com/showthread.php?t=908557
+1.57
+Added New bobbing options : Shakemod and Stepmod (MACHINIMA MAKERS : Please open the "New Bobbing" menu). Added Relax mode (Try it !). - http://www.facepunch.com/showthread.php?t=908557

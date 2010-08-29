@@ -332,6 +332,15 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendLabel( refPanel, "You can cross \"SharpeYe's Stamina\" and \"Perfected Climb SWEP Fatigue\" (by -[SB]- Spy and Kogitsune) using this.", 40 + 10, true )
 	sharpeye.Util_AppendCheckBox( refPanel, "Cross with Perfected Climb SWEP" , "sharpeye_ext_perfectedclimbswep" )
 	
+	sharpeye.Util_MakeCategory( refPanel, "New bobbing options", 1 )
+	sharpeye.Util_AppendLabel( refPanel, "MACHINIMA MAKERS, PLEASE READ :", 10 + 10, true )
+	sharpeye.Util_AppendLabel( refPanel, "Machinima makers should set these to zero to get their old SharpeYe settings back.", 40, true )
+	sharpeye.Util_AppendLabel( refPanel, "", 10, true )
+	sharpeye.Util_AppendSlider( refPanel, "Stepmod : Elevation Intensity", "sharpeye_detail_stepmodintensity", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Stepmod : Elevation Frequency", "sharpeye_detail_stepmodfrequency", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Shakemod : Intensity",  "sharpeye_detail_shakemodintensity", 0, 10, 0 )
+	sharpeye.Util_AppendSlider( refPanel, "Shakemod : Health influence",  "sharpeye_detail_shakemodhealth", 0, 10, 0 )
+	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Head motion not working ? [DEBUG]", 0)
 	sharpeye.Util_AppendLabel( refPanel, "WARNING : Make sure you are NOT holding the Toolgun or Physgun for testing.\nIf you encounter issues with head motion not working, then an addon is overriding SharpeYe. There is no way to fix it.", 100, true )

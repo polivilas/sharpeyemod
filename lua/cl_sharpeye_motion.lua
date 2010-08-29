@@ -91,13 +91,24 @@ function sharpeye.Detail_GetRunningBobFrequency()
 	-- Default is 5, so 0.2
 	return 0.06 + (sharpeye.GetVarNumber("sharpeye_detail_runningbobfreq") * 0.1) * 0.2
 end
-
-function sharpeye.Detail_GetSlightDistorsionIntensity()
-	return 1
+function sharpeye.Detail_GetStepmodFrequency()
+	-- Default is 5, so 1
+	return 0.5 + 0.5 * sharpeye.GetVarNumber("sharpeye_detail_stepmodfrequency") * 0.1
 end
 
-function sharpeye.Detail_GetRunningDistorsionIntensity()
-	return 1
+function sharpeye.Detail_GetStepmodIntensity()
+	-- Default is 5, so 10
+	return 20 * sharpeye.GetVarNumber("sharpeye_detail_stepmodintensity") * 0.1
+end
+
+function sharpeye.Detail_GetShakemodIntensity()
+	-- Default is 5, so 0.1
+	return 0.2 * sharpeye.GetVarNumber("sharpeye_detail_shakemodintensity") * 0.1
+end
+
+function sharpeye.Detail_GetShakemodHealthMod()
+	-- Default is 5, so 6
+	return 12 * sharpeye.GetVarNumber("sharpeye_detail_shakemodhealth") * 0.1
 end
 
 function sharpeye.Detail_GetPermablurAmount()
@@ -183,11 +194,14 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		local distMod  = (1 + fStamina * 7 * ( 2 + clampedSpeedCustom ) / 3) * sharpeye.Detail_GetMasterMod()
 		local breatheMod  = (1 + fStamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2)
 		
+		--Step algo
+		local stepMod = sharpeye.Detail_GetStepmodIntensity() * clampedSpeedCustom * math.abs( math.sin( CurTime() * 2 + shiftMod * sharpeye.Detail_GetStepmodFrequency() ) )
+		
 		sharpeye_dat.player_TimeShift = shiftMod
 		
 		view.origin.x = view.origin.x + sharpeye.Modulation(27, 1, shiftMod) * distMod
 		view.origin.y = view.origin.y + sharpeye.Modulation(16, 1, shiftMod) * distMod
-		view.origin.z = view.origin.z + sharpeye.Modulation(7 , 1, shiftMod) * distMod
+		view.origin.z = view.origin.z + sharpeye.Modulation(7 , 1, shiftMod) * distMod + stepMod
 		
 		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence * 0.90 * correction
 		--print(sharpeye_dat.player_PitchInfluence)
@@ -225,8 +239,14 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		
 		local precisionShot = ((math.Clamp(view.fov, 20, 75) - 15) / 60)
 		
-		view.angles.p = view.angles.p + precisionShot * sharpeye.Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod
-		view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod
+		--Distorsion algorithm
+		local healthFactorDecreased = 1 - sharpeye.GetHealthFactor() ^ 2
+		local slightDistorsionAccident = sharpeye.Detail_GetShakemodIntensity() * (2 + (1 - healthFactorDecreased) * sharpeye.Modulation(11, 1, shiftMod) + healthFactorDecreased * sharpeye.Modulation(11, 1 + sharpeye.Detail_GetShakemodHealthMod(), shiftMod)) ^ 2
+		local slightDistorsionAngle = sharpeye.Modulation(24, 1, shiftMod) + CurTime() - sharpeye.Modulation(7, 1, shiftMod) * 4
+		local sD_changeY, sD_changeP = math.cos( slightDistorsionAngle ) * slightDistorsionAccident, math.sin( slightDistorsionAngle ) * slightDistorsionAccident
+		
+		view.angles.p = view.angles.p + precisionShot * sharpeye.Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod + sD_changeP
+		view.angles.y = view.angles.y + sharpeye.Modulation(11, 1, shiftMod) * 0.1 * distMod + sD_changeY
 		view.angles.r = view.angles.r + sharpeye.Modulation(24, 1, shiftMod) * 0.1 * distMod - sharpeye_dat.player_RollChange
 		view.angles.p = math.Clamp(view.angles.p, -89.99, 89.99)
 		

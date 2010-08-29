@@ -376,6 +376,11 @@ function sharpeye.Mount()
 	sharpeye.CreateVar("sharpeye_ext_perfectedclimbswep", "1", true, false)
 	
 	sharpeye.CreateVar("sharpeye_detail_mastermod" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_detail_stepmodintensity" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_detail_stepmodfrequency" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_detail_shakemodintensity" , "5", true, false)
+	sharpeye.CreateVar("sharpeye_detail_shakemodhealth" , "5", true, false)
+	
 	sharpeye.CreateVar("sharpeye_detail_breathebobdist" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_detail_runningbobfreq" , "5", true, false)
 	sharpeye.CreateVar("sharpeye_detail_leaningangle" , "5", true, false)
