@@ -334,7 +334,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	sharpeye.Util_MakeCategory( refPanel, "New bobbing options", 1 )
 	sharpeye.Util_AppendLabel( refPanel, "MACHINIMA MAKERS, PLEASE READ :", 10 + 10, true )
-	sharpeye.Util_AppendLabel( refPanel, "Machinima makers should set these to zero to get their old SharpeYe settings back.", 40, true )
+	sharpeye.Util_AppendLabel( refPanel, "Players can set these options to zero to get their old SharpeYe settings back.", 40, true )
 	sharpeye.Util_AppendLabel( refPanel, "", 10, true )
 	sharpeye.Util_AppendSlider( refPanel, "Stepmod : Elevation Intensity", "sharpeye_detail_stepmodintensity", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Stepmod : Elevation Frequency", "sharpeye_detail_stepmodfrequency", 0, 10, 0 )
