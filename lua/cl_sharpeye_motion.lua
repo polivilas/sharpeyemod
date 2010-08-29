@@ -241,8 +241,11 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		
 		--Distorsion algorithm
 		local healthFactorDecreased = 1 - sharpeye.GetHealthFactor() ^ 2
+		// Please check. In theory, the shake will never aim the center except if intensity is set to 0.
 		local slightDistorsionAccident = sharpeye.Detail_GetShakemodIntensity() * (2 + (1 - healthFactorDecreased) * sharpeye.Modulation(11, 1, shiftMod) + healthFactorDecreased * sharpeye.Modulation(11, 1 + sharpeye.Detail_GetShakemodHealthMod(), shiftMod)) ^ 2
-		local slightDistorsionAngle = sharpeye.Modulation(24, 1, shiftMod) + CurTime() - sharpeye.Modulation(7, 1, shiftMod) * 4
+		// Check neglictible nature of the first sine
+		//local slightDistorsionAngle = sharpeye.Modulation(24, 1, shiftMod) + CurTime() - sharpeye.Modulation(7, 1, shiftMod) * 4
+		local slightDistorsionAngle = CurTime() + sharpeye.Modulation(7, 1, shiftMod) * 4
 		local sD_changeY, sD_changeP = math.cos( slightDistorsionAngle ) * slightDistorsionAccident, math.sin( slightDistorsionAngle ) * slightDistorsionAccident
 		
 		view.angles.p = view.angles.p + precisionShot * sharpeye.Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod + sD_changeP
