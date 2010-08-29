@@ -26,6 +26,10 @@ function sharpeye.UnhookMotion()
 	sharpeye_dat.motion_hooked = false
 end
 
+function sharpeye.IsFirstFrame()
+	return sharpeye_dat.motion_firstframe
+end
+
 function sharpeye.IsFirstPersonDeathEnabled()
 	return (sharpeye.GetVarNumber("sharpeye_opt_firstpersondeath") > 0)
 end
@@ -43,6 +47,11 @@ function sharpeye.IsInThirdPersonMode()
 	--return false
 	--return sharpeye_dat.hasDrawnLocalPlayer
 	--return GAMEMODE:ShouldDrawLocalPlayer() -- LocalPlayer():ShouldDrawLocalPlayer() was undocumented back then
+end
+
+function sharpeye.IsInRagdollMode()
+	return sharpeye.IsFirstPersonDeathEnabled() and (sharpeye.IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and ValidEntity( LocalPlayer():GetRagdollEntity() )
+	
 end
 
 function sharpeye.ShouldMotionDisableInThirdPerson()
@@ -114,9 +123,16 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 	local defaultReturn = nil
 	
-	if not sharpeye.IsEnabled() then return defaultReturn end
-	if not sharpeye.IsMotionEnabled() then return defaultReturn end
+	if not sharpeye.IsEnabled() then
+		sharpeye_dat.motion_firstframe = true
+		return defaultReturn
+	end
+	if not sharpeye.IsMotionEnabled() then
+		sharpeye_dat.motion_firstframe = true
+		return defaultReturn
+	end
 	if not sharpeye.InMachinimaMode() and (sharpeye.IsInVehicle() or sharpeye.ShouldMotionDisableInThirdPerson()) then
+		sharpeye_dat.motion_firstframe = true
 		return defaultReturn
 	end
 	
@@ -155,7 +171,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	--view.fov    = fov
 	
 	
-	local ragdollMode = sharpeye.IsFirstPersonDeathEnabled() and (sharpeye.IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and ValidEntity( LocalPlayer():GetRagdollEntity() )
+	local ragdollMode = sharpeye.IsInRagdollMode()
 	if not sharpeye.ShouldBobbingDisableCompletely() and (sharpeye.InMachinimaMode() or (not sharpeye.IsNoclipping() and not sharpeye.ShouldBobbingDisableWithTools() and not ragdollMode)) then
 		
 		local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
@@ -273,6 +289,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		sharpeye_drops:AppendCalcView( view )
 	end
 	
+	sharpeye_dat.motion_firstframe = false
 	return view
 	
 end

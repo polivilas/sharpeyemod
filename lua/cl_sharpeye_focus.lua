@@ -133,7 +133,7 @@ end
 
 -- BlackOps' Legs addon compatibility test
 function sharpeye_focus:GetBiaisViewAngles()
-	if not sharpeye.IsEnabled() or not sharpeye.IsFocusEnabled() or not self:HasFocus() then
+	if not sharpeye.IsEnabled() or not sharpeye.IsFocusEnabled() or not (self:HasFocus() or sharpeye_focus:IsRelaxEnabled())  then
 		return nil
 		
 	end
@@ -142,10 +142,26 @@ function sharpeye_focus:GetBiaisViewAngles()
 
 end
 
+function sharpeye_focus:GetSmoothedViewAngles()
+	if not sharpeye.IsEnabled() or not sharpeye.IsFocusEnabled() or not (self:HasFocus() or sharpeye_focus:IsRelaxEnabled()) then
+		return nil
+		
+	end
+	
+	return self.__smoothCameraAngles or nil
+
+end
+
 function sharpeye_focus:AppendCalcView( view )
 	if not sharpeye.IsFocusEnabled() then return end
 	
 	self:EvaluateConfigVars()
+	if sharpeye.IsFirstFrame() then print ("y") end
+	if sharpeye_focus:IsRelaxEnabled() and (sharpeye.IsFirstFrame() or not LocalPlayer():Alive() or sharpeye.IsInRagdollMode()) then
+		self.__bRelaxRequireReset = true
+		
+	end
+	
 	if self:HasFocus() or sharpeye_focus:IsRelaxEnabled() then
 		local smoothFactorWeapon = FrameTime() / 0.03 * FOCUS_SMOOTHWEAPON
 		local smoothFactorLook = FrameTime() / 0.03 * FOCUS_SMOOTHLOOK
@@ -169,7 +185,9 @@ function sharpeye_focus:AppendCalcView( view )
 			
 		end
 		
-		if self.__bViewWasModified and not sharpeye_focus:IsRelaxEnabled() then
+		if self.__bRelaxRequireReset or (self.__bViewWasModified and not sharpeye_focus:IsRelaxEnabled()) then
+			self.__bRelaxRequireReset = false
+			
 			self.__smoothCameraAngles.p = actualViewAng.p
 			self.__smoothCameraAngles.y = actualViewAng.y
 			self.__smoothCameraAngles.r = actualViewAng.r
@@ -425,6 +443,7 @@ function sharpeye_focus:Mount()
 	self.__bViewWasModified      = true --True for viewmodel angle initialization
 	self.__bViewWasModifiedTime  = 0
 	self.__bViewWasModifiedDelay = 0.2
+	self.__bRelaxRequireReset      = false --True for viewmodel angle initialization
 	
 	self.__smoothCameraAngles = Angle(0,0,0)
 	
