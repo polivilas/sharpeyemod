@@ -156,7 +156,6 @@ function sharpeye_focus:AppendCalcView( view )
 	if not sharpeye.IsFocusEnabled() then return end
 	
 	self:EvaluateConfigVars()
-	if sharpeye.IsFirstFrame() then print ("y") end
 	if sharpeye_focus:IsRelaxEnabled() and (sharpeye.IsFirstFrame() or not LocalPlayer():Alive() or sharpeye.IsInRagdollMode()) then
 		self.__bRelaxRequireReset = true
 		
