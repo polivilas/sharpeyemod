@@ -195,7 +195,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		local breatheMod  = (1 + fStamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2)
 		
 		--Step algo
-		local stepMod = sharpeye.Detail_GetStepmodIntensity() * clampedSpeedCustom * math.abs( math.sin( CurTime() * 2 + shiftMod * sharpeye.Detail_GetStepmodFrequency() ) )
+		local stepMod = (sharpeye_dat.player_TimeOffGround < 0.5) and (sharpeye.Detail_GetStepmodIntensity() * clampedSpeedCustom * math.abs( math.sin( CurTime() * 2 + shiftMod * sharpeye.Detail_GetStepmodFrequency() ) ) * (1 - sharpeye_dat.player_TimeOffGround * 2)) or 0
 		
 		sharpeye_dat.player_TimeShift = shiftMod
 		
