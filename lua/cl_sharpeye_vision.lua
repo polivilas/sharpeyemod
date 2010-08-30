@@ -161,8 +161,8 @@ function sharpeye.HUDPaint()
 		sharpeye_dat.crosshair.traceLineRes = util.TraceLine( sharpeye_dat.crosshair.traceLineData )
 		
 		sharpeye_dat.crosshair.scrpos = sharpeye_dat.crosshair.traceLineRes.HitPos:ToScreen()
-		sharpeye_dat.crosshair.tg_x = sharpeye_dat.crosshair.scrpos.x
-		sharpeye_dat.crosshair.tg_y = sharpeye_dat.crosshair.scrpos.y
+		sharpeye_dat.crosshair.tg_x = math.Clamp( sharpeye_dat.crosshair.scrpos.x, -ScrW() * 4, ScrW() * 4)
+		sharpeye_dat.crosshair.tg_y = math.Clamp( sharpeye_dat.crosshair.scrpos.y, -ScrH() * 4, ScrH() * 4)
 		
 		if sharpeye_focus:HasFocus() or sharpeye_focus:IsApproach() then
 			local viewModel = LocalPlayer():GetViewModel()
