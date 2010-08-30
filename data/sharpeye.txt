@@ -1,2 +1,2 @@
-1.572
-Added New bobbing options (MACHINIMA MAKERS : Please open the "New Bobbing" menu). Fixed cursor filter, so the crosshair will aim at the positin if you're using a VGUI panel. Added Relax mode. - http://www.facepunch.com/showthread.php?t=908557
+1.573
+ENHANCED DEBUG MODE IN THE MENU =) Added New bobbing options (MACHINIMA MAKERS : Please open the "New Bobbing" menu). Fixed cursor filter, so the crosshair will aim at the positin if you're using a VGUI panel. Added Relax mode. - http://www.facepunch.com/showthread.php?t=908557

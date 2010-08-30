@@ -343,6 +343,238 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	
 	sharpeye.Util_MakeCategory( refPanel, "Head motion not working ? [DEBUG]", 0)
+	
+	
+	-- Dynamic Debugger
+	do
+		local okayColor = Color(0, 255, 0, 255)
+		local overvColor = Color(255, 255, 0, 255)
+		local warnColor = Color(255, 128, 0, 255)
+		local failColor = Color(255, 0, 0, 255)
+		local neutralColor = Color(255, 255, 255, 255)
+		
+		do
+			local label = vgui.Create("DLabel")
+			label:SetSize( refPanel.W_WIDTH, 10 )
+			label:SetContentAlignment( 2 )
+			label.Okay = nil
+			function label:Think()
+				local measureOkay = sharpeye.IsEnabled()
+				if measureOkay ~= self.Okay then
+					if measureOkay then
+						label:SetText("SharpeYe is Enabled. OK")
+						label:SetColor( okayColor )
+						
+					else
+						label:SetText("SharpeYe is Disabled. FAIL")
+						label:SetColor( failColor )
+						
+					end
+					self.Okay = measureOkay
+				
+				end
+			
+			end
+			sharpeye.Util_AppendPanel( refPanel, label )
+		end
+		do
+			local label = vgui.Create("DLabel")
+			label:SetSize( refPanel.W_WIDTH, 10 )
+			label:SetContentAlignment( 2 )
+			label.Okay = nil
+			function label:Think()
+				local measureOkay = sharpeye.IsMotionEnabled()
+				if measureOkay ~= self.Okay then
+					if measureOkay then
+						label:SetText("Motion is Enabled. OK")
+						label:SetColor( okayColor )
+						
+					else
+						label:SetText("Motion is Disabled. FAIL")
+						label:SetColor( failColor )
+						
+					end
+					self.Okay = measureOkay
+				
+				end
+			
+			end
+			sharpeye.Util_AppendPanel( refPanel, label )
+		end
+		do
+			local label = vgui.Create("DLabel")
+			label:SetSize( refPanel.W_WIDTH, 10 )
+			label:SetContentAlignment( 2 )
+			label.Okay = nil
+			function label:Think()
+				local measureOkay = not sharpeye.ShouldBobbingDisableCompletely()
+				if measureOkay ~= self.Okay then
+					if measureOkay then
+						label:SetText("Bobbing is Allowed. OK")
+						label:SetColor( okayColor )
+						
+					else
+						label:SetText("Bobbing is permanently Disabled. WARNING")
+						label:SetColor( warnColor )
+						
+					end
+					self.Okay = measureOkay
+				
+				end
+			
+			end
+			sharpeye.Util_AppendPanel( refPanel, label )
+		end
+		do
+			local label = vgui.Create("DLabel")
+			label:SetSize( refPanel.W_WIDTH, 10 )
+			label:SetContentAlignment( 2 )
+			label.Okay = nil
+			function label:Think()
+				local measureOkay = not sharpeye.ShouldBobbingDisableWithTools()
+				if measureOkay ~= self.Okay then
+					if measureOkay then
+						label:SetText("Bobbing is Allowed (Tool mode). OK")
+						label:SetColor( okayColor )
+						
+					else
+						label:SetText("Bobbing is Disabled with Tools. WARNING")
+						label:SetColor( warnColor )
+						
+					end
+					self.Okay = measureOkay
+				
+				end
+			
+			end
+			sharpeye.Util_AppendPanel( refPanel, label )
+		end
+		do
+			local label = vgui.Create("DLabel")
+			label:SetSize( refPanel.W_WIDTH, 10 )
+			label:SetContentAlignment( 2 )
+			label.Okay = nil
+			function label:Think()
+				local measureOkay = math.abs( sharpeye.Detail_GetMasterMod() ) > 0.6
+				if measureOkay ~= self.Okay then
+					if measureOkay then
+						label:SetText("Master Scale is set to a noticeable value. OK")
+						label:SetColor( okayColor )
+						
+					else
+						label:SetText("Master Scale is set to a Low value. WARNING")
+						label:SetColor( warnColor )
+						
+					end
+					self.Okay = measureOkay
+				
+				end
+			
+			end
+			sharpeye.Util_AppendPanel( refPanel, label )
+		end
+		do
+			local label = vgui.Create("DLabel")
+			label:SetSize( refPanel.W_WIDTH, 10 )
+			label:SetContentAlignment( 2 )
+			label.Okay = nil
+			function label:Think()
+				local measureOkay = not sharpeye.InMachinimaMode()
+				if measureOkay ~= self.Okay then
+					if measureOkay then
+						label:SetText("Machinima Mode is Disabled. NORMAL MODE")
+						label:SetColor( okayColor )
+						
+					else
+						label:SetText("Machinima Mode is Enabled. OVERRIDE MODE")
+						label:SetColor( overvColor )
+						
+					end
+					self.Okay = measureOkay
+				
+				end
+			
+			end
+			sharpeye.Util_AppendPanel( refPanel, label )
+		end
+		do
+			local label = vgui.Create("DLabel")
+			label:SetSize( refPanel.W_WIDTH, 10 )
+			label:SetContentAlignment( 2 )
+			label.Okay = nil
+			function label:Think()
+				local measureOkay = not sharpeye.ShouldMotionDisableInThirdPerson()
+				if measureOkay ~= self.Okay then
+					if measureOkay then
+						label:SetText("Third Person mode is Undetected. OKAY")
+						label:SetColor( okayColor )
+						
+					else
+						label:SetText("Motion is Disabled in Third Person. FAIL EX OV.")
+						label:SetColor( failColor )
+						
+					end
+					self.Okay = measureOkay
+				
+				end
+			
+			end
+			sharpeye.Util_AppendPanel( refPanel, label )
+		end
+		do
+			local label = vgui.Create("DLabel")
+			label:SetSize( refPanel.W_WIDTH, 10 )
+			label:SetContentAlignment( 2 )
+			label.Okay = nil
+			function label:Think()
+				local measureOkay = not sharpeye.IsInVehicle()
+				if measureOkay ~= self.Okay then
+					if measureOkay then
+						label:SetText("Vehicle mode is Undetected. OKAY")
+						label:SetColor( okayColor )
+						
+					else
+						label:SetText("Vehicle mode is Detected. FAIL EX OV.")
+						label:SetColor( failColor )
+						
+					end
+					self.Okay = measureOkay
+				
+				end
+			
+			end
+			sharpeye.Util_AppendPanel( refPanel, label )
+		end
+		do
+			local label = vgui.Create("DLabel")
+			label:SetSize( refPanel.W_WIDTH, 10 )
+			label:SetContentAlignment( 2 )
+			label.Okay = nil
+			function label:Think()
+				local measureOkay = not sharpeye.IsNoclipping()
+				if measureOkay ~= self.Okay then
+					if measureOkay then
+						label:SetText("Noclip mode is Undetected. OKAY")
+						label:SetColor( okayColor )
+						
+					else
+						label:SetText("Noclip mode is Detected. WARNING EX OV.")
+						label:SetColor( warnColor )
+						
+					end
+					self.Okay = measureOkay
+				
+				end
+			
+			end
+			sharpeye.Util_AppendPanel( refPanel, label )
+		end
+		
+	end
+	
+	
+	
+	
 	sharpeye.Util_AppendLabel( refPanel, "WARNING : Make sure you are NOT holding the Toolgun or Physgun for testing.\nIf you encounter issues with head motion not working, then an addon is overriding SharpeYe. There is no way to fix it.", 100, true )
 	--Report multiline
 	/*
@@ -383,34 +615,57 @@ function sharpeye.BuildMenu( opt_tExpand )
 		local counter = 0
 		local tCalcView = hook.GetTable()["CalcView"]
 		for k,v in pairs( tCalcView ) do
-			if not string.find( k , "sharpeye" ) then
+			--if not string.find( k , "sharpeye" ) then
 				counter = counter + 1
 				local DisablerButton = vgui.Create("DButton")
-				DisablerButton:SetText( "Unhook " .. k )
 				DisablerButton.__IsEnabled = true
 				DisablerButton.__Keyword = k
 				DisablerButton.__Reference = v
-				DisablerButton.DoClick = function()
-					if DisablerButton.__IsEnabled then
-						DisablerButton.__IsEnabled = false
-						hook.Remove("CalcView", DisablerButton.__Keyword)
-						DisablerButton:SetText( "Hook back " .. k )
+				if not string.find( k , "sharpeye" ) then
+					DisablerButton:SetText( "Unhook " .. k )
+					DisablerButton.DoClick = function()
+						if DisablerButton.__IsEnabled then
+							DisablerButton.__IsEnabled = false
+							hook.Remove("CalcView", DisablerButton.__Keyword)
+							DisablerButton:SetText( "Hook back " .. k )
+							
+						else
+							DisablerButton.__IsEnabled = true
+							hook.Add("CalcView", DisablerButton.__Keyword, DisablerButton.__Reference)
+							DisablerButton:SetText( "Unhook " .. k )
 						
-					else
-						DisablerButton.__IsEnabled = true
-						hook.Add("CalcView", DisablerButton.__Keyword, DisablerButton.__Reference)
-						DisablerButton:SetText( "Unhook " .. k )
-					
+						end
+						--DisablerButton:SetDisabled( true )
 					end
-					--DisablerButton:SetDisabled( true )
+					
+				else
+					DisablerButton:SetText( "<--" .. k .. "-->" )
+					DisablerButton.DoClick = function() return nil end
+				
 				end
 				
 				sharpeye.Util_AppendPanel( refPanel, DisablerButton )
-			end
+			--end
 		end
 		if counter == 0 then
 			sharpeye.Util_AppendLabel( refPanel, "<No hooks to display.>" )
 		end
+	end
+	do
+		local DevtMultiline = vgui.Create("DTextEntry")
+		DevtMultiline:SetMultiline( true )
+		do
+			local myText = "REF :: "
+			for k,v in pairs( hook.GetTable()["CalcView"] ) do
+				myText = myText .. tostring(k) .. " >> "
+			end
+			DevtMultiline:SetText( myText )
+		end
+		DevtMultiline:SetEditable( false )
+		DevtMultiline:SetSize( refPanel.W_WIDTH, 100 )
+		
+		sharpeye.Util_AppendPanel( refPanel, DevtMultiline )
+		
 	end
 	
 	sharpeye.Util_MakeCategory( refPanel, "Crosshair", 0 )
