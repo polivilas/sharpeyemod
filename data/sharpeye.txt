@@ -1,2 +1,2 @@
-1.571
-Added New bobbing options : Shakemod and Stepmod (MACHINIMA MAKERS : Please open the "New Bobbing" menu). Added Relax mode (Try it !). - http://www.facepunch.com/showthread.php?t=908557
+1.572
+Added New bobbing options (MACHINIMA MAKERS : Please open the "New Bobbing" menu). Fixed cursor filter, so the crosshair will aim at the positin if you're using a VGUI panel. Added Relax mode. - http://www.facepunch.com/showthread.php?t=908557

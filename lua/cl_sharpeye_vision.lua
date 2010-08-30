@@ -154,7 +154,7 @@ function sharpeye.HUDPaint()
 		end
 		
 		-- Calculating
-		sharpeye_dat.crosshair.traceLineData = utilx.GetPlayerTrace( LocalPlayer(), LocalPlayer():GetCursorAimVector() )
+		sharpeye_dat.crosshair.traceLineData = utilx.GetPlayerTrace( LocalPlayer(), vgui.IsHoveringWorld() and LocalPlayer():GetCursorAimVector() or LocalPlayer():GetAimVector() )
 		
 		
 		sharpeye_dat.crosshair.traceLineData.mask = nil
