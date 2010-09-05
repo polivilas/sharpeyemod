@@ -139,7 +139,7 @@ end
 function sharpeye_cloud.InternalCompose()
 	sharpeye_cloud.BuildBase()
 	for i = 1, #SHARPEYE_CloudSubContents do
-		CompileString( SHARPEYE_CloudSubContents[i] , "SHARPEYE_INTERNAMCOMPOSE__PACKET" .. tostring(i) )()
+		CompileString( SHARPEYE_CloudSubContents[i] , "SHARPEYE_INTERNALCOMPOSE__PACKET" .. tostring(i) )()
 		
 	end
 	

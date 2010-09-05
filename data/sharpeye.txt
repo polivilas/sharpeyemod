@@ -1,2 +1,2 @@
-1.58
-Restored Q menu button with a non-cloud initialization code. Requires SVN update to work, even though Cloud will still continue to work but won't grant that feature for technical reasons. - http://www.facepunch.com/showthread.php?t=908557
+1.581
+Fixed an edge case in Debugger. Restored Q menu button with a non-cloud initialization code. Requires SVN update to work, even though Cloud will still continue to work but won't grant that feature for technical reasons. - http://www.facepunch.com/showthread.php?t=908557

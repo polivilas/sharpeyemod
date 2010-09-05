@@ -613,7 +613,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	--Disabler
 	do
 		local counter = 0
-		local tCalcView = hook.GetTable()["CalcView"]
+		local tCalcView = hook.GetTable()["CalcView"] or {}
 		for k,v in pairs( tCalcView ) do
 			--if not string.find( k , "sharpeye" ) then
 				counter = counter + 1
