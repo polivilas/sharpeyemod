@@ -847,7 +847,7 @@ function sharpeye.MountMenu()
 	concommand.Add( "sharpeye_call_menu", sharpeye.ShowMenuNoOverride )
 	concommand.Add( "+sharpeye_menu", sharpeye.ShowMenu )
 	concommand.Add( "-sharpeye_menu", sharpeye.HideMenu )
-	hook.Add( "PopulateToolMenu", "AddSharpeYePanel", sharpeye.AddPanel )
+	--hook.Add( "PopulateToolMenu", "AddSharpeYePanel", sharpeye.AddPanel )
 end
 
 function sharpeye.UnmountMenu()
@@ -857,7 +857,7 @@ function sharpeye.UnmountMenu()
 	concommand.Remove( "sharpeye_menu" )
 	concommand.Remove( "+sharpeye_menu" )
 	concommand.Remove( "-sharpeye_menu" )
-	hook.Remove( "PopulateToolMenu", "AddSharpeYePanel" )
+	--hook.Remove( "PopulateToolMenu", "AddSharpeYePanel" )
 end
 
 /////////////////////////////////////////////////////////////////////////

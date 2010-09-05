@@ -26,6 +26,9 @@ if (CLIENT or SinglePlayer()) then
 	
 	include("cl_sharpeye_cloudloader.lua")
 	include("cl_sharpeye_version.lua")
+	include("cl_sharpeye_preforce.lua")
+	
+	sharpeye_InitLoad()
 	
 	--sharpeye = {}
 	--sharpeye_dat = {}

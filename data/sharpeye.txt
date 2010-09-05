@@ -1,2 +1,2 @@
-1.573
-ENHANCED DEBUG MODE IN THE MENU =) Added New bobbing options (MACHINIMA MAKERS : Please open the "New Bobbing" menu). Fixed cursor filter, so the crosshair will aim at the positin if you're using a VGUI panel. Added Relax mode. - http://www.facepunch.com/showthread.php?t=908557
+1.58
+Restored Q menu button with a non-cloud initialization code. Requires SVN update to work, even though Cloud will still continue to work but won't grant that feature for technical reasons. - http://www.facepunch.com/showthread.php?t=908557
