@@ -1,6 +1,10 @@
+1.59
+Added new Changelog and update reminder.
 1.582
 Changed Stepmod frequency basises.
 1.581
 Restored Q menu button with a non-cloud initialization code.
 &
 Requires SVN update to work, even though Cloud will still continue to work but won't grant that feature for technical reasons.
+1.5
+Added Focus and Relax mode.

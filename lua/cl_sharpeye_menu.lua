@@ -9,6 +9,8 @@
 
 include( 'CtrlColor.lua' )
 
+local SHARPEYE_PRESET_LOC = "sharpeye"
+
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 //// DERMA PANEL .
@@ -74,7 +76,30 @@ function sharpeye.Util_AppendSlider( myPanel, sText, sCvar, fMin, fMax, iDecimal
 	sharpeye.Util_AppendPanel( myPanel, slider )
 end
 
-function sharpeye.Util_MakeFrame( width, height )
+function sharpeye.Util_AppendPreset( myPanel, sFolder, tCvars, opttOptions )
+	local ctrl = vgui.Create( "ControlPresets", self )
+	
+	ctrl:SetPreset( sFolder )
+	
+	if ( opttOptions ) then
+		for k, v in pairs( opttOptions ) do
+			if ( k != "id" ) then
+				ctrl:AddOption( k, v )
+			end
+		end
+	end
+	
+	if ( tCvars ) then
+		for k, v in pairs( tCvars ) do
+			ctrl:AddConVar( v )
+		end
+	end
+	
+	sharpeye.Util_AppendPanel( myPanel, ctrl )
+	
+end
+
+function sharpeye.Util_MakeFrame( width, height, optsTitleAppend )
 	local myPanel = vgui.Create( "DFrame" )
 	local border = 4
 	
@@ -83,7 +108,7 @@ function sharpeye.Util_MakeFrame( width, height )
 	
 	myPanel:SetPos( ScrW() * 0.5 - width * 0.5 , ScrH() * 0.5 - height * 0.5 )
 	myPanel:SetSize( width, height )
-	myPanel:SetTitle( SHARPEYE_NAME .. (sharpeye_internal.IsUsingCloud and sharpeye_internal.IsUsingCloud() and " over Cloud" or "" ) )
+	myPanel:SetTitle( SHARPEYE_NAME .. (sharpeye_internal.IsUsingCloud and sharpeye_internal.IsUsingCloud() and " over Cloud" or "" ) .. (optsTitleAppend or "" ) )
 	myPanel:SetVisible( false )
 	myPanel:SetDraggable( true )
 	myPanel:ShowCloseButton( true )
@@ -197,16 +222,12 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, GeneralBreathingMulti )
 		
 	end
+	
 	--Helper label
 	do
 		local GeneralTextLabelMessage = "The command \"sharpeye_menu\" calls this menu.\n"
-		if bCanGetVersion and not (MY_VERSION and ONLINE_VERSION and (MY_VERSION < ONLINE_VERSION)) then
-			GeneralTextLabelMessage = GeneralTextLabelMessage .. "Example : To assign " .. SHARPEYE_NAME .. " menu to F10, type in the console :"
-			
-		else
-			GeneralTextLabelMessage = GeneralTextLabelMessage .. "Your version is "..MY_VERSION.." and the updated one is "..ONLINE_VERSION.." ! You should update !"
-			
-		end
+		GeneralTextLabelMessage = GeneralTextLabelMessage .. "Example : To assign " .. SHARPEYE_NAME .. " menu to F10, type in the console :"
+		
 		sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 50, true )
 		
 	end
@@ -214,26 +235,99 @@ function sharpeye.BuildMenu( opt_tExpand )
 	--Helper multiline
 	do
 		local GeneralCommandLabel = vgui.Create("DTextEntry")
-		local hasUpdate = (MY_VERSION and ONLINE_VERSION and (MY_VERSION < ONLINE_VERSION) and DOWNLOAD_LINK)
-		
-		if not hasUpdate then
-			GeneralCommandLabel:SetText( "bind \"F10\" \"sharpeye_menu\"" )
-			
-		else
-			GeneralCommandLabel:SetText( DOWNLOAD_LINK )
-			
-		end
+		GeneralCommandLabel:SetText( "bind \"F10\" \"sharpeye_menu\"" )
 		GeneralCommandLabel:SetEditable( false )
-		if hasUpdate then
-			GeneralCommandLabel:SetMultiline( true )
-			GeneralCommandLabel:SetSize( refPanel.W_WIDTH, 60 )
-		end
 
 		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
 		
 	end
 	
 	
+	--Update label
+	do
+		if bCanGetVersion and (MY_VERSION and ONLINE_VERSION and (MY_VERSION < ONLINE_VERSION)) then
+			GeneralTextLabelMessage = "Your version is "..MY_VERSION.." and the updated one is "..ONLINE_VERSION.." ! You should update !"
+			sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 50, true )
+			
+			if sharpeye_internal.GetReplicate then
+				local CReload = vgui.Create("DButton")
+				CReload:SetText( "Open full Changelog" )
+				CReload.DoClick = sharpeye.ShowChangelog
+				sharpeye.Util_AppendPanel( refPanel, CReload )
+				
+				sharpeye.Util_AppendLabel( refPanel, "" )
+				
+				if ONLINE_VERSION and ONLINE_VERSION ~= -1 then
+					local myVer = MY_VERSION or 0
+					
+					local contents = sharpeye_internal.GetReplicate() or ( tostring( MY_VERSION or 0 ) .. "\n<Nothing to show>" )
+					local split = string.Explode( "\n", contents )
+					if (#split % 2) == 0 then
+						local dList = vgui.Create("DListView")
+						dList:SetMultiSelect( false )
+						dList:SetTall( 150 )
+						dList:AddColumn( "Ver." ):SetMaxWidth( 45 ) -- Add column
+						dList:AddColumn( "Log" )
+						
+						local gotMyVer = false
+						local i = 1
+						while (i <= #split) and not gotMyVer do
+							local iVer = tonumber( split[i] or 0 ) or 0
+							if not gotMyVer and iVer ~= 0 and iVer <= myVer and (split[i+2] ~= "&") then
+								dList:AddLine( "*" .. myVer .. "*", "< Locale version >" )
+								gotMyVer = true
+								
+							else
+								local myLine = dList:AddLine( (split[i] ~= "&") and split[i] or "", split[i+1] or "" )
+								myLine:SizeToContents()
+								
+							end
+							
+							i = i + 2
+							
+						end
+						
+						sharpeye.Util_AppendPanel( refPanel, dList )
+						
+					end
+					
+				end
+				
+			else
+				local GeneralCommandLabel = vgui.Create("DTextEntry")
+				GeneralCommandLabel:SetText( DOWNLOAD_LINK )
+				GeneralCommandLabel:SetEditable( false )
+				GeneralCommandLabel:SetMultiline( true )
+				GeneralCommandLabel:SetSize( refPanel.W_WIDTH, 60 )
+				sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
+				
+			end
+			
+		end
+		
+	end
+	
+	-- Presets
+	/*
+	sharpeye.Util_MakeCategory( refPanel, "Presets", 0 )
+	sharpeye.Util_AppendLabel( myPanel, "Motion" )
+	sharpeye.Util_AppendPreset( myPanel, SHARPEYE_PRESET_LOC .. "_motion",
+		{
+			"sharpeye_core_motion",
+			"sharpeye_opt_focus",
+			"sharpeye_opt_relax",
+			"sharpeye_opt_firstpersondeath",
+			"sharpeye_opt_firstpersondeath_highspeed",
+			"sharpeye_opt_disablewithtools",
+			"sharpeye_opt_disablebobbing",
+			"sharpeye_opt_disableinthirdperson",
+			"sharpeye_ext_perfectedclimbswep",
+			"sharpeye_detail_mastermod"
+			--UNCOMLPLETE
+		}, opttOptions )
+	*/
+	
+	-- Focus
 	sharpeye.Util_MakeCategory( refPanel, SHARPEYE_FOCUS_NAME, 0 )
 	sharpeye.Util_AppendCheckBox( refPanel, "Allow "..SHARPEYE_FOCUS_NAME , "sharpeye_opt_focus" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Allow Relax mode" , "sharpeye_opt_relax" )
@@ -757,6 +851,16 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, CReload )
 	end
 	
+	-- Changelog Button
+	if sharpeye_internal and sharpeye_internal.GetReplicate then
+		sharpeye.Util_AppendLabel( refPanel, "" )
+		
+		local CChangelog = vgui.Create("DButton")
+		CChangelog:SetText( "Open Changelog" )
+		CChangelog.DoClick = sharpeye.ShowChangelog
+		sharpeye.Util_AppendPanel( refPanel, CChangelog )
+	end
+	
 	sharpeye.Util_ApplyCategories( refPanel )
 end
 
@@ -786,6 +890,95 @@ function sharpeye.DestroyMenu()
 	if sharpeye.DermaPanel then
 		sharpeye.DermaPanel:Remove()
 		sharpeye.DermaPanel = nil
+	end
+end
+
+-----------
+
+function sharpeye.BuildChangelog( opt_tExpand )
+	if sharpeye.ChangelogPanel then sharpeye.ChangelogPanel:Remove() end
+	
+	local bCanGetVersion = sharpeye_internal ~= nil
+	local MY_VERSION, ONLINE_VERSION, DOWNLOAD_LINK
+	local ONLINE_VERSION_READ = -1
+	if bCanGetVersion then
+		MY_VERSION, ONLINE_VERSION, DOWNLOAD_LINK = sharpeye_internal.GetVersionData()
+		
+		if ONLINE_VERSION == -1 then
+			ONLINE_VERSION_READ = "<offline>"
+		else
+			ONLINE_VERSION_READ = tostring( ONLINE_VERSION )
+		end
+		
+	end
+	
+	sharpeye.ChangelogPanel = sharpeye.Util_MakeFrame( ScrW() * 0.95, ScrH() * 0.75, " - Changelog" )
+	local refPanel = sharpeye.ChangelogPanel
+	
+	sharpeye.Util_MakeCategory( refPanel, "Changelog", 1 )
+	
+	if ONLINE_VERSION and ONLINE_VERSION ~= -1 and sharpeye_internal.GetReplicate then
+		local myVer = MY_VERSION or 0
+		
+		local contents = sharpeye_internal.GetReplicate() or ( tostring( MY_VERSION or 0 ) .. "\n<Nothing to show>" )
+		local split = string.Explode( "\n", contents )
+		if (#split % 2) == 0 then
+			local dList = vgui.Create("DListView")
+			dList:SetMultiSelect( false )
+			dList:SetTall( refPanel.W_HEIGHT )
+			dList:AddColumn( "Ver." ):SetMaxWidth( 45 ) -- Add column
+			dList:AddColumn( "Log" )
+			
+			local gotMyVer = false
+			for i=1, #split, 2 do
+				local iVer = tonumber( split[i] or 0 ) or 0
+				if not gotMyVer and iVer ~= 0 and iVer <= myVer and (split[i+2] ~= "&") then
+					dList:AddLine( "*" .. myVer .. "*", "< Locale version >" )
+					gotMyVer = true
+					
+				end
+				local myLine = dList:AddLine( (split[i] ~= "&") and split[i] or "", split[i+1] or "" )
+				myLine:SizeToContents()
+				
+			end
+			
+			sharpeye.Util_AppendPanel( refPanel, dList )
+			--dList:SizeToContents()
+			
+		else
+			sharpeye.Util_AppendLabel( refPanel, "<Changelog data is corrupted>", 70, true )
+			
+		end
+		
+	else
+		sharpeye.Util_AppendLabel( refPanel, "Couldn't load changelog because your Locale version is too old.", 70, true )
+	
+	end
+	
+	sharpeye.Util_ApplyCategories( refPanel )
+
+end
+
+function sharpeye.ShowChangelog( optbKeyboardShouldNotOverride )
+	if not sharpeye.ChangelogPanel then
+		sharpeye.BuildChangelog()
+	end
+	sharpeye.ChangelogPanel:MakePopup()
+	sharpeye.ChangelogPanel:SetKeyboardInputEnabled( not optbKeyboardShouldNotOverride )
+	sharpeye.ChangelogPanel:SetVisible( true )
+end
+
+function sharpeye.HideChangelog()
+	if not sharpeye.ChangelogPanel then
+		return
+	end
+	sharpeye.ChangelogPanel:SetVisible( false )
+end
+
+function sharpeye.DestroyChangelog()
+	if sharpeye.ChangelogPanel then
+		sharpeye.ChangelogPanel:Remove()
+		sharpeye.ChangelogPanel = nil
 	end
 end
 

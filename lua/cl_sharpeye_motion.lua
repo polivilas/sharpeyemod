@@ -93,7 +93,7 @@ function sharpeye.Detail_GetRunningBobFrequency()
 end
 function sharpeye.Detail_GetStepmodFrequency()
 	-- Default is 5, so 1
-	return 0.5 + 0.5 * sharpeye.GetVarNumber("sharpeye_detail_stepmodfrequency") * 0.1
+	return 3 + 2 * (sharpeye.GetVarNumber("sharpeye_detail_stepmodfrequency") - 5) * 0.2
 end
 
 function sharpeye.Detail_GetStepmodIntensity()
