@@ -1,7 +1,7 @@
 "AddonInfo"
 {
 	"name"		"SharpeYe"
-	"version"	"1.4"
+	"version"	"1.6"
 	"up_date"	"13th March 2010"
 	"author_name"	"Hurricaaane"
 	"author_url"	"http://www.youtube.com/user/Hurricaaane"

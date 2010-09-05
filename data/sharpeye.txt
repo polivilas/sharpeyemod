@@ -1,3 +1,7 @@
+1.6
+SharpeYe new garrysmod.org release version.
+&
+Removed grain at the center of Tunnel.
 1.59
 Added new Changelog and update reminder.
 1.582
