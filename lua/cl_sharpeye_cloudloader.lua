@@ -10,7 +10,7 @@
 if sharpeye_cloud then pcall(function() sharpeye_cloud.Unmount() end) end
 
 sharpeye_cloud = {}
-sharpeye_cloudloader_version = 1.0
+sharpeye_cloudloader_version = 1.1
 
 local SHARPEYE_IsUsingCloud = false
 
