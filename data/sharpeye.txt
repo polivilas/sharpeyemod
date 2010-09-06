@@ -7,10 +7,28 @@ Added new Changelog and update reminder.
 1.582
 Changed Stepmod frequency basises.
 1.581
+Fixed an edge case in Debugger.
+1.58
 Restored Q menu button with a non-cloud initialization code.
 &
 Requires SVN update to work, even though Cloud will still continue to work but won't grant that feature for technical reasons.
-1.58
-Added Shakemod and Stepmod new bobbing algorithms.
+1.572
+Enhanced Debug mode in the menu.
+1.572
+Fixed cursor filter, so the crosshair will aim at the position if you're using a VGUI panel.
+1.57
+Added New bobbing options : Shakemod and Stepmod (MACHINIMA MAKERS : Please open the "New Bobbing" menu).
+1.567
+Fixed issues in which Relax Mode would perform useless pans after CalcView wouldn't have been executed.
+1.565
+Added Relax mode.
+1.56
+Added Smooth Look.
+1.553
+Attempt to allow compatibility with Wizey's "Dive Roll". 
+1.552
+Fixed smoothing errors with startmovie-host_framerate.
+1.55
+Made SharpeYe compatible with BlackOps' Legs >2.2 with Focus mode and Stamina.
 1.5
-Added Focus and Relax mode.
+Added Focus mode and Cloud features.
