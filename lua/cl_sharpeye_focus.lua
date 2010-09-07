@@ -115,6 +115,7 @@ function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
 	FOCUS_LIMITANGLE_X = relaxMode and 0 or sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
 	FOCUS_LIMITANGLE_Y = relaxMode and 0 or sharpeye.GetVar( "sharpeye_detail_focus_angley" )
 	FOCUS_BACKING       = sharpeye.GetVar( "sharpeye_detail_focus_backing" )                -- Default is 5 so 5.
+	FOCUS_HANDALTERNATE = (sharpeye.GetVar( "sharpeye_detail_focus_handalternate" ) > 0)
 	FOCUS_HANDSHIFT     = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5       -- Default is 5 so 2.5.
 	FOCUS_SMOOTHWEAPON  = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.1) * 0.95  -- Default is 5 so 2.5.
 	FOCUS_SMOOTHLOOK    = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothlook" ) * 0.1) * 0.95 -- Default is 5 so 2.5.
@@ -162,8 +163,8 @@ function sharpeye_focus:AppendCalcView( view )
 	end
 	
 	if self:HasFocus() or sharpeye_focus:IsRelaxEnabled() then
-		local smoothFactorWeapon = FrameTime() / 0.03 * FOCUS_SMOOTHWEAPON
-		local smoothFactorLook = FrameTime() / 0.03 * FOCUS_SMOOTHLOOK
+		local smoothFactorWeapon = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHWEAPON
+		local smoothFactorLook = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHLOOK
 		
 		-- Step 1 : Save original angles for viewmodel rotation fix (models that use custom angles)
 		self.__oriAngle.p = view.angles.p
@@ -209,7 +210,7 @@ function sharpeye_focus:AppendCalcView( view )
 		
 		-- REMEMBER : "angle" variable is a reference to what view.angle referenced BEFORE.
 		--
-		--[[ Using view.angles = usefulViewAng, we ONLY set a nes reference to this table index.
+		--[[ Using view.angles = usefulViewAng, we ONLY set a new reference to this table index.
 			That means even though we could think :
 
 			angles = view.angles
@@ -260,6 +261,7 @@ function sharpeye_focus:AppendCalcView( view )
 			self.__vm_angles.r = angles.r
 			
 			self.__raccor_x_quo = 0
+			self.__raccor_y_quo = 0
 			
 		else -- Else, approach the deltas from model to the centre view using a smoothing of the delta of the remaining angle.
 			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
@@ -284,6 +286,7 @@ function sharpeye_focus:AppendCalcView( view )
 		local pos = view.vm_origin or view.origin
 		local Forward 	= angles:Forward()
 		local Right 	= angles:Right()
+		local Up 	    = angles:Up()
 		--self.__raccor_x = (diff_y - usefulViewAng.y)/FOCUS_LIMITANGLE_X
 		--self.__raccor_y = (diff_p - usefulViewAng.p)/FOCUS_LIMITANGLE_Y
 		self.__raccor_x = math.NormalizeAngle(diff_y - usefulViewAng.y) / FOCUS_LIMITANGLE_CSTBASE
@@ -291,8 +294,9 @@ function sharpeye_focus:AppendCalcView( view )
 		
 		self.__diligent = (self.__raccor_x^2 + self.__raccor_y^2)^0.5
 		
-		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * smoothFactorWeapon
-		pos = pos - Forward * self.__diligent * FOCUS_BACKING + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1)
+		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * (FOCUS_HANDALTERNATE and smoothFactorWeapon^2 or smoothFactorWeapon)
+		self.__raccor_y_quo = self.__raccor_y_quo + (self.__raccor_y - self.__raccor_y_quo) * (FOCUS_HANDALTERNATE and smoothFactorWeapon^2 or smoothFactorWeapon)
+		pos = pos - Forward * self.__diligent * FOCUS_BACKING + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) + Up * self.__raccor_y_quo * FOCUS_HANDSHIFT
 		view.vm_origin = pos
 		
 		self.__y_ref = nil
@@ -302,8 +306,8 @@ function sharpeye_focus:AppendCalcView( view )
 		local ratioSq = ratio ^ 2
 		local spratio = 1 + (1 - ratioSq) * 0.5
 		
-		local smoothFactorWeapon = FrameTime() / 0.03 * FOCUS_SMOOTHWEAPON * spratio
-		local smoothFactorLook = FrameTime() / 0.03 * FOCUS_SMOOTHLOOK * spratio
+		local smoothFactorWeapon = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHWEAPON * spratio
+		local smoothFactorLook = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHLOOK * spratio
 		
 		
 		local angles = view.angles -- Redundant, but we do the analogy with the code before
@@ -343,7 +347,8 @@ function sharpeye_focus:AppendCalcView( view )
 		local pos = view.vm_origin or view.origin
 		local Forward = view.vm_angles:Forward()
 		local Right   = view.vm_angles:Right()
-		view.vm_origin = pos - Forward * self.__diligent * FOCUS_BACKING * ratioSq + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) * ratioSq
+		local Up 	  = view.vm_angles:Up()
+		view.vm_origin = pos - Forward * self.__diligent * FOCUS_BACKING * ratioSq + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) * ratioSq + Up * self.__raccor_y_quo * FOCUS_HANDSHIFT
 		
 	end
 	
@@ -450,6 +455,7 @@ function sharpeye_focus:Mount()
 	self.__raccor_x = 0
 	self.__raccor_y = 0
 	self.__raccor_x_quo = 0
+	self.__raccor_y_quo = 0
 	
 	self:EvaluateConfigVars( true )
 

@@ -14,6 +14,7 @@ local SHARPEYE_PRESET_LOC = "sharpeye"
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 //// DERMA PANEL .
+do ---- Notepad++ convenience (do end) to hide this
 
 function sharpeye.Util_FrameGetExpandTable( myPanel )
 	local expandTable = {}
@@ -169,6 +170,8 @@ function sharpeye.MenuCall_ReloadFromLocale()
 	
 end
 
+end
+
 function sharpeye.BuildMenu( opt_tExpand )
 	if sharpeye.DermaPanel then sharpeye.DermaPanel:Remove() end
 	
@@ -200,6 +203,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing with Toolgun and Physgun" , "sharpeye_opt_disablewithtools" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Disable bobbing completely" , "sharpeye_opt_disablebobbing" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Allow Relax mode" , "sharpeye_opt_relax" )
+	
 	sharpeye.Util_AppendLabel( refPanel, "Breathing mode :" )
 	--Breathing mode Choice
 	do
@@ -332,26 +336,22 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendCheckBox( refPanel, "Allow "..SHARPEYE_FOCUS_NAME , "sharpeye_opt_focus" )
 	sharpeye.Util_AppendCheckBox( refPanel, "Allow Relax mode" , "sharpeye_opt_relax" )
 	do
-		local GeneralTextLabelMessage = "The binding \"+sharpeye_focus\" allows you to enter "..SHARPEYE_FOCUS_NAME.." mode (with a 'hold key' action).\nExample : To assign it to the key 'v', type in the console :"
-		sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 70, true )
+		sharpeye.Util_AppendLabel( refPanel, "The binding \"+sharpeye_focus\" allows you to enter "..SHARPEYE_FOCUS_NAME.." mode (with a 'hold key' action).\nExample : To assign it to the key 'v', type in the console :", 70, true )
 		
-	end
-	do
 		local GeneralCommandLabel = vgui.Create("DTextEntry")
 		GeneralCommandLabel:SetText( "bind \"v\" \"+sharpeye_focus\"" )
 		GeneralCommandLabel:SetEditable( false )
 		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
-	end
-	do
-		local GeneralTextLabelMessage = "You can also use toggle mode (like the Crossbow zoom) using \"sharpeye_focus_toggle\" command.\nExample : To assign it to the key 'v', type in the console :"
-		sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 70, true )
 		
 	end
 	do
+		sharpeye.Util_AppendLabel( refPanel, "You can also use toggle mode (like the Crossbow zoom) using \"sharpeye_focus_toggle\" command.\nExample : To assign it to the key 'v', type in the console :", 70, true )
+		
 		local GeneralCommandLabel = vgui.Create("DTextEntry")
 		GeneralCommandLabel:SetText( "bind \"v\" \"sharpeye_focus_toggle\"" )
 		GeneralCommandLabel:SetEditable( false )
 		sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
+		
 	end
 	sharpeye.Util_AppendSlider( refPanel, "Left-Right pan angles",    "sharpeye_detail_focus_anglex", 8, 32, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Up-Down pan angles",       "sharpeye_detail_focus_angley", 8, 16, 0 )
@@ -359,9 +359,11 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Viewmodel visual smoothing",  "sharpeye_detail_focus_smoothing", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Camera visual smoothing",  "sharpeye_detail_focus_smoothlook", 0, 10, 0 )
 	
+	sharpeye.Util_AppendCheckBox( refPanel, "Use Handshift alternate algorithm (Experimental)", "sharpeye_detail_focus_handalternate" )
 	sharpeye.Util_AppendSlider( refPanel, "Aim Simulation (Angle approximation)",  "sharpeye_detail_focus_aimsim", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Hand Shift (Weapon X-Perspective)",  "sharpeye_detail_focus_handshiftx", 0, 10, 0 )
 	sharpeye.Util_AppendLabel( refPanel, "Use AS/HS preset :" )
+	
 	--FocusPreset mode Choice
 	do
 		local GeneralBreathingMulti = vgui.Create( "DMultiChoice" )
@@ -373,10 +375,13 @@ function sharpeye.BuildMenu( opt_tExpand )
 			if value == 2 then
 				sharpeye.SetVar( "sharpeye_detail_focus_aimsim" , 5 )
 				sharpeye.SetVar( "sharpeye_detail_focus_handshiftx" , 0 )
+				
 			elseif value == 3 then
 				sharpeye.SetVar( "sharpeye_detail_focus_aimsim" , 8 )
 				sharpeye.SetVar( "sharpeye_detail_focus_handshiftx" , 4 )
+				
 			end
+			
 		end
 		
 		do
@@ -395,6 +400,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	sharpeye.Util_AppendSlider( refPanel, "Left-Right pan angles (Extended)",    "sharpeye_detail_focus_anglex", 0, 60, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Up-Down pan angles (Extended)",       "sharpeye_detail_focus_angley", 0, 60, 0 )
+	
 	--ToggleFocus button
 	do
 		local CDetailsRevertButton = vgui.Create("DButton")
@@ -834,7 +840,20 @@ function sharpeye.BuildMenu( opt_tExpand )
 		sharpeye.Util_AppendPanel( refPanel, CDetailsRevertButton )
 	end
 
-	sharpeye.Util_MakeCategory( refPanel, "Cloud" .. (bCanGetVersion and (" [ v" .. tostring(MY_VERSION) .. " >> v" .. tostring(ONLINE_VERSION_READ) .. " ]") or " Version" ), 0 )
+	if sharpeye_internal.IsUsingCloud then
+		if sharpeye_internal.IsUsingCloud() then
+			sharpeye.Util_MakeCategory( refPanel, "Using Cloud update" .. (bCanGetVersion and (" [ v" .. tostring(MY_VERSION) .. " >> v" .. tostring(ONLINE_VERSION_READ) .. " ]") or " Version" ), 0 )
+		
+		else
+			sharpeye.Util_MakeCategory( refPanel, "Using Locale version" .. (bCanGetVersion and (" [ v" .. tostring(MY_VERSION) .. " >> v" .. tostring(ONLINE_VERSION_READ) .. " ]") or " Version" ), 0 )
+			
+		end
+		
+	else
+		sharpeye.Util_MakeCategory( refPanel, "Cloud" .. (bCanGetVersion and (" [ v" .. tostring(MY_VERSION) .. " >> v" .. tostring(ONLINE_VERSION_READ) .. " ]") or " Version" ), 0 )
+		
+	end
+	
 	-- Reload from Cloud Button
 	do
 		local CReload = vgui.Create("DButton")
@@ -925,19 +944,22 @@ function sharpeye.BuildChangelog( opt_tExpand )
 		if (#split % 2) == 0 then
 			local dList = vgui.Create("DListView")
 			dList:SetMultiSelect( false )
-			dList:SetTall( refPanel.W_HEIGHT )
+			dList:SetTall( refPanel.W_HEIGHT - 40 )
 			dList:AddColumn( "Ver." ):SetMaxWidth( 45 ) -- Add column
+			dList:AddColumn( "Type" ):SetMaxWidth( 60 ) -- Add column
 			dList:AddColumn( "Log" )
 			
 			local gotMyVer = false
 			for i=1, #split, 2 do
 				local iVer = tonumber( split[i] or 0 ) or 0
 				if not gotMyVer and iVer ~= 0 and iVer <= myVer and (split[i+2] ~= "&") then
-					dList:AddLine( "*" .. myVer .. "*", "< Locale version >" )
+					dList:AddLine( "*" .. myVer .. "*", "Locale", "< Currently installed version >" )
 					gotMyVer = true
 					
 				end
-				local myLine = dList:AddLine( (split[i] ~= "&") and split[i] or "", split[i+1] or "" )
+				local nature = tonumber( split[i] )
+				nature = (nature == nil) and "" or math.floor(nature*1000) % 10 > 0 and "Fix" or math.floor(nature*100) % 10 > 0 and "Feature" or "Release"
+				local myLine = dList:AddLine( (split[i] ~= "&") and split[i] or "", tostring(nature), split[i+1] or "" )
 				myLine:SizeToContents()
 				
 			end

@@ -1,3 +1,11 @@
+1.61
+Added Handshift Alternate Algorithm
+&
+Changed Hanfshift main algorighm to add dynamism with Pitch (Y axis).
+&
+Preparing Convar Dump internal code (for configuration backup).
+&
+Attempting Focus fix on smoothing algorithm (spazzing).
 1.6
 SharpeYe new garrysmod.org release version.
 &

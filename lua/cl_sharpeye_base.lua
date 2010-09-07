@@ -84,6 +84,10 @@ function sharpeye.InitializeData()
 	}
 	sharpeye_dat.main_overlay = "sharpeye/sharpeye_tunnel"
 	
+	--sharpeye_dat.materialtables = {
+	// Need to fill this
+	--}
+	
 	--sharpeye_day.player_RunSpeed = 100
 	sharpeye_dat.player_LastRelSpeed = 0
 	sharpeye_dat.player_LastWaterLevel = 0
@@ -339,85 +343,125 @@ function sharpeye.Think( )
 end
 
 function sharpeye.RevertDetails()
-	sharpeye.SetVar("sharpeye_detail_breathebobdist" , "5")
-	sharpeye.SetVar("sharpeye_detail_runningbobfreq" , "5")
-	sharpeye.SetVar("sharpeye_detail_leaningangle" , "5")
-	sharpeye.SetVar("sharpeye_detail_landingangle" , "5")
-	sharpeye.SetVar("sharpeye_basis_runspeed" , "100")
-	sharpeye.SetVar("sharpeye_basis_staminarecover" , "5")
-	sharpeye.SetVar("sharpeye_basis_healthylevel" , "100")
-	sharpeye.SetVar("sharpeye_basis_healthbased" , "5")
-	sharpeye.SetVar("sharpeye_snd_footsteps_vol" , "5")
-	sharpeye.SetVar("sharpeye_snd_breathing_vol" , "5")
-	sharpeye.SetVar("sharpeye_snd_windvelocityincap" , "5")
+	-- Disable this for the moment due to new cvar style.
+	do
+		--nothing
+	end
 	
 end
 
 -- Load
+function sharpeye.Util_AppendCvar( tGroup, sName, oDefault, sType, ... )
+	if not sType then
+		tGroup[sName] = oDefault
+		
+	elseif sType == "color" then
+		tGroup[sName .. "_r"] = oDefault[1]
+		tGroup[sName .. "_g"] = oDefault[2]
+		tGroup[sName .. "_b"] = oDefault[3]
+		tGroup[sName .. "_a"] = oDefault[4]
+		
+	end
+	
+	
+end
+
+function sharpeye.Util_BuildCvars( tGroup, sPrefix )
+	if not sPrefix then return end
+	
+	for sName,oDefault in pairs( tGroup ) do
+		sharpeye.CreateVar( tostring( sPrefix ) .. tostring( sName ), tostring( oDefault ), true, false )
+		
+	end
+	
+end
+
+function sharpeye.Util_RestoreCvars( tGroup, sPrefix )
+	if not sPrefix then return end
+	
+	for sName,oDefault in pairs( tGroup ) do
+		sharpeye.SetVar( tostring( sPrefix ) .. tostring( sName ), tostring( oDefault ) )
+		
+	end
+	
+end
+
 function sharpeye.Mount()
 	print("")
 	print("[ Mounting " .. SHARPEYE_NAME .. " ... ]")
 	
-	sharpeye.CreateVar("sharpeye_core_enable", "1", true, false)
-	sharpeye.CreateVar("sharpeye_core_motion", "1", true, false)
-	sharpeye.CreateVar("sharpeye_core_sound" , "1", true, false)
-	sharpeye.CreateVar("sharpeye_core_crosshair" , "1", true, false)
-	sharpeye.CreateVar("sharpeye_core_overlay" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_opt_focus", "1", true, false)
-	sharpeye.CreateVar("sharpeye_opt_relax", "0", true, false)
-	sharpeye.CreateVar("sharpeye_opt_firstpersondeath" , "1", true, false)
-	sharpeye.CreateVar("sharpeye_opt_firstpersondeath_highspeed" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_opt_breathing" , "1", true, false)
-	sharpeye.CreateVar("sharpeye_opt_disablewithtools" , "1", true, false)
-	sharpeye.CreateVar("sharpeye_opt_disablebobbing" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_opt_machinimamode" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_opt_motionblur", "1", true, false)
-	sharpeye.CreateVar("sharpeye_opt_disableinthirdperson", "1", true, false)
-	sharpeye.CreateVar("sharpeye_ext_perfectedclimbswep", "1", true, false)
+	sharpeye.cvarGroups = {}
+	sharpeye.cvarGroups.core   = {}
+	sharpeye.cvarGroups.opt    = {}
+	sharpeye.cvarGroups.ext    = {}
+	sharpeye.cvarGroups.basis  = {}
+	sharpeye.cvarGroups.detail = {}
+	sharpeye.cvarGroups.xhair  = {}
+	sharpeye.cvarGroups.snd    = {}
 	
-	sharpeye.CreateVar("sharpeye_detail_mastermod" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_stepmodintensity" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_stepmodfrequency" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_shakemodintensity" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_shakemodhealth" , "5", true, false)
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.core, "enable", "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.core, "motion", "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.core, "sound" , "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.core, "crosshair" , "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.core, "overlay" , "0")
 	
-	sharpeye.CreateVar("sharpeye_detail_breathebobdist" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_runningbobfreq" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_leaningangle" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_landingangle" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_focus_anglex" , "20", true, false)
-	sharpeye.CreateVar("sharpeye_detail_focus_angley" , "12", true, false)
-	sharpeye.CreateVar("sharpeye_detail_focus_backing" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_focus_smoothing" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_focus_smoothlook" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_detail_focus_aimsim" , "8", true, false)
-	sharpeye.CreateVar("sharpeye_detail_focus_handshiftx" , "4", true, false)
-	sharpeye.CreateVar("sharpeye_detail_permablur" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_basis_runspeed" , "100", true, false)
-	sharpeye.CreateVar("sharpeye_basis_staminarecover" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_basis_healthylevel" , "100", true, false)
-	sharpeye.CreateVar("sharpeye_basis_healthbased" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_color_r" , "255", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_color_g" , "220", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_color_b" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_color_a" , "255", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_shadcolor_r" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_shadcolor_g" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_shadcolor_b" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_shadcolor_a" , "64", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_staticsize" , "8", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_dynamicsize" , "8", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_shadowsize" , "8", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_focussize" , "8", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_focusshadowsize" , "8", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_focusspin" , "2", true, false)
-	sharpeye.CreateVar("sharpeye_xhair_focusangle" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_snd_footsteps_vol" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_snd_breathing_vol" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_snd_windenable" , "1", true, false)
-	sharpeye.CreateVar("sharpeye_snd_windvelocityincap" , "5", true, false)
-	sharpeye.CreateVar("sharpeye_snd_windonground" , "0", true, false)
-	sharpeye.CreateVar("sharpeye_snd_windonnoclip" , "0", true, false)
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "focus", "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "relax", "0")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "firstpersondeath" , "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "firstpersondeath_highspeed" , "0")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "breathing" , "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "disablewithtools" , "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "disablebobbing" , "0")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "machinimamode" , "0")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "motionblur", "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.opt, "disableinthirdperson", "1")
+	
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.ext, "perfectedclimbswep", "1")
+	
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "mastermod" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "stepmodintensity" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "stepmodfrequency" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "shakemodintensity" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "shakemodhealth" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "breathebobdist" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "runningbobfreq" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "leaningangle" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "landingangle" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "focus_anglex" , "20")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "focus_angley" , "12")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "focus_backing" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "focus_smoothing" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "focus_smoothlook" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "focus_aimsim" , "8")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "focus_handshiftx" , "4")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "focus_handalternate" , "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "permablur" , "0")
+	
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.basis, "runspeed" , "100")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.basis, "staminarecover" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.basis, "healthylevel" , "100")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.basis, "healthbased" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.xhair, "color" , {"255", "220", "0", "255"}, "color")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.xhair, "shadcolor" , {"0", "0", "0", "64"}, "color")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.xhair, "staticsize" , "8")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.xhair, "dynamicsize" , "8")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.xhair, "shadowsize" , "8")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.xhair, "focussize" , "8")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.xhair, "focusshadowsize" , "8")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.xhair, "focusspin" , "2")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.xhair, "focusangle" , "0")
+	
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.snd, "footsteps_vol" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.snd, "breathing_vol" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.snd, "windenable" , "1")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.snd, "windvelocityincap" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.snd, "windonground" , "0")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.snd, "windonnoclip" , "0")
+	
+	for sSubFix,tCvarGroup in pairs( sharpeye.cvarGroups ) do
+		sharpeye.Util_BuildCvars( tCvarGroup, "sharpeye_" .. sSubFix .. "_" )
+		
+	end
 	
 	sharpeye.InitializeData()
 	
