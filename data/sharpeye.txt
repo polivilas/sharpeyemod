@@ -1,7 +1,7 @@
 1.61
-Added Handshift Alternate Algorithm
+Added Handshift Alternate Algorithm.
 &
-Changed Hanfshift main algorighm to add dynamism with Pitch (Y axis).
+Changed Handshift main algorighm to add dynamism with Pitch (Y axis).
 &
 Preparing Convar Dump internal code (for configuration backup).
 &
