@@ -115,7 +115,7 @@ function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
 	FOCUS_LIMITANGLE_X = relaxMode and 0 or sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
 	FOCUS_LIMITANGLE_Y = relaxMode and 0 or sharpeye.GetVar( "sharpeye_detail_focus_angley" )
 	FOCUS_BACKING       = sharpeye.GetVar( "sharpeye_detail_focus_backing" )                -- Default is 5 so 5.
-	FOCUS_HANDALTERNATE = (sharpeye.GetVar( "sharpeye_detail_focus_handalternate" ) > 0)
+	//FOCUS_HANDALTERNATE = (sharpeye.GetVar( "sharpeye_detail_focus_handalternate" ) > 0)
 	FOCUS_HANDSHIFT     = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5       -- Default is 5 so 2.5.
 	FOCUS_SMOOTHWEAPON  = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.1) * 0.95  -- Default is 5 so 2.5.
 	FOCUS_SMOOTHLOOK    = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothlook" ) * 0.1) * 0.95 -- Default is 5 so 2.5.
@@ -180,6 +180,10 @@ function sharpeye_focus:AppendCalcView( view )
 			self.computeViewAng = self.lockedViewAng - self.computeViewAng + angles
 			actualViewAng = self.computeViewAng
 			
+			-- Unshifting
+			local fUnshifting = 0.2 + math.Clamp( 1 - (75 - view.fov) / 30, 0, 1 ) * 0.8
+			actualViewAng = actualViewAng * fUnshifting + angles * (1 - fUnshifting)
+			
 		else
 			actualViewAng = angles
 			
@@ -201,7 +205,6 @@ function sharpeye_focus:AppendCalcView( view )
 			self.__smoothCameraAngles.r = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.r, actualViewAng.r, tr * smoothFactorLook) )
 			
 		end
-		
 		
 		
 		-- Now set the camera angles, and set a new logical reference.
@@ -294,12 +297,10 @@ function sharpeye_focus:AppendCalcView( view )
 		
 		self.__diligent = (self.__raccor_x^2 + self.__raccor_y^2)^0.5
 		
-		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * (FOCUS_HANDALTERNATE and smoothFactorWeapon^2 or smoothFactorWeapon)
-		self.__raccor_y_quo = self.__raccor_y_quo + (self.__raccor_y - self.__raccor_y_quo) * (FOCUS_HANDALTERNATE and smoothFactorWeapon^2 or smoothFactorWeapon)
+		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * smoothFactorWeapon
+		self.__raccor_y_quo = self.__raccor_y_quo + (self.__raccor_y - self.__raccor_y_quo) * smoothFactorWeapon
 		pos = pos - Forward * self.__diligent * FOCUS_BACKING + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) + Up * self.__raccor_y_quo * FOCUS_HANDSHIFT
 		view.vm_origin = pos
-		
-		self.__y_ref = nil
 
 	elseif self:IsApproach() then
 		local ratio = self:ApproachRatio()

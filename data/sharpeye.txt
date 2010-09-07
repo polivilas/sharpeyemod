@@ -1,3 +1,7 @@
+1.611
+Added support for any zooming weapons / suit zoom.
+&
+Suspended Alternate Algorithm.
 1.61
 Added Handshift Alternate Algorithm.
 &

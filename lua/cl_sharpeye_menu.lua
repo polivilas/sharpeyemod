@@ -367,7 +367,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendSlider( refPanel, "Viewmodel visual smoothing",  "sharpeye_detail_focus_smoothing", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Camera visual smoothing",  "sharpeye_detail_focus_smoothlook", 0, 10, 0 )
 	
-	sharpeye.Util_AppendCheckBox( refPanel, "Use Handshift alternate algorithm (Experimental)", "sharpeye_detail_focus_handalternate" )
+	--sharpeye.Util_AppendCheckBox( refPanel, "Use Handshift alternate algorithm (Experimental)", "sharpeye_detail_focus_handalternate" )
 	sharpeye.Util_AppendSlider( refPanel, "Aim Simulation (Angle approximation)",  "sharpeye_detail_focus_aimsim", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Hand Shift (Weapon X-Perspective)",  "sharpeye_detail_focus_handshiftx", 0, 10, 0 )
 	sharpeye.Util_AppendLabel( refPanel, "Use AS/HS preset :" )
