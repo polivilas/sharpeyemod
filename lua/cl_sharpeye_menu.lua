@@ -253,7 +253,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 			GeneralTextLabelMessage = "Your version is "..MY_VERSION.." and the updated one is "..ONLINE_VERSION.." ! You should update !"
 			sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 50, true )
 			
-			if sharpeye_internal.GetReplicate then
+			if false and sharpeye_internal.GetReplicate then
 				local CReload = vgui.Create("DButton")
 				CReload:SetText( "Open full Changelog" )
 				CReload.DoClick = sharpeye.ShowChangelog
@@ -298,12 +298,20 @@ function sharpeye.BuildMenu( opt_tExpand )
 				end
 				
 			else
-				local GeneralCommandLabel = vgui.Create("DTextEntry")
+				local label = vgui.Create("DLabel")
+				label:SetSize( refPanel.W_WIDTH, 40 )
+				label:SetContentAlignment( 4 )
+				label:SetWrap( true )
+				label:SetText("Your SharpeYe Locale version is too old to handle update announcements. Please update your Locale to 1.6 or more (garrysmod.org).")
+				label:SetColor( Color(255, 0, 0) )
+				sharpeye.Util_AppendPanel( refPanel, label )
+			
+				/*local GeneralCommandLabel = vgui.Create("DTextEntry")
 				GeneralCommandLabel:SetText( DOWNLOAD_LINK )
 				GeneralCommandLabel:SetEditable( false )
 				GeneralCommandLabel:SetMultiline( true )
 				GeneralCommandLabel:SetSize( refPanel.W_WIDTH, 60 )
-				sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )
+				sharpeye.Util_AppendPanel( refPanel, GeneralCommandLabel )*/
 				
 			end
 			
