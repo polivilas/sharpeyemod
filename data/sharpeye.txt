@@ -1,5 +1,7 @@
 1.611
-Added support for any zooming weapons / suit zoom.
+Added Focus support for any free-HUD zooming weapons (like Crossbow) and suit zoom, except HUD-scoped weapons.
+&
+(You should not enter Focus mode with a HUD lens scope weapon)
 &
 Suspended Alternate Algorithm.
 1.61
