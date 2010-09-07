@@ -253,7 +253,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 			GeneralTextLabelMessage = "Your version is "..MY_VERSION.." and the updated one is "..ONLINE_VERSION.." ! You should update !"
 			sharpeye.Util_AppendLabel( refPanel, GeneralTextLabelMessage, 50, true )
 			
-			if false and sharpeye_internal.GetReplicate then
+			if sharpeye_internal.GetReplicate then
 				local CReload = vgui.Create("DButton")
 				CReload:SetText( "Open full Changelog" )
 				CReload.DoClick = sharpeye.ShowChangelog
