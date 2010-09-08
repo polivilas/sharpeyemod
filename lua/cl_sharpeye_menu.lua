@@ -444,6 +444,7 @@ function sharpeye.BuildMenu( opt_tExpand )
 	sharpeye.Util_AppendLabel( refPanel, "MACHINIMA MAKERS, PLEASE READ :", 10 + 10, true )
 	sharpeye.Util_AppendLabel( refPanel, "Players can set these options to zero to get their old SharpeYe settings back.", 40, true )
 	sharpeye.Util_AppendLabel( refPanel, "", 10, true )
+	sharpeye.Util_AppendSlider( refPanel, "Crouchmod : Bobbing reduction while crouched", "sharpeye_detail_crouchmod", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Stepmod : Elevation Intensity", "sharpeye_detail_stepmodintensity", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Stepmod : Elevation Frequency", "sharpeye_detail_stepmodfrequency", 0, 10, 0 )
 	sharpeye.Util_AppendSlider( refPanel, "Shakemod : Intensity",  "sharpeye_detail_shakemodintensity", 0, 10, 0 )
@@ -980,8 +981,11 @@ function sharpeye.BuildChangelog( opt_tExpand )
 			
 		end
 		
-	else
+	elseif not sharpeye_internal.GetReplicate then
 		sharpeye.Util_AppendLabel( refPanel, "Couldn't load changelog because your Locale version is too old.", 70, true )
+		
+	else
+		sharpeye.Util_AppendLabel( refPanel, "Couldn't load changelog because SharpeYe failed to pickup information from the Cloud.", 70, true )
 	
 	end
 	

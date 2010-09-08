@@ -98,6 +98,8 @@ function sharpeye.InitializeData()
 	sharpeye_dat.player_StaminaSpeedFactor = 0.01
 	--sharpeye_dat.player_StaminaRecover    = 0.97
 	
+	sharpeye_dat.player_CrouchSmooth = 0
+	
 	sharpeye_dat.player_TimeOffGround = 0
 	sharpeye_dat.player_TimeOffGroundWhenLanding = 0
 	
@@ -105,6 +107,7 @@ function sharpeye.InitializeData()
 	sharpeye_dat.player_RollChange = 0
 	
 	sharpeye_dat.player_TimeShift = 0
+	sharpeye_dat.player_TimeRun = 0
 	
 	sharpeye_dat.bumpsounds_LastTime = 0
 	sharpeye_dat.bumpsounds_delay    = 0.1
@@ -284,25 +287,26 @@ function sharpeye.Think( )
 	end
 	*/
 	
-	if (CurTime() - sharpeye_dat.bumpsounds_LastTime) < sharpeye_dat.bumpsounds_delay then return end
-	sharpeye_dat.bumpsounds_LastTime = CurTime()
-	
 	local ply = LocalPlayer()
 	
 	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
 	local clampedSpeed = (relativeSpeed > 1) and 1 or relativeSpeed
+	
+	local correction = math.Clamp(FrameTime() * 33, 0, 1)
+	
+	-- Crouch
+	sharpeye_dat.player_CrouchSmooth = sharpeye_dat.player_CrouchSmooth + ((ply:Crouching() and 1 or 0) - sharpeye_dat.player_CrouchSmooth) * correction * 0.05
 	
 	-- Stamina
 	if not ply:Alive() then
 		sharpeye_dat.player_Stamina = 0
 		
 	else
-		sharpeye_dat.player_Stamina = sharpeye_dat.player_Stamina * sharpeye.GetBasisStaminaRecover() + sharpeye_dat.player_StaminaSpeedFactor * relativeSpeed
-		sharpeye_dat.player_Stamina = (sharpeye_dat.player_Stamina > 1) and 1 or sharpeye_dat.player_Stamina
+		sharpeye_dat.player_Stamina = sharpeye_dat.player_Stamina + (-1 * sharpeye_dat.player_Stamina * (1 - sharpeye.GetBasisStaminaRecover()) * (1 - relativeSpeed) + sharpeye_dat.player_StaminaSpeedFactor * relativeSpeed) * correction * 0.2
+		sharpeye_dat.player_Stamina = math.Clamp( sharpeye_dat.player_Stamina, 0, 1 )
+		//print( sharpeye_dat.player_Stamina)
 		
 	end
-	
-	--print(sharpeye_dat.player_Stamina)
 	
 	-- Reset previous tick ground landing memoryvar
 	if sharpeye_dat.player_TimeOffGroundWhenLanding > 0 then
@@ -311,16 +315,14 @@ function sharpeye.Think( )
 	
 	--print(sharpeye_dat.player_Stamina)
 	
-	local shouldTriggerStopSound = (sharpeye_dat.player_LastRelSpeed - relativeSpeed) > sharpeye_dat.player_RelStop
-	local shouldTriggerWaterFlop = (sharpeye_dat.player_LastWaterLevel - ply:WaterLevel()) <= -2
-	
 	local isInDeepWater = ply:WaterLevel() >= 3
 	local isInModerateWater = (ply:WaterLevel() == 1) or (ply:WaterLevel() == 2)
 	
 	-- Off ground
 	if not ply:IsOnGround() then
 		if not isInDeepWater then
-			sharpeye_dat.player_TimeOffGround = sharpeye_dat.player_TimeOffGround + sharpeye_dat.bumpsounds_delay
+			sharpeye_dat.player_TimeOffGround = sharpeye_dat.player_TimeOffGround + FrameTime() // TOKEN : SERVER-CLIENT DEPMATCH FRAMETIME
+			
 		else
 			sharpeye_dat.player_TimeOffGround = 0
 		end
@@ -331,14 +333,23 @@ function sharpeye.Think( )
 	
 	end
 	
+	-- Sound Think
+	if sharpeye.SoundThink then
+		--if not ((CurTime() - sharpeye_dat.bumpsounds_LastTime) < sharpeye_dat.bumpsounds_delay) then
+		--	sharpeye_dat.bumpsounds_LastTime = CurTime()
+			
+
+			local shouldTriggerStopSound = (sharpeye_dat.player_LastRelSpeed - relativeSpeed) > sharpeye_dat.player_RelStop
+			local shouldTriggerWaterFlop = (sharpeye_dat.player_LastWaterLevel - ply:WaterLevel()) <= -2
+			sharpeye.SoundThink( shouldTriggerStopSound, shouldTriggerWaterFlop, isInModerateWater, isInDeepWater )
+			
+		--end
+		
+	end
+	
 	-- Data store
 	sharpeye_dat.player_LastRelSpeed = relativeSpeed
 	sharpeye_dat.player_LastWaterLevel = ply:WaterLevel()
-	
-	-- Sound Think
-	if sharpeye.SoundThink then
-		sharpeye.SoundThink( shouldTriggerStopSound, shouldTriggerWaterFlop, isInModerateWater, isInDeepWater )
-	end
 	
 end
 
@@ -419,6 +430,7 @@ function sharpeye.Mount()
 	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.ext, "perfectedclimbswep", "1")
 	
 	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "mastermod" , "5")
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "crouchmod" , "5")
 	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "stepmodintensity" , "5")
 	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "stepmodfrequency" , "5")
 	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.detail, "shakemodintensity" , "5")

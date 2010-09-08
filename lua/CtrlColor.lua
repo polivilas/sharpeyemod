@@ -6,6 +6,8 @@
 //										 
 //
 
+if SERVER then return end
+
 local PANEL = {}
 
 AccessorFunc( PANEL, "m_ConVarR", 				"ConVarR" )

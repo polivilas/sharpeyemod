@@ -68,7 +68,13 @@ end
 
 function sharpeye.Detail_GetMasterMod()
 	-- Default is 5, so 1
-	return (sharpeye.GetVarNumber("sharpeye_detail_mastermod") * 0.1) * 2
+	return (sharpeye.GetVarNumber("sharpeye_detail_mastermod") * 0.1) * 2 * math.Clamp(1 - sharpeye.Detail_GetCrouchMod() * sharpeye_dat.player_CrouchSmooth, 0, 1 )
+end
+
+
+function sharpeye.Detail_GetCrouchMod()
+	-- Default is 5, so 0.5
+	return (sharpeye.GetVarNumber("sharpeye_detail_crouchmod") * 0.1)
 end
 
 function sharpeye.Detail_GetLeaningAngle()
@@ -189,21 +195,23 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
 		
 		local fStamina = sharpeye.GetStamina()
-		local correction = math.Clamp( FrameTime() * 66 , 0 , 1	)
+		local correction = math.Clamp( FrameTime() * 33 , 0 , 1	)
 		local shiftMod = sharpeye_dat.player_TimeShift + fStamina * sharpeye.Detail_GetRunningBobFrequency() * ( 1 + clampedSpeedCustom ) / 2 * correction
+		local runMod = sharpeye_dat.player_TimeRun + 0.05 * ( 1 + clampedSpeedCustom ) / 2 * correction
 		local distMod  = (1 + fStamina * 7 * ( 2 + clampedSpeedCustom ) / 3) * sharpeye.Detail_GetMasterMod()
 		local breatheMod  = (1 + fStamina * sharpeye.Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2)
 		
 		--Step algo
-		local stepMod = (sharpeye_dat.player_TimeOffGround < 0.5) and (sharpeye.Detail_GetStepmodIntensity() * clampedSpeedCustom * math.abs( math.sin( CurTime() * 2 + shiftMod * sharpeye.Detail_GetStepmodFrequency() ) ) * (1 - sharpeye_dat.player_TimeOffGround * 2)) or 0
+		local stepMod = (sharpeye_dat.player_TimeOffGround < 0.5) and (sharpeye.Detail_GetStepmodIntensity() * clampedSpeedCustom * math.abs( math.sin( CurTime() * 2 + runMod * sharpeye.Detail_GetStepmodFrequency() ) ) * (1 - sharpeye_dat.player_TimeOffGround * 2)) or 0
 		
 		sharpeye_dat.player_TimeShift = shiftMod
+		sharpeye_dat.player_TimeRun   = runMod
 		
 		view.origin.x = view.origin.x + sharpeye.Modulation(27, 1, shiftMod) * distMod
 		view.origin.y = view.origin.y + sharpeye.Modulation(16, 1, shiftMod) * distMod
 		view.origin.z = view.origin.z + sharpeye.Modulation(7 , 1, shiftMod) * distMod + stepMod
 		
-		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence * 0.90 * correction
+		sharpeye_dat.player_PitchInfluence = sharpeye_dat.player_PitchInfluence - (sharpeye_dat.player_PitchInfluence * 0.1 * correction)
 		--print(sharpeye_dat.player_PitchInfluence)
 		
 		if sharpeye_dat.player_TimeOffGroundWhenLanding > 0 then

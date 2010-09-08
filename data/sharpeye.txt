@@ -1,3 +1,11 @@
+1.615
+Attempt to fix landing algorithm framerate-dependent bug.
+&
+Changed Stamina algorithm (!).
+&
+Added Crouchmod (experimental, decreases bobbing while crouched).
+&
+Made Stepmod stamina-independant.
 1.611
 Added Focus support for any free-HUD zooming weapons (like Crossbow) and suit zoom, except HUD-scoped weapons.
 &
