@@ -1,3 +1,5 @@
+1.616
+Added Dump Config debug mode.
 1.615
 Attempt to fix landing algorithm framerate-dependent bug.
 &

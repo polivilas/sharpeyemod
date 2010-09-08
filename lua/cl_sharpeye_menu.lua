@@ -848,7 +848,27 @@ function sharpeye.BuildMenu( opt_tExpand )
 		
 		sharpeye.Util_AppendPanel( refPanel, CDetailsRevertButton )
 	end
-
+	
+	sharpeye.Util_MakeCategory( refPanel, "[DEBUG] Config and Presets", 0 )
+	do
+		local CDoStuff = vgui.Create("DButton")
+		CDoStuff:SetText( "Dump config" )
+		CDoStuff.DoClick = sharpeye.UserCall_DumpConfig
+		sharpeye.Util_AppendPanel( refPanel, CDoStuff )
+	end
+	do
+		local CDoStuff = vgui.Create("DButton")
+		CDoStuff:SetText( "Restore config" )
+		CDoStuff.DoClick = sharpeye.RebuildConfig
+		sharpeye.Util_AppendPanel( refPanel, CDoStuff )
+	end
+	do
+		local CDoStuff = vgui.Create("DButton")
+		CDoStuff:SetText( "Amp config" )
+		CDoStuff.DoClick = sharpeye.AmpConfig
+		sharpeye.Util_AppendPanel( refPanel, CDoStuff )
+	end
+	
 	if sharpeye_internal.IsUsingCloud then
 		if sharpeye_internal.IsUsingCloud() then
 			sharpeye.Util_MakeCategory( refPanel, "Using Cloud update" .. (bCanGetVersion and (" [ v" .. tostring(MY_VERSION) .. " >> v" .. tostring(ONLINE_VERSION_READ) .. " ]") or " Version" ), 0 )
@@ -890,6 +910,10 @@ function sharpeye.BuildMenu( opt_tExpand )
 	end
 	
 	sharpeye.Util_ApplyCategories( refPanel )
+	
+	// SHARPEYE DEBUG : REMOVE AFTER EDITING
+	sharpeye_backup.AmpConfig()
+	
 end
 
 
