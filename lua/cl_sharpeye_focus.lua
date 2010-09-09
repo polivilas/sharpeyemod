@@ -162,9 +162,20 @@ function sharpeye_focus:AppendCalcView( view )
 		
 	end
 	
-	if self:HasFocus() or sharpeye_focus:IsRelaxEnabled() then
-		local smoothFactorWeapon = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHWEAPON
-		local smoothFactorLook = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHLOOK
+	if self:HasFocus() or sharpeye_focus:IsRelaxEnabled() or self:IsApproach() then
+		local smoothFactorWeapon = math.Clamp( FrameTime() / 0.03, 0, 1 )
+		local smoothFactorLook = math.Clamp( FrameTime() / 0.03, 0, 1 )
+		
+		if self:IsApproach() then
+			local ratio = self:ApproachRatio() ^ 0.5
+			
+			smoothFactorWeapon = smoothFactorWeapon * (1 - (1 - FOCUS_SMOOTHWEAPON) * ratio)
+			smoothFactorLook   = smoothFactorLook * (1 - (1 - FOCUS_SMOOTHLOOK) * ratio)
+		else
+			smoothFactorWeapon = smoothFactorWeapon * FOCUS_SMOOTHWEAPON
+			smoothFactorLook   = smoothFactorLook * FOCUS_SMOOTHLOOK
+		
+		end
 		
 		-- Step 1 : Save original angles for viewmodel rotation fix (models that use custom angles)
 		self.__oriAngle.p = view.angles.p
@@ -240,12 +251,12 @@ function sharpeye_focus:AppendCalcView( view )
 		
 		-- CS:S models needs to have YAW flipped.
 		if FOCUS_FLIP then
-			angles.y = usefulViewAng.y + (usefulViewAng.y - angles.y)
+			angles.y = 2 * usefulViewAng.y - angles.y
 		end
 		
 		-- Rotate for SWEPs with custom angles.
 		if view.vm_angles then
-			angles:RotateAroundAxis( angles:Right(), 	view.vm_angles.p - self.__oriAngle.p )
+			angles:RotateAroundAxis( angles:Right(), 	- view.vm_angles.p + self.__oriAngle.p )
 			angles:RotateAroundAxis( angles:Up(), 		view.vm_angles.y - self.__oriAngle.y ) 
 			angles:RotateAroundAxis( angles:Forward(),  view.vm_angles.r - self.__oriAngle.r )
 		end
@@ -302,7 +313,7 @@ function sharpeye_focus:AppendCalcView( view )
 		pos = pos - Forward * self.__diligent * FOCUS_BACKING + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) + Up * self.__raccor_y_quo * FOCUS_HANDSHIFT
 		view.vm_origin = pos
 
-	elseif self:IsApproach() then
+	--[[elseif self:IsApproach() then
 		local ratio = self:ApproachRatio()
 		local ratioSq = ratio ^ 2
 		local spratio = 1 + (1 - ratioSq) * 0.5
@@ -310,6 +321,9 @@ function sharpeye_focus:AppendCalcView( view )
 		local smoothFactorWeapon = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHWEAPON * spratio
 		local smoothFactorLook = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHLOOK * spratio
 		
+		self.__oriAngle.p = view.angles.p
+		self.__oriAngle.y = view.angles.y
+		self.__oriAngle.r = view.angles.r
 		
 		local angles = view.angles -- Redundant, but we do the analogy with the code before
 		local actualViewAng = view.angles
@@ -325,6 +339,22 @@ function sharpeye_focus:AppendCalcView( view )
 		
 		local usefulViewAng = self.__smoothCameraAngles
 		view.angles = usefulViewAng
+		
+		-- Fov is variable from aimsimulation.
+		local fovratio = FOCUS_FOVTOSET / FOCUS_FOV
+		angles = (angles * fovratio) + (usefulViewAng * (1 - fovratio))
+		
+		-- CS:S models needs to have YAW flipped.
+		if FOCUS_FLIP then
+			angles.y = 2 * usefulViewAng.y - angles.y
+		end
+		
+		-- Rotate for SWEPs with custom angles.
+		/*if view.vm_angles then
+			angles:RotateAroundAxis( angles:Right(), 	view.vm_angles.p - self.__oriAngle.p )
+			angles:RotateAroundAxis( angles:Up(), 		view.vm_angles.y - self.__oriAngle.y ) 
+			angles:RotateAroundAxis( angles:Forward(),  view.vm_angles.r - self.__oriAngle.r )
+		end*/
 		
 		if view.vm_angles then
 			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
@@ -349,8 +379,8 @@ function sharpeye_focus:AppendCalcView( view )
 		local Forward = view.vm_angles:Forward()
 		local Right   = view.vm_angles:Right()
 		local Up 	  = view.vm_angles:Up()
-		view.vm_origin = pos - Forward * self.__diligent * FOCUS_BACKING * ratioSq + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) * ratioSq + Up * self.__raccor_y_quo * FOCUS_HANDSHIFT
-		
+		view.vm_origin = pos - Forward * self.__diligent * FOCUS_BACKING * ratioSq + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) * ratioSq + Up * self.__raccor_y_quo * FOCUS_HANDSHIFT * ratioSq 
+		]]--
 	end
 	
 end
