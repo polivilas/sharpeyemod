@@ -911,9 +911,6 @@ function sharpeye.BuildMenu( opt_tExpand )
 	
 	sharpeye.Util_ApplyCategories( refPanel )
 	
-	// SHARPEYE DEBUG : REMOVE AFTER EDITING
-	sharpeye_backup.AmpConfig()
-	
 end
 
 

@@ -1,3 +1,5 @@
+1.617
+Removed a piece of code that did silently crash the first attempt to open the menu.
 1.616
 Added Dump Config debug mode.
 1.615
