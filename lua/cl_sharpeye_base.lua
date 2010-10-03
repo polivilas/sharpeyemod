@@ -409,6 +409,7 @@ function sharpeye.Mount()
 	sharpeye.cvarGroups.detail = {}
 	sharpeye.cvarGroups.xhair  = {}
 	sharpeye.cvarGroups.snd    = {}
+	sharpeye.cvarGroups.wiimote    = {}
 	
 	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.core, "enable", "1")
 	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.core, "motion", "1")
@@ -470,6 +471,8 @@ function sharpeye.Mount()
 	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.snd, "windonground" , "0")
 	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.snd, "windonnoclip" , "0")
 	
+	sharpeye.Util_AppendCvar( sharpeye.cvarGroups.wiimote, "enable" , "0")
+	
 	for sSubFix,tCvarGroup in pairs( sharpeye.cvarGroups ) do
 		sharpeye.Util_BuildCvars( tCvarGroup, "sharpeye_" .. sSubFix .. "_" )
 		
@@ -492,6 +495,7 @@ function sharpeye.Mount()
 		hook.Add("HUDPaint", "sharpeye_HUDPaint", sharpeye.HUDPaint)
 		hook.Add("RenderScreenspaceEffects", "sharpeye_RenderScreenspaceEffects", sharpeye.RenderScreenspaceEffects)
 		hook.Add("Initialize", "sharpeye_Initialize", sharpeye.GamemodeInitialize)
+		hook.Add("InputMouseApply", "sharpeye_InputMouseApply", sharpeye.InputMouseApply)
 		concommand.Add( "sharpeye_call_forcesolvecompatibilities", sharpeye.ForceSolveCompatilibityIssues)
 		
 		if sharpeye.MountMenu then
@@ -526,6 +530,7 @@ function sharpeye.Unmount()
 		hook.Remove("HUDPaint", "sharpeye_HUDPaint")
 		hook.Remove("HUDShouldDraw", "sharpeye_HUDShouldDraw")
 		hook.Remove("Initialize", "sharpeye_Initialize")
+		hook.Remove("InputMouseApply", "sharpeye_InputMouseApply")
 		concommand.Remove( "sharpeye_call_forcesolvecompatibilities")
 
 		sharpeye_focus:Unmount()

@@ -8,6 +8,7 @@ table.insert( ADDON_PROP, "cl_sharpeye_focus.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_sound.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_vision.lua" )
 
+table.insert( ADDON_PROP, "cl_sharpeye_wiimote.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_compatibility.lua" )
 --table.insert( ADDON_PROP, "cl_sharpeye_version.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_cvar_custom.lua" )

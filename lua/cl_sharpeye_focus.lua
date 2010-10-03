@@ -74,7 +74,7 @@ function sharpeye_focus:IsRelaxEnabled()
 end
 
 function sharpeye_focus:HasFocus()
-	return self.__hasfocus
+	return self.__hasfocus or sharpeye.IsWiimoteEnabled( )
 	
 end
 
@@ -255,6 +255,9 @@ function sharpeye_focus:AppendCalcView( view )
 		end
 		
 		-- Rotate for SWEPs with custom angles.
+		local Forward 	= angles:Forward()
+		local Right 	= angles:Right()
+		local Up 	    = angles:Up()
 		if view.vm_angles then
 			angles:RotateAroundAxis( angles:Right(), 	- view.vm_angles.p + self.__oriAngle.p )
 			angles:RotateAroundAxis( angles:Up(), 		view.vm_angles.y - self.__oriAngle.y ) 
