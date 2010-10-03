@@ -1,3 +1,5 @@
+1.62
+Added Wiimote support.
 1.618
 Fixed a bug with weapon pitch angle calculation, bug that was especially visible in Mad Cows Holster mode.
 &
