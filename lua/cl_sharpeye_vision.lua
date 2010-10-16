@@ -6,163 +6,163 @@
 //--------------------------------------------//
 // Vision                                     //
 ////////////////////////////////////////////////
+local sharpeye = sharpeye
 
-function sharpeye.IsCrosshairEnabled()
-	return (sharpeye.GetVarNumber("sharpeye_core_crosshair") > 0)
+function sharpeye:IsCrosshairEnabled()
+	return self:GetVar("core_crosshair") > 0
 end
 
-function sharpeye.IsOverlayEnabled()
-	return (sharpeye.GetVarNumber("sharpeye_core_overlay") > 0)
+function sharpeye:IsOverlayEnabled()
+	return self:GetVar("core_overlay") > 0
 end
 
-function sharpeye.HudSmooth( fCurrent, fTarget, fSmooth )
+function sharpeye:HudSmooth( fCurrent, fTarget, fSmooth )
 	return fCurrent + (fTarget - fCurrent) * math.Clamp( fSmooth * FrameTime() * 25 , 0 , 1 )
 end
 
-function sharpeye.SetDrawColorFromVar( sVar )
+function sharpeye:SetDrawColorFromVar( sVar )
 	return surface.SetDrawColor(
-		sharpeye.GetVarNumber(sVar .. "_r"),
-		sharpeye.GetVarNumber(sVar .. "_g"),
-		sharpeye.GetVarNumber(sVar .. "_b"),
-		sharpeye.GetVarNumber(sVar .. "_a")
+		self:GetVarColorVariadic( sVar )
 	)
 end
 
-function sharpeye.GetCrosshairStaticSize()
-	return (sharpeye.GetVarNumber("sharpeye_xhair_staticsize") / 8) * 48
+function sharpeye:GetCrosshairStaticSize()
+	return self:GetVar("xhair_staticsize") / 8 * 48
 end
 
-function sharpeye.GetCrosshairDynamicSize()
-	return (sharpeye.GetVarNumber("sharpeye_xhair_dynamicsize") / 8.0) * 4
+function sharpeye:GetCrosshairDynamicSize()
+	return self:GetVar("xhair_dynamicsize") / 8.0 * 4
 end
 
-function sharpeye.GetCrosshairShadowSize()
-	return (sharpeye.GetVarNumber("sharpeye_xhair_shadowsize") / 8.0) * 8
+function sharpeye:GetCrosshairShadowSize()
+	return self:GetVar("xhair_shadowsize") / 8.0 * 8
 end
 
-function sharpeye.GetCrosshairFocusSize()
-	return (sharpeye.GetVarNumber("sharpeye_xhair_focussize") / 8.0) * 4
+function sharpeye:GetCrosshairFocusSize()
+	return self:GetVar("xhair_focussize") / 8.0 * 4
 end
 
-function sharpeye.GetCrosshairFocusShadowSize()
-	return (sharpeye.GetVarNumber("sharpeye_xhair_focusshadowsize") / 8.0) * 4
+function sharpeye:GetCrosshairFocusShadowSize()
+	return self:GetVar("xhair_focusshadowsize") / 8.0 * 4
 end
 
-function sharpeye.GetCrosshairFocusSpin()
-	return (sharpeye.GetVarNumber("sharpeye_xhair_focusspin") / 4.0) * 0.1
+function sharpeye:GetCrosshairFocusSpin()
+	return self:GetVar("xhair_focusspin") / 4.0 * 0.1
 end
 
-function sharpeye.GetCrosshairFocusAngle()
-	return sharpeye.GetVarNumber("sharpeye_xhair_focusangle") * 11.25
+function sharpeye:GetCrosshairFocusAngle()
+	return self:GetVar("xhair_focusangle") * 11.25
 end
 
 function sharpeye.HUDShouldDraw( sName )
-	if not sharpeye.IsEnabled() then return end
-	if sharpeye.IsCrosshairEnabled() and sName == "CHudCrosshair" then
+	if not sharpeye:IsEnabled() then return end
+	if sharpeye:IsCrosshairEnabled() and sName == "CHudCrosshair" then
 		return false
 	end
 	
 end
 
 function sharpeye.HUDPaint()
-	if not sharpeye.IsEnabled() then return end
+	local self = sharpeye
 	
-	if sharpeye.IsCrosshairEnabled() then
-		if not sharpeye_dat.crosshair then
-			sharpeye_dat.crosshair = {}
-			sharpeye_dat.crosshair.ch_x = ScrW() * 0.5
-			sharpeye_dat.crosshair.ch_y = ScrH() * 0.5
+	if not self:IsEnabled() then return end
+	
+	if self:IsCrosshairEnabled() then
+		if not self.dat.crosshair then
+			self.dat.crosshair = {}
+			self.dat.crosshair.ch_x = ScrW() * 0.5
+			self.dat.crosshair.ch_y = ScrH() * 0.5
 			
-			sharpeye_dat.crosshair.tg_x = ScrW() * 0.5
-			sharpeye_dat.crosshair.tg_y = ScrH() * 0.5
+			self.dat.crosshair.tg_x = ScrW() * 0.5
+			self.dat.crosshair.tg_y = ScrH() * 0.5
 			
-			sharpeye_dat.crosshair.dbv_x = ScrW() * 0.5
-			sharpeye_dat.crosshair.dbv_y = ScrH() * 0.5
+			self.dat.crosshair.dbv_x = ScrW() * 0.5
+			self.dat.crosshair.dbv_y = ScrH() * 0.5
 			
-			sharpeye_dat.crosshair.tdbv_x = ScrW() * 0.5
-			sharpeye_dat.crosshair.tdbv_y = ScrH() * 0.5
+			self.dat.crosshair.tdbv_x = ScrW() * 0.5
+			self.dat.crosshair.tdbv_y = ScrH() * 0.5
 			
-			sharpeye_dat.crosshair.dist = -1
-			sharpeye_dat.crosshair.tdist = -1
+			self.dat.crosshair.dist = -1
+			self.dat.crosshair.tdist = -1
 			
-			sharpeye_dat.crosshair.speed = 0.5
-			--sharpeye_dat.crosshair.focus = 0.1
+			self.dat.crosshair.speed = 0.5
+			--self.dat.crosshair.focus = 0.1
 			
-			--sharpeye_dat.crosshair.staticsize = 48
-			--sharpeye_dat.crosshair.dynamicsize = 48 * 0.07 * 1.2
+			--self.dat.crosshair.staticsize = 48
+			--self.dat.crosshair.dynamicsize = 48 * 0.07 * 1.2
 			
-			sharpeye_dat.crosshair.shape = {}
-			for k,matPath in pairs(sharpeye_dat.crosshairshapes) do
-				sharpeye_dat.crosshair.shape[k] = surface.GetTextureID( matPath )
+			self.dat.crosshair.shape = {}
+			for k,matPath in pairs(self.dat.crosshairshapes) do
+				self.dat.crosshair.shape[k] = surface.GetTextureID( matPath )
 			end
 			
 		end
 		
 		-- Smooth before calculating.
-		sharpeye_dat.crosshair.ch_x = sharpeye.HudSmooth(sharpeye_dat.crosshair.ch_x, sharpeye_dat.crosshair.tg_x, sharpeye_dat.crosshair.speed)
-		sharpeye_dat.crosshair.ch_y = sharpeye.HudSmooth(sharpeye_dat.crosshair.ch_y, sharpeye_dat.crosshair.tg_y, sharpeye_dat.crosshair.speed)
+		self.dat.crosshair.ch_x = self:HudSmooth(self.dat.crosshair.ch_x, self.dat.crosshair.tg_x, self.dat.crosshair.speed)
+		self.dat.crosshair.ch_y = self:HudSmooth(self.dat.crosshair.ch_y, self.dat.crosshair.tg_y, self.dat.crosshair.speed)
 		
-		sharpeye_dat.crosshair.dbv_x = sharpeye.HudSmooth(sharpeye_dat.crosshair.dbv_x, sharpeye_dat.crosshair.tdbv_x, sharpeye_dat.crosshair.speed)
-		sharpeye_dat.crosshair.dbv_y = sharpeye.HudSmooth(sharpeye_dat.crosshair.dbv_y, sharpeye_dat.crosshair.tdbv_y, sharpeye_dat.crosshair.speed)
+		self.dat.crosshair.dbv_x = self:HudSmooth(self.dat.crosshair.dbv_x, self.dat.crosshair.tdbv_x, self.dat.crosshair.speed)
+		self.dat.crosshair.dbv_y = self:HudSmooth(self.dat.crosshair.dbv_y, self.dat.crosshair.tdbv_y, self.dat.crosshair.speed)
 		
-		sharpeye_dat.crosshair.dist = sharpeye.HudSmooth(sharpeye_dat.crosshair.dist, sharpeye_dat.crosshair.tdist, sharpeye_dat.crosshair.speed)
+		self.dat.crosshair.dist = self:HudSmooth(self.dat.crosshair.dist, self.dat.crosshair.tdist, self.dat.crosshair.speed)
 		
 		-- Displaying
-		local staticSize  = sharpeye.GetCrosshairStaticSize()
-		local dynamicSize = sharpeye.GetCrosshairDynamicSize()
-		local shadowSize  = sharpeye.GetCrosshairShadowSize()
-		local focusSize   = sharpeye.GetCrosshairFocusSize()
-		local focusShadowSize   = sharpeye.GetCrosshairFocusShadowSize()
+		local staticSize  = self:GetCrosshairStaticSize()
+		local dynamicSize = self:GetCrosshairDynamicSize()
+		local shadowSize  = self:GetCrosshairShadowSize()
+		local focusSize   = self:GetCrosshairFocusSize()
+		local focusShadowSize   = self:GetCrosshairFocusShadowSize()
 		
 		if staticSize > 0 then
-			sharpeye.SetDrawColorFromVar( "sharpeye_xhair_color" )
-			surface.SetTexture(sharpeye_dat.crosshair.shape[1])
+			self:SetDrawColorFromVar( "xhair_color" )
+			surface.SetTexture(self.dat.crosshair.shape[1])
 			surface.DrawTexturedRectRotated(ScrW() * 0.5, ScrH() * 0.5, staticSize, staticSize, 0)
 		end
 
 		local hasDynamic = (dynamicSize > 0)
 		local hasFocus   = (focusSize > 0)
-		local focusSpin = hasFocus and (((sharpeye_dat.crosshair.dist > 192) and (sharpeye_dat.crosshair.dist - 192) or 0) * sharpeye.GetCrosshairFocusSpin() + sharpeye.GetCrosshairFocusAngle()) or 0
-		if not sharpeye.IsInVehicle() and LocalPlayer():Alive() and (hasDynamic or hasFocus) then
-			local rdist = (1024 - math.Clamp( sharpeye_dat.crosshair.dist, 192, 512 )) * 0.015
-			local speSpell = sharpeye_dat.crosshair.dist < 0 and (1 + sharpeye_dat.crosshair.dist) or 1
+		local focusSpin = hasFocus and (((self.dat.crosshair.dist > 192) and (self.dat.crosshair.dist - 192) or 0) * self:GetCrosshairFocusSpin() + self:GetCrosshairFocusAngle()) or 0
+		if not self:IsInVehicle() and LocalPlayer():Alive() and (hasDynamic or hasFocus) then
+			local rdist = (1024 - math.Clamp( self.dat.crosshair.dist, 192, 512 )) * 0.015
+			local speSpell = self.dat.crosshair.dist < 0 and (1 + self.dat.crosshair.dist) or 1
 			rdist = rdist * speSpell
 			local drawFocus = hasFocus and (rdist > 0)
 			
-			sharpeye.SetDrawColorFromVar( "sharpeye_xhair_shadcolor" )
+			self:SetDrawColorFromVar( "xhair_shadcolor" )
 			if hasDynamic then
-				surface.SetTexture(sharpeye_dat.crosshair.shape[3])
-				surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.ch_x, sharpeye_dat.crosshair.ch_y, shadowSize, shadowSize, 0)
+				surface.SetTexture(self.dat.crosshair.shape[3])
+				surface.DrawTexturedRectRotated(self.dat.crosshair.ch_x, self.dat.crosshair.ch_y, shadowSize, shadowSize, 0)
 			end
 			
 			if drawFocus then
-				surface.SetTexture(sharpeye_dat.crosshair.shape[5])
-				surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.dbv_x, sharpeye_dat.crosshair.dbv_y, focusShadowSize*rdist, focusShadowSize*rdist, focusSpin)
+				surface.SetTexture(self.dat.crosshair.shape[5])
+				surface.DrawTexturedRectRotated(self.dat.crosshair.dbv_x, self.dat.crosshair.dbv_y, focusShadowSize*rdist, focusShadowSize*rdist, focusSpin)
 			end
 			
-			sharpeye.SetDrawColorFromVar( "sharpeye_xhair_color" )
+			self:SetDrawColorFromVar( "xhair_color" )
 			if hasDynamic then
-				surface.SetTexture(sharpeye_dat.crosshair.shape[2])
-				surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.ch_x, sharpeye_dat.crosshair.ch_y, dynamicSize, dynamicSize, 0)
+				surface.SetTexture(self.dat.crosshair.shape[2])
+				surface.DrawTexturedRectRotated(self.dat.crosshair.ch_x, self.dat.crosshair.ch_y, dynamicSize, dynamicSize, 0)
 			end
 			
 			if drawFocus then
-				surface.SetTexture(sharpeye_dat.crosshair.shape[4])
-				surface.DrawTexturedRectRotated(sharpeye_dat.crosshair.dbv_x, sharpeye_dat.crosshair.dbv_y, focusSize*rdist, focusSize*rdist, focusSpin)
+				surface.SetTexture(self.dat.crosshair.shape[4])
+				surface.DrawTexturedRectRotated(self.dat.crosshair.dbv_x, self.dat.crosshair.dbv_y, focusSize*rdist, focusSize*rdist, focusSpin)
 			end
 			
 		end
 		
 		-- Calculating
-		sharpeye_dat.crosshair.traceLineData = utilx.GetPlayerTrace( LocalPlayer(), vgui.IsHoveringWorld() and LocalPlayer():GetCursorAimVector() or LocalPlayer():GetAimVector() )
+		self.dat.crosshair.traceLineData = utilx.GetPlayerTrace( LocalPlayer(), vgui.IsHoveringWorld() and LocalPlayer():GetCursorAimVector() or LocalPlayer():GetAimVector() )
 		
 		
-		sharpeye_dat.crosshair.traceLineData.mask = nil
-		sharpeye_dat.crosshair.traceLineRes = util.TraceLine( sharpeye_dat.crosshair.traceLineData )
+		self.dat.crosshair.traceLineData.mask = nil
+		self.dat.crosshair.traceLineRes = util.TraceLine( self.dat.crosshair.traceLineData )
 		
-		sharpeye_dat.crosshair.scrpos = sharpeye_dat.crosshair.traceLineRes.HitPos:ToScreen()
-		sharpeye_dat.crosshair.tg_x = math.Clamp( sharpeye_dat.crosshair.scrpos.x, -ScrW() * 4, ScrW() * 4)
-		sharpeye_dat.crosshair.tg_y = math.Clamp( sharpeye_dat.crosshair.scrpos.y, -ScrH() * 4, ScrH() * 4)
+		self.dat.crosshair.scrpos = self.dat.crosshair.traceLineRes.HitPos:ToScreen()
+		self.dat.crosshair.tg_x = math.Clamp( self.dat.crosshair.scrpos.x, -ScrW() * 4, ScrW() * 4)
+		self.dat.crosshair.tg_y = math.Clamp( self.dat.crosshair.scrpos.y, -ScrH() * 4, ScrH() * 4)
 		
 		if sharpeye_focus:HasFocus() or sharpeye_focus:IsApproach() then
 			local viewModel = LocalPlayer():GetViewModel()
@@ -179,12 +179,12 @@ function sharpeye.HUDPaint()
 			
 			
 					
-			sharpeye_dat.crosshair.midpos = dbvorigin + (sharpeye_dat.crosshair.traceLineRes.HitPos - dbvorigin) * 0.8
+			self.dat.crosshair.midpos = dbvorigin + (self.dat.crosshair.traceLineRes.HitPos - dbvorigin) * 0.8
 			
-			sharpeye_dat.crosshair.scrpos = sharpeye_dat.crosshair.midpos:ToScreen()
-			sharpeye_dat.crosshair.tdbv_x = sharpeye_dat.crosshair.scrpos.x
-			sharpeye_dat.crosshair.tdbv_y = sharpeye_dat.crosshair.scrpos.y
-			sharpeye_dat.crosshair.tdist = sharpeye_focus:IsApproach() and -1 or sharpeye_dat.crosshair.traceLineRes.Fraction * 16384
+			self.dat.crosshair.scrpos = self.dat.crosshair.midpos:ToScreen()
+			self.dat.crosshair.tdbv_x = self.dat.crosshair.scrpos.x
+			self.dat.crosshair.tdbv_y = self.dat.crosshair.scrpos.y
+			self.dat.crosshair.tdist = sharpeye_focus:IsApproach() and -1 or self.dat.crosshair.traceLineRes.Fraction * 16384
 		
 		end
 	
@@ -193,10 +193,10 @@ function sharpeye.HUDPaint()
 end
 
 function sharpeye.RenderScreenspaceEffects()
-	if not sharpeye.IsEnabled() then return end
-	if not sharpeye.IsOverlayEnabled() or not GAMEMODE:PostProcessPermitted( "material overlay" ) then return end
+	if not sharpeye:IsEnabled() then return end
+	if not sharpeye:IsOverlayEnabled() or not GAMEMODE:PostProcessPermitted( "material overlay" ) then return end
 
-	DrawMaterialOverlay( sharpeye_dat.main_overlay, 0);
+	DrawMaterialOverlay( sharpeye.dat.main_overlay, 0);
 			
 end
 

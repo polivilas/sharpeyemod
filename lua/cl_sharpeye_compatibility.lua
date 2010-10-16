@@ -15,8 +15,8 @@ end
 function sharpeye.SolveCompatilibityIssues( optbForce )
 	do return end
 
-	if not sharpeye_dat.comp then
-		sharpeye_dat.comp = {}
+	if not self.dat.comp then
+		self.dat.comp = {}
 	end
 	
 	sharpeye.Compatibility_MakeSpacebuildCompatible( optbForce )
@@ -28,13 +28,13 @@ end
 function sharpeye.ProcessCompatibleCalcView( ply, origin, angles, fov, tCalcView)
 /*
 	local modified = false
-	if sharpeye_dat.comp.spacebuild then
+	if self.dat.comp.spacebuild then
 		modified = modified or sharpeye.Compatibility_SBEPBMView( ply, origin, angles, fov, tCalcView)
 	end
-	if sharpeye_dat.comp.scars then
+	if self.dat.comp.scars then
 		modified = modified or sharpeye.Compatibility_SCarCalcView( ply, origin, angles, fov, tCalcView)
 	end
-	if sharpeye_dat.comp.weaponseats then
+	if self.dat.comp.weaponseats then
 		modified = modified or sharpeye.Compatibility_WeaponSeat( ply, origin, angles, fov, tCalcView)
 	end
 	*/
@@ -46,7 +46,7 @@ end
 // taken from the addon Spacebuild.
 
 function sharpeye.Compatibility_ShouldOverrideSpacebuild( optbForce )
-	if not optbForce and (sharpeye_dat.comp.spacebuild or CALCVIEW_ISFIXED_SPACEBUILD) then
+	if not optbForce and (self.dat.comp.spacebuild or CALCVIEW_ISFIXED_SPACEBUILD) then
 		return false
 		
 	elseif hook.GetTable()["CalcView"] and hook.GetTable()["CalcView"]["SBEPBMView"] then
@@ -59,7 +59,7 @@ end
 
 function sharpeye.Compatibility_MakeSpacebuildCompatible( optbForce )
 	if not sharpeye.Compatibility_ShouldOverrideSpacebuild( optbForce ) then return end
-	sharpeye_dat.comp.spacebuild = true
+	self.dat.comp.spacebuild = true
 	
 	print("[ > " .. SHARPEYE_NAME .. " has found a potential uncompatibility with Spacebuild. Patching... ]")
 	
@@ -82,7 +82,7 @@ end
 // taken from the addon SCars.
 
 function sharpeye.Compatibility_ShouldOverrideSCars( optbForce )
-	if not optbForce and (sharpeye_dat.comp.scars or CALCVIEW_ISFIXED_SCARS) then
+	if not optbForce and (self.dat.comp.scars or CALCVIEW_ISFIXED_SCARS) then
 		return false
 		
 	elseif hook.GetTable()["CalcView"] and hook.GetTable()["CalcView"]["SCar CalcView"] then
@@ -95,7 +95,7 @@ end
 
 function sharpeye.Compatibility_MakeSCarsCompatible( optbForce )
 	if not sharpeye.Compatibility_ShouldOverrideSCars( optbForce ) then return end
-	sharpeye_dat.comp.scars = true
+	self.dat.comp.scars = true
 	
 	print("[ > " .. SHARPEYE_NAME .. " has found a potential uncompatibility with SCars. Patching... ]")
 	
@@ -229,7 +229,7 @@ end
 // taken from the addon Weapon Seats.
 
 function sharpeye.Compatibility_ShouldOverrideWeaponSeats( optbForce )
-	if not optbForce and (sharpeye_dat.comp.weaponseats or CALCVIEW_ISFIXED_WEAPONSEATS) then
+	if not optbForce and (self.dat.comp.weaponseats or CALCVIEW_ISFIXED_WEAPONSEATS) then
 		return false
 		
 	elseif hook.GetTable()["CalcView"] and hook.GetTable()["CalcView"]["Weapon Seat"] then
@@ -242,7 +242,7 @@ end
 
 function sharpeye.Compatibility_MakeWeaponSeatsCompatible( optbForce )
 	if not sharpeye.Compatibility_ShouldOverrideWeaponSeats( optbForce ) then return end
-	sharpeye_dat.comp.weaponseats = true
+	self.dat.comp.weaponseats = true
 	
 	print("[ > " .. SHARPEYE_NAME .. " has found a potential uncompatibility with Weapon Seats. Patching... ]")
 	

@@ -18,24 +18,26 @@
 ////////////////////////////////////////////////
 
 // ATTENTION PERSONNEL. sharpeye_focus USES METHODS.
+local sharpeye = sharpeye
+local sharpeye_focus = sharpeye_focus
 
-function sharpeye.IsFocusEnabled()
-	return (sharpeye.GetVarNumber("sharpeye_opt_focus") > 0)
+function sharpeye:IsFocusEnabled()
+	return self:GetVar("opt_focus") > 0
 end
 
-function sharpeye.HookFocus()
-	if sharpeye_dat.focus_hooked then return end
+function sharpeye:HookFocus()
+	if self.dat.focus_hooked then return end
 	hook.Add("CreateMove", "sharpeye_CreateMove", function(cmd) return sharpeye_focus:CreateMove(cmd) end)
 	
-	sharpeye_dat.focus_hooked = true
+	self.dat.focus_hooked = true
 	
 end
 
-function sharpeye.UnhookFocus()
-	if not sharpeye_dat.focus_hooked then return end
+function sharpeye:UnhookFocus()
+	if not self.dat.focus_hooked then return end
 	hook.Remove("CreateMove", "sharpeye_CreateMove")
 	
-	sharpeye_dat.focus_hooked = false
+	self.dat.focus_hooked = false
 	
 end
 
@@ -69,12 +71,12 @@ function sharpeye_focus:DisableFocus()
 end
 
 function sharpeye_focus:IsRelaxEnabled()
-	return (sharpeye.GetVarNumber("sharpeye_opt_relax") > 0) and not sharpeye.IsInThirdPersonMode()
+	return (sharpeye:GetVar("opt_relax") > 0) and not sharpeye:IsInThirdPersonMode()
 	
 end
 
 function sharpeye_focus:HasFocus()
-	return self.__hasfocus or sharpeye.IsWiimoteEnabled( )
+	return self.__hasfocus or sharpeye:IsWiimoteEnabled( )
 	
 end
 
@@ -106,19 +108,19 @@ function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
 	local relaxMode = sharpeye_focus:IsRelaxEnabled() and not self:HasFocus()
 	
 	FOCUS_FOVTOSET     = GetConVarNumber("fov_desired") or 75
-	FOCUS_FOV          = FOCUS_FOVTOSET + sharpeye.GetVar( "sharpeye_detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
+	FOCUS_FOV          = FOCUS_FOVTOSET + sharpeye:GetVar("detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
 	FOCUS_MOUSESENSITIVITY = 1
 	FOCUS_ZOOMTIME         = 1.0
 	
 	FOCUS_FLIP         = optbNoPlayer and false or LocalPlayer():GetActiveWeapon().ViewModelFlip
 
-	FOCUS_LIMITANGLE_X = relaxMode and 0 or sharpeye.GetVar( "sharpeye_detail_focus_anglex" )
-	FOCUS_LIMITANGLE_Y = relaxMode and 0 or sharpeye.GetVar( "sharpeye_detail_focus_angley" )
-	FOCUS_BACKING       = sharpeye.GetVar( "sharpeye_detail_focus_backing" )                -- Default is 5 so 5.
-	//FOCUS_HANDALTERNATE = (sharpeye.GetVar( "sharpeye_detail_focus_handalternate" ) > 0)
-	FOCUS_HANDSHIFT     = sharpeye.GetVar( "sharpeye_detail_focus_handshiftx" ) * 0.5       -- Default is 5 so 2.5.
-	FOCUS_SMOOTHWEAPON  = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothing" ) * 0.1) * 0.95  -- Default is 5 so 2.5.
-	FOCUS_SMOOTHLOOK    = 1 - (sharpeye.GetVar( "sharpeye_detail_focus_smoothlook" ) * 0.1) * 0.95 -- Default is 5 so 2.5.
+	FOCUS_LIMITANGLE_X = relaxMode and 0 or sharpeye:GetVar("detail_focus_anglex" )
+	FOCUS_LIMITANGLE_Y = relaxMode and 0 or sharpeye:GetVar("detail_focus_angley" )
+	FOCUS_BACKING       = sharpeye:GetVar("detail_focus_backing" )                -- Default is 5 so 5.
+	//FOCUS_HANDALTERNATE = (sharpeye:GetVar("detail_focus_handalternate" ) > 0)
+	FOCUS_HANDSHIFT     = sharpeye:GetVar("detail_focus_handshiftx" ) * 0.5       -- Default is 5 so 2.5.
+	FOCUS_SMOOTHWEAPON  = 1 - (sharpeye:GetVar("detail_focus_smoothing" ) * 0.1) * 0.95  -- Default is 5 so 2.5.
+	FOCUS_SMOOTHLOOK    = 1 - (sharpeye:GetVar("detail_focus_smoothlook" ) * 0.1) * 0.95 -- Default is 5 so 2.5.
 	
 end
 
@@ -134,30 +136,34 @@ end
 
 -- BlackOps' Legs addon compatibility test
 function sharpeye_focus:GetBiaisViewAngles()
-	if not sharpeye.IsEnabled() or not sharpeye.IsFocusEnabled() or not (self:HasFocus() or sharpeye_focus:IsRelaxEnabled())  then
+	// IMPORTANT : sharpeye_focus used for LEGACY WITH BlackOps' Legs
+	
+	if not sharpeye:IsEnabled() or not sharpeye:IsFocusEnabled() or not (sharpeye_focus:HasFocus() or sharpeye_focus:IsRelaxEnabled())  then
 		return nil
 		
 	end
 	
-	return self.lockedViewAng or nil
+	return sharpeye_focus.lockedViewAng or nil
 
 end
 
 function sharpeye_focus:GetSmoothedViewAngles()
-	if not sharpeye.IsEnabled() or not sharpeye.IsFocusEnabled() or not (self:HasFocus() or sharpeye_focus:IsRelaxEnabled()) then
+	// IMPORTANT : sharpeye_focus used for LEGACY WITH BlackOps' Legs
+	
+	if not sharpeye:IsEnabled() or not sharpeye:IsFocusEnabled() or not (sharpeye_focus:HasFocus() or sharpeye_focus:IsRelaxEnabled()) then
 		return nil
 		
 	end
 	
-	return self.__smoothCameraAngles or nil
+	return sharpeye_focus.__smoothCameraAngles or nil
 
 end
 
 function sharpeye_focus:AppendCalcView( view )
-	if not sharpeye.IsFocusEnabled() then return end
+	if not sharpeye:IsFocusEnabled() then return end
 	
 	self:EvaluateConfigVars()
-	if sharpeye_focus:IsRelaxEnabled() and (sharpeye.IsFirstFrame() or not LocalPlayer():Alive() or sharpeye.IsInRagdollMode()) then
+	if sharpeye_focus:IsRelaxEnabled() and (sharpeye:IsFirstFrame() or not LocalPlayer():Alive() or sharpeye:IsInRagdollMode()) then
 		self.__bRelaxRequireReset = true
 		
 	end
@@ -466,9 +472,9 @@ function sharpeye_focus.CommandDisableFocus()
 end
 
 function sharpeye_focus:Mount()
-	concommand.Add("sharpeye_focus_toggle", sharpeye_focus.CommandToggleFocus)
-	concommand.Add("+sharpeye_focus",       sharpeye_focus.CommandEnableFocus)
-	concommand.Add("-sharpeye_focus",       sharpeye_focus.CommandDisableFocus)
+	//concommand.Add("sharpeye_focus_toggle", sharpeye_focus.CommandToggleFocus)
+	//concommand.Add("+sharpeye_focus",       sharpeye_focus.CommandEnableFocus)
+	//concommand.Add("-sharpeye_focus",       sharpeye_focus.CommandDisableFocus)
 	
 	self.__hasfocus = false
 	self.__decotime = 0
@@ -497,9 +503,10 @@ function sharpeye_focus:Mount()
 end
 
 function sharpeye_focus:Unmount()
-	concommand.Remove("sharpeye_focus_toggle")
-	concommand.Remove("+sharpeye_focus")
-	concommand.Remove("-sharpeye_focus")
+	//concommand.Remove("sharpeye_focus_toggle")
+	//concommand.Remove("+sharpeye_focus")
+	//concommand.Remove("-sharpeye_focus")
+	sharpeye:UnhookFocus()
 	
 end
 

@@ -7,46 +7,46 @@
 // Sound                                      //
 ////////////////////////////////////////////////
 
-function sharpeye.IsSoundEnabled()
-	return (sharpeye.GetVarNumber("sharpeye_core_sound") > 0)
+function sharpeye:IsSoundEnabled()
+	return self:GetVar("core_sound") > 0
 end
 
-function sharpeye.GetBreathingMode()
-	return math.Clamp( math.floor(sharpeye.GetVarNumber("sharpeye_opt_breathing")), 0, 4)
+function sharpeye:GetBreathingMode()
+	return math.Clamp( math.floor(self:GetVar("opt_breathing")), 0, 4)
 end
 
-function sharpeye.GetBreathingVolume()
-	return math.Clamp(sharpeye.GetVarNumber("sharpeye_snd_breathing_vol") * 0.1, 0, 1)
+function sharpeye:GetBreathingVolume()
+	return math.Clamp(self:GetVar("snd_breathing_vol") * 0.1, 0, 1)
 end
 
-function sharpeye.GetFootstepsVolume()
-	return math.Clamp(sharpeye.GetVarNumber("sharpeye_snd_footsteps_vol") * 0.1, 0, 1)
+function sharpeye:GetFootstepsVolume()
+	return math.Clamp(self:GetVar("snd_footsteps_vol") * 0.1, 0, 1)
 end
 
-function sharpeye.GetWindVelocityIncap()
+function sharpeye:GetWindVelocityIncap()
 	-- Default is 5, so 350
-	return 5 + math.Clamp( sharpeye.GetVarNumber("sharpeye_snd_windvelocityincap") * 50, 0, 16000)
+	return 5 + math.Clamp( self:GetVar("snd_windvelocityincap") * 50, 0, 16000)
 end
 
-function sharpeye.GetIsWindEnabled()
-	return sharpeye.GetVarNumber("sharpeye_snd_windenable") > 0
+function sharpeye:GetIsWindEnabled()
+	return self:GetVar("snd_windenable") > 0
 end
 
-function sharpeye.GetIsWindEnabledOnGround()
-	return sharpeye.GetVarNumber("sharpeye_snd_windonground") > 0
+function sharpeye:GetIsWindEnabledOnGround()
+	return self:GetVar("snd_windonground") > 0
 end
 
-function sharpeye.GetIsWindEnabledOnNoclip()
-	return sharpeye.GetVarNumber("sharpeye_snd_windonnoclip") > 0
+function sharpeye:GetIsWindEnabledOnNoclip()
+	return self:GetVar("snd_windonnoclip") > 0
 end
 
-function sharpeye.GetBreathingGender()
-	local mode = sharpeye.GetBreathingMode()
+function sharpeye:GetBreathingGender()
+	local mode = self:GetBreathingMode()
 	if mode == 0 then return 0 end
 	if mode > 1  then return (mode - 1) end
 	
 	local model = LocalPlayer():GetModel()
-	if (model ~= sharpeye_dat.breathing_LastModel) or (sharpeye_dat.breathing_LastMode ~= mode) then
+	if (model ~= self.dat.breathing_LastModel) or (self.dat.breathing_LastMode ~= mode) then
 		if string.find(model, "female")
 			or string.find(model, "alyx")
 			or string.find(model, "mossman") then
@@ -68,189 +68,188 @@ function sharpeye.GetBreathingGender()
 		end
 		
 	else
-		return sharpeye_dat.breathing_LastGender
+		return self.dat.breathing_LastGender
 		
 	end
 end
 
-function sharpeye.StoreBreathingGender()
-	sharpeye_dat.breathing_LastGender = sharpeye.GetBreathingGender()
-	sharpeye_dat.breathing_LastModel  = LocalPlayer():GetModel()
-	sharpeye_dat.breathing_LastMode   = sharpeye.GetBreathingMode()
+function sharpeye:StoreBreathingGender()
+	self.dat.breathing_LastGender = self:GetBreathingGender()
+	self.dat.breathing_LastModel  = LocalPlayer():GetModel()
+	self.dat.breathing_LastMode   = self:GetBreathingMode()
 end
 
-function sharpeye.PlayerFootstep( ply, pos, foot, sound, volume, rf )
-	if not sharpeye.IsEnabled() then return end
-	if not sharpeye.IsSoundEnabled() then return end
+function sharpeye:PlayerFootstep( ply, pos, foot, sound, volume, rf )
+	if not self:IsEnabled() then return end
+	if not self:IsSoundEnabled() then return end
 	if not SinglePlayer() and not (ply == LocalPlayer()) then return end
 
-	local relativeSpeed = ply:GetVelocity():Length() / sharpeye.GetBasisRunSpeed()
+	local relativeSpeed = ply:GetVelocity():Length() / self:GetBasisRunSpeed()
 	local clampedSpeed = (relativeSpeed > 1) and 1 or relativeSpeed
 	
 	local isInDeepWater = ply:WaterLevel() >= 3
 	local isInModerateWater = (ply:WaterLevel() == 1) or (ply:WaterLevel() == 2)
 	
 	local sndPitch  = 30 + clampedSpeed * 128
-	local sndVolume = 1 + ((sharpeye.GetFootstepsVolume() > 0) and (20 + clampedSpeed * sharpeye.GetFootstepsVolume() * 90) or 0)
+	local sndVolume = 1 + ((self:GetFootstepsVolume() > 0) and (20 + clampedSpeed * self:GetFootstepsVolume() * 90) or 0)
 	
 	if not isInDeepWater and not isInModerateWater then
 	
-		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.footsteps, sharpeye_dat.footsteps_LastPlayed)
-		sharpeye_dat.footsteps_LastPlayed = dice
+		local dice = self:DiceNoRepeat(self.dat.footsteps, self.dat.footsteps_LastPlayed)
+		self.dat.footsteps_LastPlayed = dice
 		
-		ply:EmitSound(sharpeye_dat.footsteps[dice], sndVolume, sndPitch)
+		ply:EmitSound(self.dat.footsteps[dice], sndVolume, sndPitch)
 		
 	elseif isInModerateWater then
 	
-		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.sloshsteps, sharpeye_dat.sloshsteps_LastPlayed)
-		sharpeye_dat.sloshsteps_LastPlayed = dice
+		local dice = self:DiceNoRepeat(self.dat.sloshsteps, self.dat.sloshsteps_LastPlayed)
+		self.dat.sloshsteps_LastPlayed = dice
 		
-		ply:EmitSound(sharpeye_dat.sloshsteps[dice], sndVolume, sndPitch * 0.8)
+		ply:EmitSound(self.dat.sloshsteps[dice], sndVolume, sndPitch * 0.8)
 	
 	else
-		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.watersteps, sharpeye_dat.watersteps_LastPlayed)
-		sharpeye_dat.watersteps_LastPlayed = dice
+		local dice = self:DiceNoRepeat(self.dat.watersteps, self.dat.watersteps_LastPlayed)
+		self.dat.watersteps_LastPlayed = dice
 		
-		ply:EmitSound(sharpeye_dat.watersteps[dice], sndVolume, sndPitch * 0.8)
+		ply:EmitSound(self.dat.watersteps[dice], sndVolume, sndPitch * 0.8)
 		
 	end
 	
 	--return true
 end
 
-function sharpeye.Breathing()
-	if not sharpeye.IsEnabled() then return end
-	if not sharpeye.IsSoundEnabled() then return end
-	if (sharpeye.GetBreathingMode() == 0) and (sharpeye_dat.breathing_LastGender == 0) then return end
+function sharpeye:Breathing()
+	if not self:IsEnabled() then return end
+	if not self:IsSoundEnabled() then return end
+	if (self:GetBreathingMode() == 0) and (self.dat.breathing_LastGender == 0) then return end
 	
-	local gender = sharpeye.GetBreathingGender()
-	--print(sharpeye.GetBreathingMode() , sharpeye.GetBreathingGender())
+	local gender = self:GetBreathingGender()
 	
-	if not sharpeye_dat.breathing_cached then
-		sharpeye_dat.breathing_cached = {}
+	if not self.dat.breathing_cached then
+		self.dat.breathing_cached = {}
 		
-		for k,path in pairs(sharpeye_dat.breathing) do
-			sharpeye_dat.breathing_cached[k] = CreateSound( LocalPlayer(), path )
+		for k,path in pairs(self.dat.breathing) do
+			self.dat.breathing_cached[k] = CreateSound( LocalPlayer(), path )
 		end
 		
 	end
 	
-	if sharpeye_dat.breathing_LastGender ~= gender then
-		if sharpeye_dat.breathing_cached[sharpeye_dat.breathing_LastGender] then
-			sharpeye_dat.breathing_cached[sharpeye_dat.breathing_LastGender]:Stop()
+	if self.dat.breathing_LastGender ~= gender then
+		if self.dat.breathing_cached[self.dat.breathing_LastGender] then
+			self.dat.breathing_cached[self.dat.breathing_LastGender]:Stop()
 		end
 		
-		sharpeye_dat.breathing_WasBreathing = false
+		self.dat.breathing_WasBreathing = false
 		
 		--if (gender > 0) then
-		--	sharpeye_dat.breathing_cached[gender]:PlayEx(0.0, 100)
+		--	self.dat.breathing_cached[gender]:PlayEx(0.0, 100)
 		--end
 	end
 	
 	if (gender > 0) then
-		local fStamina = sharpeye.GetStamina()
-		local breathingcap = 0.7 - (1 - sharpeye.GetHealthFactor()) * 0.4
+		local fStamina = self:GetStamina()
+		local breathingcap = 0.7 - (1 - self:GetHealthFactor()) * 0.4
 		if (fStamina > breathingcap) then
-			if not sharpeye_dat.breathing_WasBreathing then
-				sharpeye_dat.breathing_cached[gender]:PlayEx(fStamina * sharpeye.GetBreathingVolume(), 100)
-				sharpeye_dat.breathing_WasBreathing = true
+			if not self.dat.breathing_WasBreathing then
+				self.dat.breathing_cached[gender]:PlayEx(fStamina * self:GetBreathingVolume(), 100)
+				self.dat.breathing_WasBreathing = true
 				
 			else
-				sharpeye_dat.breathing_cached[gender]:ChangeVolume(fStamina * sharpeye.GetBreathingVolume(), 100)
+				self.dat.breathing_cached[gender]:ChangeVolume(fStamina * self:GetBreathingVolume(), 100)
 				
 			end
 			
-		elseif (fStamina < breathingcap) and sharpeye_dat.breathing_WasBreathing then
-			sharpeye_dat.breathing_cached[gender]:FadeOut(0.5)
-				sharpeye_dat.breathing_WasBreathing = false
+		elseif (fStamina < breathingcap) and self.dat.breathing_WasBreathing then
+			self.dat.breathing_cached[gender]:FadeOut(0.5)
+				self.dat.breathing_WasBreathing = false
 			
 		end
 	end
 	
-	sharpeye.StoreBreathingGender()
+	self:StoreBreathingGender()
 	
 end
 
-function sharpeye.SoundWind()
-	if not sharpeye.IsEnabled() then return end
-	if not sharpeye.IsSoundEnabled() then return end
-	if not sharpeye.GetIsWindEnabled() then return end
+function sharpeye:SoundWind()
+	if not self:IsEnabled() then return end
+	if not self:IsSoundEnabled() then return end
+	if not self:GetIsWindEnabled() then return end
 	
 	local ply = LocalPlayer()
 	
-	if not sharpeye_dat.wind_cached then
-		sharpeye_dat.wind_cached = {}
+	if not self.dat.wind_cached then
+		self.dat.wind_cached = {}
 		
-		for k,path in pairs(sharpeye_dat.wind) do
-			sharpeye_dat.wind_cached[k] = CreateSound( ply, path )
+		for k,path in pairs(self.dat.wind) do
+			self.dat.wind_cached[k] = CreateSound( ply, path )
 		end
 		
 	end
 	
 	if not ply:Alive() and ValidEntity( ply:GetRagdollEntity() ) then
-		sharpeye_dat.wind_velocity = ply:GetRagdollEntity():GetVelocity():Length()
+		self.dat.wind_velocity = ply:GetRagdollEntity():GetVelocity():Length()
 		
-	elseif not sharpeye.IsInVehicle() then
-		sharpeye_dat.wind_velocity = ply:GetVelocity():Length()
+	elseif not self:IsInVehicle() then
+		self.dat.wind_velocity = ply:GetVelocity():Length()
 	
 	else
-		sharpeye_dat.wind_velocity = ply:GetVehicle():GetVelocity():Length()
+		self.dat.wind_velocity = ply:GetVehicle():GetVelocity():Length()
 		
 	end
 	
-	local iVeloIncap = sharpeye.GetWindVelocityIncap()
-	if (sharpeye_dat.wind_velocity > iVeloIncap) then
-		local shouldForce = sharpeye.GetIsWindEnabledOnGround() or not ply:Alive()
-		local shouldNotPlay  = not sharpeye.GetIsWindEnabledOnNoclip() and sharpeye.IsNoclipping()
-		local volume = shouldNotPlay and 0 or shouldForce and 1 or math.Clamp( (sharpeye_dat.player_TimeOffGround * 0.5) ^ 2 , 0, 1) * sharpeye_dat.wind_velocity / 64
+	local iVeloIncap = self:GetWindVelocityIncap()
+	if (self.dat.wind_velocity > iVeloIncap) then
+		local shouldForce = self:GetIsWindEnabledOnGround() or not ply:Alive()
+		local shouldNotPlay  = not self:GetIsWindEnabledOnNoclip() and self:IsNoclipping()
+		local volume = shouldNotPlay and 0 or shouldForce and 1 or math.Clamp( (self.dat.player_TimeOffGround * 0.5) ^ 2 , 0, 1) * self.dat.wind_velocity / 64
 		volume = (volume > 1) and 1 or volume
 		
-		local pitch = ( math.Clamp((sharpeye_dat.wind_velocity - iVeloIncap) / (iVeloIncap * 2), 0, 1) ) * 120 + 80
-		if not sharpeye_dat.wind_IsPlaying then
-			sharpeye_dat.wind_cached[1]:PlayEx(volume, pitch)
-			sharpeye_dat.wind_IsPlaying = true
+		local pitch = ( math.Clamp((self.dat.wind_velocity - iVeloIncap) / (iVeloIncap * 2), 0, 1) ) * 120 + 80
+		if not self.dat.wind_IsPlaying then
+			self.dat.wind_cached[1]:PlayEx(volume, pitch)
+			self.dat.wind_IsPlaying = true
 			
 		else
-			sharpeye_dat.wind_cached[1]:ChangeVolume(volume)
-			sharpeye_dat.wind_cached[1]:ChangePitch(pitch)
+			self.dat.wind_cached[1]:ChangeVolume(volume)
+			self.dat.wind_cached[1]:ChangePitch(pitch)
 			
 		end
 		
-	--elseif sharpeye_dat.wind_IsPlaying then
-	--	sharpeye_dat.wind_cached[1]:FadeOut(0.1)
-	--	sharpeye_dat.wind_IsPlaying = false
+	--elseif self.dat.wind_IsPlaying then
+	--	self.dat.wind_cached[1]:FadeOut(0.1)
+	--	self.dat.wind_IsPlaying = false
 	--	
 	--end
 	else
 		-- The reason we're doing this is that stopping the sound plays it back to zero. It creates too much of a sense of loop
-		sharpeye_dat.wind_cached[1]:ChangeVolume(0)
+		self.dat.wind_cached[1]:ChangeVolume(0)
 		
 	end
 	
 end
 
-function sharpeye.SoundThink(shouldTriggerStopSound, shouldTriggerWaterFlop, isInModerateWater, isInDeepWater)
-	if not sharpeye.IsEnabled() then return end
-	if not sharpeye.IsSoundEnabled() then return end
+function sharpeye:SoundThink(shouldTriggerStopSound, shouldTriggerWaterFlop, isInModerateWater, isInDeepWater)
+	if not self:IsEnabled() then return end
+	if not self:IsSoundEnabled() then return end
 	
 	local ply = LocalPlayer()
 	
-	if shouldTriggerStopSound and not shouldTriggerWaterFlop and not isInModerateWater and not isInDeepWater and not sharpeye.IsNoclipping() then
-		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.stops, sharpeye_dat.footsteps_LastPlayed)
-		sharpeye_dat.footsteps_LastPlayed = dice
+	if shouldTriggerStopSound and not shouldTriggerWaterFlop and not isInModerateWater and not isInDeepWater and not self:IsNoclipping() then
+		local dice = self:DiceNoRepeat(self.dat.stops, self.dat.footsteps_LastPlayed)
+		self.dat.footsteps_LastPlayed = dice
 	
-		ply:EmitSound(sharpeye_dat.stops[dice], 128, math.random(95, 105))
+		ply:EmitSound(self.dat.stops[dice], 128, math.random(95, 105))
 	end
 	
 	if shouldTriggerWaterFlop then
-		local dice = sharpeye.DiceNoRepeat(sharpeye_dat.waterflop, sharpeye_dat.waterflop_LastPlayed)
-		sharpeye_dat.waterflop_LastPlayed = dice
+		local dice = self:DiceNoRepeat(self.dat.waterflop, self.dat.waterflop_LastPlayed)
+		self.dat.waterflop_LastPlayed = dice
 		
-		ply:EmitSound(sharpeye_dat.waterflop[dice], 128, math.random(95, 105))
+		ply:EmitSound(self.dat.waterflop[dice], 128, math.random(95, 105))
 	end
 	
-	sharpeye.Breathing()
-	sharpeye.SoundWind()
+	self:Breathing()
+	self:SoundWind()
 	
 end
 

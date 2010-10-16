@@ -31,7 +31,7 @@ if (CLIENT or SinglePlayer()) then
 	sharpeye_InitLoad()
 	
 	--sharpeye = {}
-	--sharpeye_dat = {}
+	--sharpeye.dat = {}
 	--sharpeye_focus = {} // Did in the focus lua file
 	
 	if not SHARPEYE_FORCE_VERSION then

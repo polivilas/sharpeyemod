@@ -8,13 +8,13 @@
 ////////////////////////////////////////////////
 
 
-function sharpeye.IsWiimoteEnabled( )
-	return sharpeye.GetVarNumber("sharpeye_wiimote_enable") > 0
+function sharpeye:IsWiimoteEnabled( )
+	return self:GetVar("wiimote_enable") > 0
 	
 end
 
 function sharpeye.InputMouseApply( cmd, x, y, angle )
-	if not sharpeye.IsEnabled( ) or not sharpeye.IsWiimoteEnabled( ) then return end
+	if not sharpeye:IsEnabled( ) or not sharpeye:IsWiimoteEnabled( ) then return end
 	
 	local biais = sharpeye_focus:GetBiaisViewAngles()
 	if not biais then return end

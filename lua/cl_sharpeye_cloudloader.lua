@@ -38,7 +38,7 @@ end
 function sharpeye_cloud.BuildBase()
 	pcall(function() if sharpeye and sharpeye.Unmount then sharpeye.Unmount() end end)
 	sharpeye = {}
-	sharpeye_dat = {}
+	sharpeye.dat = {}
 	
 end
 
