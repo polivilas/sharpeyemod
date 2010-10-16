@@ -735,7 +735,7 @@ function sharpeye:RemoveMenu()
 end
 
 function sharpeye:MountMenu()
-	self:CreateVarParam( "bool", "menu_position", "1", { callback = function ( a, b, c ) sharpeye:UpdateMenuPosition() end } )
+	self:CreateVarParam( "bool", "menu_position", "0", { callback = function ( a, b, c ) sharpeye:UpdateMenuPosition() end } )
 	-- do nothing
 	
 end
