@@ -285,7 +285,7 @@ function sharpeye:BuildMenu()
 			do				
 				local category = vgui.Create("DCollapsibleCategory", formOptions)
 				category:SetExpanded( false )
-				category:SetLabel( "Crosshair Options" )
+				category:SetLabel( "Crosshair" )
 				
 				category.List  = vgui.Create("DPanelList", category )
 				category.List:EnableHorizontal( false )
