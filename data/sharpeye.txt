@@ -1,3 +1,5 @@
+1.701
+Restored several missing options.
 1.7
 SharpeYe is now using HayFrame, including a redesigned menu.
 1.62

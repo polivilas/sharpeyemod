@@ -114,6 +114,7 @@ function sharpeye:BuildMenu()
 				category.List:AddItem( self:BuildParamPanel( "opt_relax", { Type = "bool", Text = "Use Relax Mode (Smoothed view)" } ) )
 				category.List:AddItem( self:BuildParamPanel( "opt_disableinthirdperson", { Type = "bool", Text = "Disable Motion in Third Person Mode" } ) )
 				category.List:AddItem( self:BuildParamPanel( "opt_disablewithtools", { Type = "bool", Text = "Disable Bobbing with Toolgun and Physgun" } ) )
+				category.List:AddItem( self:BuildParamPanel( "opt_disablebobbing", { Type = "bool", Text = "Disable Bobbing entierely (Keep Focus)" } ) )
 				
 				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "Breathing mode :" } ) )
 				do
@@ -361,14 +362,16 @@ function sharpeye:BuildMenu()
 				category.List:AddItem( self:BuildParamPanel( "opt_motionblur", { Type = "bool", Text = "Use " .. tostring(SHARPEYE_NAME) .. " Motion Blur" } ) )
 				category.List:AddItem( self:BuildParamPanel( "detail_permablur", { Type = "range", Text = "Permablur Amount", Min = 0, Max = 10, Decimals = 0 } ) )
 				
-				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "Machinima mode allows you to enable SharpeYe bobbing even if noclipping or inside a vehicle. Remember to disable it during normal gameplay.", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nMachinima mode allows you to enable SharpeYe bobbing even if noclipping or inside a vehicle. Remember to disable it during normal gameplay.", Wrap = true } ) )
 				category.List:AddItem( self:BuildParamPanel( "opt_machinimamode", { Type = "bool", Text = "Enable Machinima Override Mode" } ) )
 				
 
-				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "Highspeed Deathcam allows the deathcam to be immediate when the player has a death ragdoll, which totally ignores if you are dead or not. This may cause issues on some gamemodes (such as gamemodes that have a simulate death feature).", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nHighspeed Deathcam allows the deathcam to be immediate when the player has a death ragdoll, which totally ignores if you are dead or not. This may cause issues on some gamemodes (such as gamemodes that have a simulate death feature).", Wrap = true } ) )
 				category.List:AddItem( self:BuildParamPanel( "opt_firstpersondeath_highspeed", { Type = "bool", Text = "Enable Deathcam Highspeed Mode" } ) )
-				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "You can cross \"SharpeYe's Stamina\" and \"Perfected Climb SWEP Fatigue\" (by -[SB]- Spy and Kogitsune) using this.", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nYou can cross \"SharpeYe's Stamina\" and \"Perfected Climb SWEP Fatigue\" (by -[SB]- Spy and Kogitsune) using this.", Wrap = true } ) )
 				category.List:AddItem( self:BuildParamPanel( "ext_perfectedclimbswep", { Type = "bool", Text = "Cross with Perfected Climb SWEP" } ) )
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nYou can enable SharpeYe to allows a Graphics Tablet or a Wiimote pointer to aim.", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "wiimote_enable", { Type = "bool", Text = "Enable Wiimote / Tablet input" } ) )
 				
 			end
 			
