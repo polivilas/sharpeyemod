@@ -1,3 +1,7 @@
+1.711
+Fixed problems with motion alignment not working at all.
+&
+Fixed menu parameter displaying as a checkbox instead of a slider.
 1.71
 Added Backup system.
 1.701

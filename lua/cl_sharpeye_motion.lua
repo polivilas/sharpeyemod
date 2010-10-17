@@ -82,17 +82,17 @@ end
 
 function sharpeye:Detail_GetLeaningAngle()
 	-- Default is 5, so 8
-	return self:GetVar("detail_leaningangle") * 0.16
+	return self:GetVar("detail_leaningangle") * 1.6
 end
 
 function sharpeye:Detail_GetLandingAngle()
 	-- Default is 5, so 12
-	return self:GetVar("detail_landingangle") * 0.24
+	return self:GetVar("detail_landingangle") * 2.4
 end
 
 function sharpeye:Detail_GetBreatheBobDistance()
 	-- Default is 5, so 30
-	return self:GetVar("detail_breathebobdist") * 0.60 * (3 - self:GetHealthFactor() * 2)
+	return self:GetVar("detail_breathebobdist") * 6 * (3 - self:GetHealthFactor() * 2)
 end
 
 function sharpeye:Detail_GetRunningBobFrequency()

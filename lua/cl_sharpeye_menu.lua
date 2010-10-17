@@ -329,7 +329,7 @@ function sharpeye:BuildMenu()
 				category:SetContents( category.List )
 				formDetails:AddItem( category )
 				
-				category.List:AddItem( self:BuildParamPanel( "snd_footsteps_vol", { Type = "bool", Text = "Footsteps Volume" } ) )
+				category.List:AddItem( self:BuildParamPanel( "snd_footsteps_vol", { Type = "range", Text = "Footsteps Volume", Min = 0, Max = 8, Decimals = 0 } ) )
 				category.List:AddItem( self:BuildParamPanel( "snd_breathing_vol", { Type = "range", Text = "Breathing Volume", Min = 0, Max = 8, Decimals = 0 } ) )
 				
 				category.List:AddItem( self:BuildParamPanel( "snd_windenable", { Type = "bool", Text = "Enable Wind"} ) )
@@ -370,7 +370,7 @@ function sharpeye:BuildMenu()
 				category.List:AddItem( self:BuildParamPanel( "opt_firstpersondeath_highspeed", { Type = "bool", Text = "Enable Deathcam Highspeed Mode" } ) )
 				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nYou can cross \"SharpeYe's Stamina\" and \"Perfected Climb SWEP Fatigue\" (by -[SB]- Spy and Kogitsune) using this.", Wrap = true } ) )
 				category.List:AddItem( self:BuildParamPanel( "ext_perfectedclimbswep", { Type = "bool", Text = "Cross with Perfected Climb SWEP" } ) )
-				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nYou can enable SharpeYe to allows a Graphics Tablet or a Wiimote pointer to aim.", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nYou can enable SharpeYe to allow a Graphics Tablet or a Wiimote pointer to aim.", Wrap = true } ) )
 				category.List:AddItem( self:BuildParamPanel( "wiimote_enable", { Type = "bool", Text = "Enable Wiimote / Tablet input" } ) )
 				
 			end
@@ -717,6 +717,7 @@ function sharpeye:BuildMenu()
 						self:SetColor( Color( 255, 255, 255 ) )
 						
 					end
+					self:InvalidateLayout( true )
 					self:InvalidateParent( true )
 					self.LastValue = value
 					
