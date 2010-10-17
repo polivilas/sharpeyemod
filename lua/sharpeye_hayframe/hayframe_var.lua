@@ -17,6 +17,7 @@ local HAY_LOCAL_VARPREFIX = HAYFRAME_SetupParameter( "var_prefix" )
 if not HAY__CALLBACK_FUNC then	HAY__CALLBACK_FUNC = {} end
 if not HAY__CALLBACK_FUNC[ HAY_SHORT ] then HAY__CALLBACK_FUNC[ HAY_SHORT ] = {} end
 local HAY_REFERENCE_CALLBACK_FUNC = HAY__CALLBACK_FUNC[ HAY_SHORT ]
+local HAY_LOCAL_VARLIST = {}
 
 function HAY_MAIN:GetVarName( sVarName )
 	return HAY_LOCAL_VARPREFIX .. sVarName
@@ -32,6 +33,9 @@ end
 
 function HAY_MAIN:CreateVar( sVarName, sContents, shouldSave, userData, optfCallback, optbIsBooleanType )
 	CreateClientConVar( HAY_LOCAL_VARPREFIX .. sVarName, sContents, shouldSave, userData)
+	if shouldSave then
+		HAY_LOCAL_VARLIST[ sVarName ] = true
+	end
 	
 	if type( optfCallback ) == "function" then
 		self:CreateVarCallback( sVarName, optfCallback, optbIsBooleanType )
@@ -42,6 +46,11 @@ end
 
 function HAY_MAIN:SetVar( sVarName, tContents )
 	RunConsoleCommand( HAY_LOCAL_VARPREFIX .. sVarName , tostring(tContents) )
+	
+end
+
+function HAY_MAIN:GetVarList( )
+	return HAY_LOCAL_VARLIST
 	
 end
 

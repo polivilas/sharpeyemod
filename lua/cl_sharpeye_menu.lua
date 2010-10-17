@@ -696,11 +696,76 @@ function sharpeye:BuildMenu()
 	////
 	local optionsForm = vgui.Create( "DForm", mainPanel )
 	do
-		optionsForm:SetName( "Status" )
+		optionsForm:SetAutoSize( true )
+		optionsForm:SetName( "Backup" )
+				
+		optionsForm.BuildLabel = function()
+			local label = sharpeye:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "", Wrap = true } )
+			label.LastValue = -2
+			label.Think = function (self)
+				local value = (sharpeye:IsBackupInitDifferent() and -1) or sharpeye:GetLastSaveDiff()
+				if value ~= self.LastValue then
+					if value == -1 then
+						self:SetText( "It seems that SharpeYe settings didn't save properly (This may be due to a Garry's Mod crash).\nRestore them with your last configuration?\nSharpeYe won't perform any backups until you confirm.")
+					
+					elseif value > 0 then
+						self:SetText( "SharpeYe backup is running. Backups are performed every time you close that menu.\nLast save, we found " .. value .. " differences in the configuration."  )
+						self:SetColor( Color( 192, 255, 192 ) )
+					
+					else
+						self:SetText( "SharpeYe backup is running. Backups are performed every time you close that menu." )
+						self:SetColor( Color( 255, 255, 255 ) )
+						
+					end
+					self:InvalidateParent( true )
+					self.LastValue = value
+					
+				end
+				if value == -1 then
+					local blink = 127 + (math.sin( math.pi * CurTime() * 0.5 ) + 1 ) * 64
+					self:SetColor( Color( 255, blink, blink ) )
+				
+				else
+					-- do nothing
+					
+				end
+				
+			end
+			
+			return label
+		end
 		
-		local label = vgui.Create( "DLabel" )
-		label:SetText( "None." )
-		optionsForm:AddItem( label )
+		optionsForm:AddItem( optionsForm:BuildLabel() )
+		optionsForm._p_label = label
+		optionsForm.NormalMode = function (self)
+			self:Clear()
+			self:AddItem( optionsForm:BuildLabel() )
+			self:Rebuild()
+			self:InvalidateLayout( true )
+			self:InvalidateParent( true )
+			
+		end
+		if sharpeye:IsBackupInitDifferent() then
+			local yesBtn = self:BuildParamPanel( "noconvars", { Type = "panel_button", Text = "Yes, restore my latest settings.", DoClick = function(self)
+				sharpeye:BackupInitDifferentResolve( true )
+				if self.GetParent and self:GetParent().NormalMode then
+					self:GetParent():NormalMode()
+				end
+				
+			end } )
+			local noBtn = self:BuildParamPanel( "noconvars", { Type = "panel_button", Text = "No, keep my settings as they are currently.", DoClick = function(self)
+				sharpeye:BackupInitDifferentResolve( false )
+				if self.GetParent and self:GetParent().NormalMode then
+					self:GetParent():NormalMode()
+				end
+				
+			end } )
+			
+			optionsForm:AddItem( yesBtn )
+			optionsForm:AddItem( noBtn )
+			
+		end
+		
 		
 	end
 	
@@ -721,6 +786,7 @@ function sharpeye:BuildMenu()
 		self._p_tabMaster:Dock( FILL )
 	end
 	
+	// Done when opening...
 	SHARPEYE_MENU:UpdateContents()
 	self:UpdateMenuPosition()
 	
@@ -750,11 +816,15 @@ end
 
 function sharpeye:OpenMenu()
 	self:GetMenu():Open()
+	SHARPEYE_MENU:UpdateContents()
 	
 end
 
 function sharpeye:CloseMenu()
 	self:GetMenu():Close()
+	
+	local saved = self:TryBackupNow()
+	if not saved then sharpeye_util.OutputDebug( "Couldn't save backup." ) end
 	
 end
 
@@ -820,7 +890,6 @@ function sharpeye:BuildHeader( mainPanel, sHeaderName )
 		
 		local closeBox = self:BuildParamPanel( "noconvar", { Type = "panel_sysbutton", Style = "close", DoClick = function ( self ) sharpeye:CallCmd("-menu") end } )
 		closeBox:SetParent( title )
-		closeBox:SetToolTip( "Close menu." )
 		
 		local positionBox = self:BuildParamPanel( "noconvar", { Type = "panel_sysbutton", Style = "left", DoClick = function ( self ) sharpeye:SetVar( "menu_position", (sharpeye:GetVar( "menu_position" ) > 0) and 0 or 1 ) end } )
 		positionBox:SetParent( title )

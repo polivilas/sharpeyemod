@@ -6,6 +6,7 @@
 //--------------------------------------------//
 // Motion                                     //
 ////////////////////////////////////////////////
+local sharpeye = sharpeye
 
 function sharpeye:IsMotionEnabled()
 	return self:GetVar("core_motion") > 0

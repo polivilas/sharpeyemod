@@ -128,7 +128,8 @@ function PANEL:UpdateContents()
 	self.Canvas:AddItem( self._Contents )
 	self.Canvas:Rebuild()
 	
-	self.Canvas:InvalidateLayout( )
+	self.Canvas:InvalidateLayout( true )
+	self:InvalidateLayout( true )
 	
 end
 

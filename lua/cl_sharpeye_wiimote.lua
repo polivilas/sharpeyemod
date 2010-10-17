@@ -6,6 +6,7 @@
 //--------------------------------------------//
 // Wiimote support                            //
 ////////////////////////////////////////////////
+local sharpeye = sharpeye
 
 
 function sharpeye:IsWiimoteEnabled( )

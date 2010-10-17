@@ -12,6 +12,7 @@ table.insert( ADDON_PROP, HAYFRAME_DIR .. "hayframe_mediator.lua" )
 table.insert( ADDON_PROP, HAYFRAME_DIR .. "hayframe_changelog.lua" )
 table.insert( ADDON_PROP, HAYFRAME_DIR .. "hayframe_ctrlcolor.lua" )
 table.insert( ADDON_PROP, HAYFRAME_DIR .. "hayframe_context.lua" )
+table.insert( ADDON_PROP, HAYFRAME_DIR .. "hayframe_backup.lua" )
 
 table.insert( ADDON_PROP, "cl_sharpeye_ground.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_motion.lua" )
@@ -21,7 +22,7 @@ table.insert( ADDON_PROP, "cl_sharpeye_vision.lua" )
 
 table.insert( ADDON_PROP, "cl_sharpeye_wiimote.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_compatibility.lua" )
-//table.insert( ADDON_PROP, "cl_sharpeye_backup.lua" )
+table.insert( ADDON_PROP, "cl_sharpeye_backup.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_menu.lua" )
 
 //table.insert( ADDON_PROP, "cl_sharpeye_legacy.lua" )

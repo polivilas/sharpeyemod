@@ -161,6 +161,11 @@ function sharpeye.RevertDetails()
 	
 end
 
+function sharpeye.ShutDown()
+	sharpeye.Unmount()
+	
+end
+
 function sharpeye.Mount()
 	local self = sharpeye
 	
@@ -265,7 +270,7 @@ function sharpeye.Mount()
 	self:BuildCmds( self.cmdGroups, "" )
 	self:BuildCmds( self.cmdGroupsNoRemove, "" )
 	
-	sharpeye:InitializeData()
+	self:InitializeData()
 	
 	hook.Add("Think", "sharpeye_Think", sharpeye.Think)
 	--SharpeYe CalcView hook should now be evaluated.
@@ -276,9 +281,11 @@ function sharpeye.Mount()
 	hook.Add("RenderScreenspaceEffects", "sharpeye_RenderScreenspaceEffects", sharpeye.RenderScreenspaceEffects)
 	hook.Add("Initialize", "sharpeye_Initialize", sharpeye.GamemodeInitialize)
 	hook.Add("InputMouseApply", "sharpeye_InputMouseApply", sharpeye.InputMouseApply)
+	hook.Add("ShutDown", "sharpeye_ShutDown", sharpeye.ShutDown)
 	concommand.Add( "sharpeye_call_forcesolvecompatibilities", sharpeye.ForceSolveCompatilibityIssues)
 	
-
+	self:CheckBackupInit()
+	
 	self:MountMenu()
 	sharpeye_focus:Mount()
 		
@@ -299,9 +306,12 @@ function sharpeye.Unmount()
 		end
 		
 		if CLIENT then
-			hook.Remove("Think", "sharpeye_Think")
 			sharpeye_util.OutputLineBreak( )
 			sharpeye_util.OutputOut( "Unmounting ..." )
+			
+			self:TryExitBackup()
+			
+			hook.Remove("Think", "sharpeye_Think")
 			--hook.Remove("CalcView", "sharpeye_CalcView")
 			hook.Remove("GetMotionBlurValues", "sharpeye_GetMotionBlurValues")
 			hook.Remove("RenderScreenspaceEffects", "sharpeye_RenderScreenspaceEffects")
@@ -309,6 +319,7 @@ function sharpeye.Unmount()
 			hook.Remove("HUDShouldDraw", "sharpeye_HUDShouldDraw")
 			hook.Remove("Initialize", "sharpeye_Initialize")
 			hook.Remove("InputMouseApply", "sharpeye_InputMouseApply")
+			hook.Add("ShutDown", "sharpeye_ShutDown")
 			concommand.Remove( "sharpeye_call_forcesolvecompatibilities")
 			
 			sharpeye_focus:Unmount()

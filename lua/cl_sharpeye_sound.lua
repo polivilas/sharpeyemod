@@ -6,6 +6,7 @@
 //--------------------------------------------//
 // Sound                                      //
 ////////////////////////////////////////////////
+local sharpeye = sharpeye
 
 function sharpeye:IsSoundEnabled()
 	return self:GetVar("core_sound") > 0
