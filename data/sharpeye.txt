@@ -1,3 +1,7 @@
+1.712
+Fix attempt for Focus executing before being initialized.
+&
+Fix attempt for menu issue.
 1.711
 Fixed problems with motion alignment not working at all.
 &

@@ -18,7 +18,7 @@ function sharpeye:CheckBackupInit()
 end
 
 function sharpeye:GetLastSaveDiff()
-	return self.dat.LastSaveDiff
+	return self.dat.LastSaveDiff or 0 // TODO : Init failure makes LastSaveDiff == nil
 	
 end
 

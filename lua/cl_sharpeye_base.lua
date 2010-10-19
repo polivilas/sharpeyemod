@@ -271,6 +271,7 @@ function sharpeye.Mount()
 	self:BuildCmds( self.cmdGroupsNoRemove, "" )
 	
 	self:InitializeData()
+	sharpeye_focus:Mount()
 	
 	hook.Add("Think", "sharpeye_Think", sharpeye.Think)
 	--SharpeYe CalcView hook should now be evaluated.
@@ -285,9 +286,7 @@ function sharpeye.Mount()
 	concommand.Add( "sharpeye_call_forcesolvecompatibilities", sharpeye.ForceSolveCompatilibityIssues)
 	
 	self:CheckBackupInit()
-	
 	self:MountMenu()
-	sharpeye_focus:Mount()
 		
 	sharpeye_util.OutputIn( "Mount complete : " .. (sharpeye_internal.IsUsingCloud() and "Cloud" or "Locale") )
 	sharpeye_util.OutputLineBreak( )
