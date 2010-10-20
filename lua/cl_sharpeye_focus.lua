@@ -126,9 +126,9 @@ end
 
 function sharpeye_focus:IsApproach()
 	if not self or (self.__decotime == nil) then
-		HAY_UTIL.OutputError( "CRITICAL ERROR : Please send the following report :: <<" .. tostring( self ) )
+		sharpeye_util.OutputError( "CRITICAL ERROR : Please send the following report :: <<" .. tostring( self ) )
 		debug.Trace()
-		HAY_UTIL.OutputError( ">> :: END OF CRITICA ERROR. Please send the report above." )
+		sharpeye_util.OutputError( ">> :: END OF CRITICA ERROR. Please send the report above." )
 		
 	end
 	return (CurTime() - self.__decotime) < FOCUS_ZOOMTIME
@@ -137,9 +137,9 @@ end
 
 function sharpeye_focus:ApproachRatio()
 	if not self or (self.__decotime == nil) then
-		HAY_UTIL.OutputError( "CRITICAL ERROR : Please send the following report :: <<" .. tostring( self ) )
+		sharpeye_util.OutputError( "CRITICAL ERROR : Please send the following report :: <<" .. tostring( self ) )
 		debug.Trace()
-		HAY_UTIL.OutputError( ">> :: END OF CRITICA ERROR. Please send the report above." )
+		sharpeye_util.OutputError( ">> :: END OF CRITICA ERROR. Please send the report above." )
 		
 	end
 	return 1 - (CurTime() - self.__decotime) / FOCUS_ZOOMTIME
