@@ -108,7 +108,7 @@ function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
 	local relaxMode = sharpeye_focus:IsRelaxEnabled() and not self:HasFocus()
 	
 	FOCUS_FOVTOSET     = GetConVarNumber("fov_desired") or 75
-	FOCUS_FOV          = FOCUS_FOVTOSET + sharpeye:GetVar("detail_focus_aimsim" ) * 3.0 -- Default is 5 so 15
+	FOCUS_FOV          = FOCUS_FOVTOSET + 33 + sharpeye:GetVar("detail_focus_aimsimalter" ) * 3.0 -- Default is 5 so 15
 	FOCUS_MOUSESENSITIVITY = 1
 	FOCUS_ZOOMTIME         = 1.0
 	

@@ -1,3 +1,7 @@
+1.713
+Changed the way Aim Simulation works. Is now called Aim Calibration.
+&
+It basically is Aim Simulation set to 11, and you can calibrate it, or leave it to 0.
 1.712
 Fix attempt for Focus executing before being initialized.
 &

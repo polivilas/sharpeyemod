@@ -188,34 +188,39 @@ function sharpeye:BuildMenu()
 				
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_smoothing", { Type = "range", Text = "Viewmodel visual smoothing", Min = 0, Max = 16, Decimals = 0 } ) )
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_smoothlook", { Type = "range", Text = "Camera visual smoothing", Min = 0, Max = 16, Decimals = 0 } ) )
-				category.List:AddItem( self:BuildParamPanel( "detail_focus_aimsim", { Type = "range", Text = "Aim Simulation (Angle approximation)", Min = 0, Max = 16, Decimals = 0 } ) )
-				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshiftx", { Type = "range", Text = "Hand Shift (Weapon X-Perspective)", Min = 0, Max = 16, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_aimsimalter", { Type = "range", Text = "Aim Calibration", Min = -4, Max = 4, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshiftx", { Type = "range", Text = "Hand Shift (Aiming variation)", Min = 0, Max = 16, Decimals = 0 } ) )
 				
 				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label",Text = "Use AS/HS preset :" } ) )
 				
 				do
+					local tHandshift = {}
+					tHandshift[0] = #tHandshift + 2
+					tHandshift[4] = #tHandshift + 2
+					tHandshift[10] = #tHandshift + 2
+					tHandshift[30] = #tHandshift + 2
+					
+					local tReverse = {}
+					for hs,id in pairs( tHandshift ) do
+						tReverse[id] = hs
+					end
+					
 					local GeneralMulti = vgui.Create( "DMultiChoice" )
-					GeneralMulti:AddChoice( "Custom" )
-					GeneralMulti:AddChoice( "Old School" )
-					GeneralMulti:AddChoice( "Hand Shift Optimized" )
+					GeneralMulti:AddChoice( "Custom" )     // 1
+					GeneralMulti:AddChoice( "Old school" ) // 2
+					GeneralMulti:AddChoice( "Slight pan" ) // 3
+					GeneralMulti:AddChoice( "Both arms" )  // 4
+					GeneralMulti:AddChoice( "One arm" )    // 5
 					
 					GeneralMulti.OnSelect = function(index, value, data)
-						if value == 2 then
-							self:SetVar( "detail_focus_aimsim" , 5 )
-							self:SetVar( "detail_focus_handshiftx" , 0 )
-							
-						elseif value == 3 then
-							self:SetVar( "detail_focus_aimsim" , 8 )
-							self:SetVar( "detail_focus_handshiftx" , 4 )
-							
-						end
+						if tReverse[ value ] == nil then return end
+						self:SetVar( "detail_focus_handshiftx" , tReverse[ value ] )
 						
 					end
 					
 					do
-						local as = self:GetVar("detail_focus_aimsim")
 						local hs = self:GetVar("detail_focus_handshiftx")
-						GeneralMulti:ChooseOptionID( ((as == 5) and (hs == 0)) and 2 or ((as == 8) and (hs == 4)) and 3 or 1 )
+						GeneralMulti:ChooseOptionID( tHandshift[hs] or 1 )
 					
 					end
 					
@@ -225,6 +230,7 @@ function sharpeye:BuildMenu()
 				
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_anglex", { Type = "range", Text = "Left-Right pan angles (Extended)", Min = 0, Max = 60, Decimals = 0 } ) )
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_angley", { Type = "range", Text = "Up-Down pan angles (Extended)", Min = 0, Max = 60, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshiftx", { Type = "range", Text = "Hand Shift (Extended)", Min = 0, Max = 50, Decimals = 0 } ) )
 				
 				local toggleButton = self:BuildParamPanel( "noconvars", { Type = "panel_button", Text = "Toggle Focus", DoClick = function() sharpeye_focus:ToggleFocus() end } )
 				toggleButton:SetTooltip( "This should only be used to quickly debug if it gets stuck." )
