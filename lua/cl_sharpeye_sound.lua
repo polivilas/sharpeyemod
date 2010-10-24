@@ -80,7 +80,9 @@ function sharpeye:StoreBreathingGender()
 	self.dat.breathing_LastMode   = self:GetBreathingMode()
 end
 
-function sharpeye:PlayerFootstep( ply, pos, foot, sound, volume, rf )
+function sharpeye.PlayerFootstep( ply, pos, foot, sound, volume, rf )
+	local self = sharpeye
+	
 	if not self:IsEnabled() then return end
 	if not self:IsSoundEnabled() then return end
 	if not SinglePlayer() and not (ply == LocalPlayer()) then return end
@@ -96,20 +98,20 @@ function sharpeye:PlayerFootstep( ply, pos, foot, sound, volume, rf )
 	
 	if not isInDeepWater and not isInModerateWater then
 	
-		local dice = self:DiceNoRepeat(self.dat.footsteps, self.dat.footsteps_LastPlayed)
+		local dice = sharpeye_util.DiceNoRepeat(self.dat.footsteps, self.dat.footsteps_LastPlayed)
 		self.dat.footsteps_LastPlayed = dice
 		
 		ply:EmitSound(self.dat.footsteps[dice], sndVolume, sndPitch)
 		
 	elseif isInModerateWater then
 	
-		local dice = self:DiceNoRepeat(self.dat.sloshsteps, self.dat.sloshsteps_LastPlayed)
+		local dice = sharpeye_util.DiceNoRepeat(self.dat.sloshsteps, self.dat.sloshsteps_LastPlayed)
 		self.dat.sloshsteps_LastPlayed = dice
 		
 		ply:EmitSound(self.dat.sloshsteps[dice], sndVolume, sndPitch * 0.8)
 	
 	else
-		local dice = self:DiceNoRepeat(self.dat.watersteps, self.dat.watersteps_LastPlayed)
+		local dice = sharpeye_util.DiceNoRepeat(self.dat.watersteps, self.dat.watersteps_LastPlayed)
 		self.dat.watersteps_LastPlayed = dice
 		
 		ply:EmitSound(self.dat.watersteps[dice], sndVolume, sndPitch * 0.8)
@@ -236,14 +238,14 @@ function sharpeye:SoundThink(shouldTriggerStopSound, shouldTriggerWaterFlop, isI
 	local ply = LocalPlayer()
 	
 	if shouldTriggerStopSound and not shouldTriggerWaterFlop and not isInModerateWater and not isInDeepWater and not self:IsNoclipping() then
-		local dice = self:DiceNoRepeat(self.dat.stops, self.dat.footsteps_LastPlayed)
+		local dice = sharpeye_util.DiceNoRepeat(self.dat.stops, self.dat.footsteps_LastPlayed)
 		self.dat.footsteps_LastPlayed = dice
 	
 		ply:EmitSound(self.dat.stops[dice], 128, math.random(95, 105))
 	end
 	
 	if shouldTriggerWaterFlop then
-		local dice = self:DiceNoRepeat(self.dat.waterflop, self.dat.waterflop_LastPlayed)
+		local dice = sharpeye_util.DiceNoRepeat(self.dat.waterflop, self.dat.waterflop_LastPlayed)
 		self.dat.waterflop_LastPlayed = dice
 		
 		ply:EmitSound(self.dat.waterflop[dice], 128, math.random(95, 105))

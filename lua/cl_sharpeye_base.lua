@@ -169,6 +169,10 @@ end
 function sharpeye.Mount()
 	local self = sharpeye
 	
+	if SERVER then
+		return
+	end
+	
 	sharpeye_util.OutputLineBreak( )
 	sharpeye_util.OutputIn( "Mounting ..." )
 	
@@ -176,15 +180,18 @@ function sharpeye.Mount()
 		sharpeye_internal.QueryVersion( nil )
 	end
 	
-	if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
+	//if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
 		--If SinglePlayer, hook this server-side
+		//Something weird is happening. Ignore the thing.
 		hook.Add("PlayerFootstep", "sharpeye_PlayerFootstep", sharpeye.PlayerFootstep)
 		
-	end
-	
-	if SERVER then return end
+	//end
 	
 	self.dat = {}
+	/*if SERVER then
+		--self:InitializeData()
+		return
+	end*/
 	
 	self:RequireParameterMediator( )
 	
@@ -224,7 +231,7 @@ function sharpeye.Mount()
 	self:CreateVarParam( "range", "detail_focus_smoothing" , "5")
 	self:CreateVarParam( "range", "detail_focus_smoothlook" , "5")
 	self:CreateVarParam( "range", "detail_focus_aimsimalter" , "0")
-	self:CreateVarParam( "range", "detail_focus_handshiftx" , "4")
+	self:CreateVarParam( "range", "detail_focus_handshiftx" , "6")
 	self:CreateVarParam( "range", "detail_focus_handalternate" , "1")
 	self:CreateVarParam( "range", "detail_permablur" , "0")
 	

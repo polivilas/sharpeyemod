@@ -71,6 +71,15 @@ function HAY_UTIL.PercentCharge( fUniform )
 	
 end
 
+function HAY_UTIL.DiceNoRepeat( myTable, lastUsed )
+	local dice = math.random(1, #myTable - 1)
+	if (dice >= lastUsed) then
+		dice = dice + 1
+	end
+	
+	return dice
+end
+
 function HAY_UTIL.Cubar_FacepunchAlgorithm( )
 	if not facepunch then return end
 	

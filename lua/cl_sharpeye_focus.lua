@@ -131,7 +131,7 @@ function sharpeye_focus:IsApproach()
 		sharpeye_util.OutputError( ">> :: END OF CRITICA ERROR. Please send the report above." )
 		
 	end
-	return (CurTime() - self.__decotime) < FOCUS_ZOOMTIME
+	return (not self:HasFocus()) and (CurTime() - self.__decotime) < FOCUS_ZOOMTIME
 	
 end
 
@@ -332,6 +332,11 @@ function sharpeye_focus:AppendCalcView( view )
 		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * smoothFactorWeapon
 		self.__raccor_y_quo = self.__raccor_y_quo + (self.__raccor_y - self.__raccor_y_quo) * smoothFactorWeapon
 		pos = pos - Forward * self.__diligent * FOCUS_BACKING + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) + Up * self.__raccor_y_quo * FOCUS_HANDSHIFT
+		
+		/*if self.__shiftenable then
+			self.__shiftat = self.__shiftat + (self:HasFocus() and (self.__shiftme - self.__shiftat) or -1 * self.__shiftat) * smoothFactorWeapon
+			pos = pos + Forward * self.__shiftat.z * (1 - smoothFactorWeapon) + Right * self.__shiftat.x * (1 - smoothFactorWeapon) + Up * self.__shiftat.y * (1 - smoothFactorWeapon)
+		end*/
 		view.vm_origin = pos
 
 	--[[elseif self:IsApproach() then
@@ -508,6 +513,9 @@ function sharpeye_focus:Mount()
 	self.__raccor_y = 0
 	self.__raccor_x_quo = 0
 	self.__raccor_y_quo = 0
+	
+	//self.__shiftme = Vector( 0, 0, 0 )
+	//self.__shiftat = Vector( 0, 0, 0 )
 	
 	self:EvaluateConfigVars( true )
 

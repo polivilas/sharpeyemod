@@ -95,6 +95,7 @@ function sharpeye:Modulation( magic, speedMod, shift )
 end
 
 function sharpeye:DiceNoRepeat( myTable, lastUsed )
+	--debug.Trace()
 	local dice = math.random(1, #myTable - 1)
 	if (dice >= lastUsed) then
 		dice = dice + 1

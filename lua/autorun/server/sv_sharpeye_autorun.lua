@@ -4,7 +4,7 @@ if (SinglePlayer()) then
 	include("sh_sharpeye_autorun.lua")
 	
 elseif SHARPEYE_SENDCOPY then
-	AddCSLuaFile( "autorun/client/cl_sharpeye_autorun.lua" )
+	/*AddCSLuaFile( "autorun/client/cl_sharpeye_autorun.lua" )
 	AddCSLuaFile( "cl_sharpeye_base.lua" )
 	AddCSLuaFile( "cl_sharpeye_cvar_custom.lua" )
 	AddCSLuaFile( "cl_sharpeye_menu.lua" )
@@ -14,9 +14,11 @@ elseif SHARPEYE_SENDCOPY then
 	AddCSLuaFile( "cl_sharpeye_compatibility" )
 	AddCSLuaFile( "cl_sharpeye_vision.lua" )
 	--AddCSLuaFile( "CtrlColor.lua" )
-	AddCSLuaFile( "sh_sharpeye_autorun.lua" )
+	AddCSLuaFile( "sh_sharpeye_autorun.lua" )*/
 	
-	local sharpeye.dat = {}
+	sharpeye = {}
+	local self = sharpeye
+	self.dat = {}
 	self.dat.footsteps = {
 		"sharpeye/boots1.wav",
 		"sharpeye/boots2.wav",

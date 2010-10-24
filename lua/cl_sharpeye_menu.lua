@@ -139,6 +139,7 @@ function sharpeye:BuildMenu()
 				end
 				
 			end
+			
 		end
 		
 		local formDetails = vgui.Create( "DPanelList" )
@@ -237,6 +238,7 @@ function sharpeye:BuildMenu()
 				category.List:AddItem( toggleButton )
 				
 			end
+			
 			
 			do				
 				local category = vgui.Create("DCollapsibleCategory", formOptions)
