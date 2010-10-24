@@ -139,6 +139,45 @@ function sharpeye:BuildMenu()
 				end
 				
 			end
+			do
+				local category = vgui.Create("DCollapsibleCategory", formOptions)
+				category:SetExpanded( false )
+				category:SetLabel( "Menu shortcut" )
+				
+				category.List  = vgui.Create("DPanelList", category )
+				category.List:EnableHorizontal( false )
+				category.List:EnableVerticalScrollbar( false )
+				category.List:SetAutoSize( true )
+				
+				category:SetContents( category.List )
+				formOptions:AddItem( category )
+				
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "Did you know this menu can be opened using a console command or a key ? The binding \"sharpeye_menu\" allows you to open the menu (You can also use +sharpeye_menu as an hold-key action).\nExample : To assign it to the key 'F9', type in the console :", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_readonly", Text = "bind \"F9\" \"sharpeye_menu\"" } ) )
+
+				end
+			do
+				local category = vgui.Create("DCollapsibleCategory", formOptions)
+				category:SetExpanded( true )
+				category:SetLabel( "New Modifiers" )
+				
+				category.List  = vgui.Create("DPanelList", category )
+				category.List:EnableHorizontal( false )
+				category.List:EnableVerticalScrollbar( false )
+				category.List:SetAutoSize( true )
+				
+				category:SetContents( category.List )
+				formOptions:AddItem( category )
+				
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nA new option has been added in Focus Mode ! You can now tweak Hand Pull, that is the way your hands move when you are aiming up or down in Focus mode, and Hand Tilt, that is a slight tilt of your weapon on edges !", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handalternate", { Type = "bool", Text = "Let Handpull use the same value as Handshift" } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshiftx", { Type = "range", Text = "Hand Shift (Extended)", Min = 0, Max = 50, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshifty", { Type = "range", Text = "Hand Pull (Extended)", Min = 0, Max = 50, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handlean", { Type = "range", Text = "Hand Tilt (Weapon tilt)", Min = 0, Max = 10, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handlean", { Type = "range", Text = "Hand Tilt (Extended on negatives)", Min = -10, Max = 10, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nChoosing different values for Handshift and Handpull can result in various effects ! (If you want to simulate the way it was before the update, check \"Let Handpull use the same value as Handshift\" and only tweak Handshift value).", Wrap = true } ) )
+				
+			end
 			
 		end
 		
@@ -190,7 +229,10 @@ function sharpeye:BuildMenu()
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_smoothing", { Type = "range", Text = "Viewmodel visual smoothing", Min = 0, Max = 16, Decimals = 0 } ) )
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_smoothlook", { Type = "range", Text = "Camera visual smoothing", Min = 0, Max = 16, Decimals = 0 } ) )
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_aimsimalter", { Type = "range", Text = "Aim Calibration", Min = -4, Max = 4, Decimals = 0 } ) )
-				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshiftx", { Type = "range", Text = "Hand Shift (Aiming variation)", Min = 0, Max = 16, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handalternate", { Type = "bool", Text = "Let Handpull use the same value as Handshift" } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshiftx", { Type = "range", Text = "Hand Shift (Aiming x-variation)", Min = 0, Max = 16, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshifty", { Type = "range", Text = "Hand Pull (Aiming y-variation)", Min = 0, Max = 16, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handlean", { Type = "range", Text = "Hand Tilt (Weapon tilt)", Min = 0, Max = 10, Decimals = 0 } ) )
 				
 				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label",Text = "Use AS/HS preset :" } ) )
 				
@@ -216,6 +258,7 @@ function sharpeye:BuildMenu()
 					GeneralMulti.OnSelect = function(index, value, data)
 						if tReverse[ value ] == nil then return end
 						self:SetVar( "detail_focus_handshiftx" , tReverse[ value ] )
+						self:SetVar( "detail_focus_handshifty" , tReverse[ value ] )
 						
 					end
 					
@@ -232,6 +275,8 @@ function sharpeye:BuildMenu()
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_anglex", { Type = "range", Text = "Left-Right pan angles (Extended)", Min = 0, Max = 60, Decimals = 0 } ) )
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_angley", { Type = "range", Text = "Up-Down pan angles (Extended)", Min = 0, Max = 60, Decimals = 0 } ) )
 				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshiftx", { Type = "range", Text = "Hand Shift (Extended)", Min = 0, Max = 50, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshifty", { Type = "range", Text = "Hand Pull (Extended)", Min = 0, Max = 50, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_focus_handlean", { Type = "range", Text = "Hand Tilt (Extended on negatives)", Min = -10, Max = 10, Decimals = 0 } ) )
 				
 				local toggleButton = self:BuildParamPanel( "noconvars", { Type = "panel_button", Text = "Toggle Focus", DoClick = function() sharpeye_focus:ToggleFocus() end } )
 				toggleButton:SetTooltip( "This should only be used to quickly debug if it gets stuck." )

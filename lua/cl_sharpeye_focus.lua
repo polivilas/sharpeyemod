@@ -101,8 +101,10 @@ local FOCUS_LIMITANGLE_X
 local FOCUS_LIMITANGLE_Y
 local FOCUS_BACKING
 local FOCUS_HANDSHIFT
+local FOCUS_HANDPULL
 local FOCUS_SMOOTHWEAPON
 local FOCUS_SMOOTHLOOK
+local FOCUS_HANDLEAN
 
 function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
 	local relaxMode = sharpeye_focus:IsRelaxEnabled() and not self:HasFocus()
@@ -119,8 +121,10 @@ function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
 	FOCUS_BACKING       = sharpeye:GetVar("detail_focus_backing" )                -- Default is 5 so 5.
 	//FOCUS_HANDALTERNATE = (sharpeye:GetVar("detail_focus_handalternate" ) > 0)
 	FOCUS_HANDSHIFT     = sharpeye:GetVar("detail_focus_handshiftx" ) * 0.5       -- Default is 5 so 2.5.
+	FOCUS_HANDPULL      = (sharpeye:GetVar("detail_focus_handalternate") > 0) and FOCUS_HANDSHIFT or sharpeye:GetVar("detail_focus_handshifty" ) * 0.5       -- Default is 5 so 2.5.
 	FOCUS_SMOOTHWEAPON  = 1 - (sharpeye:GetVar("detail_focus_smoothing" ) * 0.1) * 0.95  -- Default is 5 so 2.5.
 	FOCUS_SMOOTHLOOK    = 1 - (sharpeye:GetVar("detail_focus_smoothlook" ) * 0.1) * 0.95 -- Default is 5 so 2.5.
+	FOCUS_HANDLEAN    = (sharpeye:GetVar("detail_focus_handlean" ) * 0.1) * 64
 	
 end
 
@@ -272,15 +276,31 @@ function sharpeye_focus:AppendCalcView( view )
 			angles.y = 2 * usefulViewAng.y - angles.y
 		end
 		
+
+		---- RACCOR Script
+		--self.__raccor_x = (diff_y - usefulViewAng.y)/FOCUS_LIMITANGLE_X
+		--self.__raccor_y = (diff_p - usefulViewAng.p)/FOCUS_LIMITANGLE_Y
+		self.__raccor_x = math.NormalizeAngle(diff_y - usefulViewAng.y) / FOCUS_LIMITANGLE_CSTBASE
+		self.__raccor_y = math.NormalizeAngle(diff_p - usefulViewAng.p) / FOCUS_LIMITANGLE_CSTBASE
+		self.__diligent = (self.__raccor_x^2 + self.__raccor_y^2)^0.5
+		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * smoothFactorWeapon
+		self.__raccor_y_quo = self.__raccor_y_quo + (self.__raccor_y - self.__raccor_y_quo) * smoothFactorWeapon
+		
+		
+		angles.r = angles.r + self.__raccor_x_quo * FOCUS_HANDLEAN
+		
 		-- Rotate for SWEPs with custom angles.
 		local Forward 	= angles:Forward()
 		local Right 	= angles:Right()
 		local Up 	    = angles:Up()
+		
 		if view.vm_angles then
 			angles:RotateAroundAxis( angles:Right(), 	- view.vm_angles.p + self.__oriAngle.p )
 			angles:RotateAroundAxis( angles:Up(), 		view.vm_angles.y - self.__oriAngle.y ) 
 			angles:RotateAroundAxis( angles:Forward(),  view.vm_angles.r - self.__oriAngle.r )
 		end
+		
+		--angles.r = self.__raccor_x_quo * 24
 		
 		if self.__bViewWasModified then -- If first frame then Snap.
 			self.__bViewWasModified = false
@@ -322,16 +342,17 @@ function sharpeye_focus:AppendCalcView( view )
 		local Forward 	= angles:Forward()
 		local Right 	= angles:Right()
 		local Up 	    = angles:Up()
-		--self.__raccor_x = (diff_y - usefulViewAng.y)/FOCUS_LIMITANGLE_X
-		--self.__raccor_y = (diff_p - usefulViewAng.p)/FOCUS_LIMITANGLE_Y
-		self.__raccor_x = math.NormalizeAngle(diff_y - usefulViewAng.y) / FOCUS_LIMITANGLE_CSTBASE
-		self.__raccor_y = math.NormalizeAngle(diff_p - usefulViewAng.p) / FOCUS_LIMITANGLE_CSTBASE
+		// RACCOR USED TO BE HERE
 		
-		self.__diligent = (self.__raccor_x^2 + self.__raccor_y^2)^0.5
+		pos = pos - Forward * self.__diligent * FOCUS_BACKING + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) + Up * self.__raccor_y_quo * FOCUS_HANDPULL
+		--pos = pos + Right * -4
 		
-		self.__raccor_x_quo = self.__raccor_x_quo + (self.__raccor_x - self.__raccor_x_quo) * smoothFactorWeapon
-		self.__raccor_y_quo = self.__raccor_y_quo + (self.__raccor_y - self.__raccor_y_quo) * smoothFactorWeapon
-		pos = pos - Forward * self.__diligent * FOCUS_BACKING + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) + Up * self.__raccor_y_quo * FOCUS_HANDSHIFT
+		---- Focus Leaning
+		-- Don't delete the following lines of code
+		--local vario = self.__smoothCameraAngles:Right() * self.__raccor_x_quo^3 * -32 + self.__smoothCameraAngles:Up() * self.__raccor_y_quo^3 * -32 * -1
+		--view.origin = view.origin + vario
+		--pos = pos - vario
+		----self.__smoothCameraAngles.r = self.__smoothCameraAngles.r + self.__raccor_x_quo^3 * -40
 		
 		/*if self.__shiftenable then
 			self.__shiftat = self.__shiftat + (self:HasFocus() and (self.__shiftme - self.__shiftat) or -1 * self.__shiftat) * smoothFactorWeapon

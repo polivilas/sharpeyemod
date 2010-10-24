@@ -232,6 +232,8 @@ function sharpeye.Mount()
 	self:CreateVarParam( "range", "detail_focus_smoothlook" , "5")
 	self:CreateVarParam( "range", "detail_focus_aimsimalter" , "0")
 	self:CreateVarParam( "range", "detail_focus_handshiftx" , "6")
+	self:CreateVarParam( "range", "detail_focus_handshifty" , "6")
+	self:CreateVarParam( "range", "detail_focus_handlean" , "0")
 	self:CreateVarParam( "range", "detail_focus_handalternate" , "1")
 	self:CreateVarParam( "range", "detail_permablur" , "0")
 	
