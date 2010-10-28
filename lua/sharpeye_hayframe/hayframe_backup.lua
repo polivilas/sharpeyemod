@@ -42,7 +42,7 @@ function HAY_MAIN:BackupReadDump()
 	local tLines = string.Explode("\n", sHypo)
 	
 	for iLine,sLine in pairs( tLines ) do
-		local space = string.find( sLine, " " )
+		local space = string.find( sLine or "", " " )
 		if space then
 			local var   = string.sub( sLine, 1, space - 1 )
 			local value = string.sub( sLine, space + 1 )
