@@ -1,3 +1,5 @@
+1.722
+Attempt to fix twitchy Focus mode.
 1.721
 Trying to pinpoint a bug due to an edge case on Hayframe Backup.
 1.72

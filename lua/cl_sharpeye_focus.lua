@@ -315,8 +315,9 @@ function sharpeye_focus:AppendCalcView( view )
 			self.__vm_angles.y = angles.y
 			self.__vm_angles.r = angles.r
 			
-			self.__raccor_x_quo = 0
-			self.__raccor_y_quo = 0
+			---- Commented out to remove abrupt snapping when refocusing smoothed
+			--self.__raccor_x_quo = 0
+			--self.__raccor_y_quo = 0
 			
 		else -- Else, approach the deltas from model to the centre view using a smoothing of the delta of the remaining angle.
 			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
