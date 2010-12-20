@@ -13,7 +13,7 @@ function sharpeye:IsMotionEnabled()
 end
 
 function sharpeye:IsUsingEmotion()
-	return self:GetVar("core_emotion") > 0
+	return false or self:GetVar("core_emotion") > 0
 end
 
 function sharpeye:HookMotion()
