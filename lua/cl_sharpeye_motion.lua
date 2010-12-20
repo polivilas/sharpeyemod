@@ -12,6 +12,10 @@ function sharpeye:IsMotionEnabled()
 	return self:GetVar("core_motion") > 0
 end
 
+function sharpeye:IsUsingEmotion()
+	return self:GetVar("core_emotion") > 0
+end
+
 function sharpeye:HookMotion()
 	if self.dat.motion_hooked then return end
 	hook.Add("CalcView", "sharpeye_CalcView", sharpeye.CalcView)
@@ -124,6 +128,79 @@ function sharpeye:Detail_GetPermablurAmount()
 	return self:GetVar("detail_permablur") * 0.005
 end
 
+function sharpeye:ApplyMotion( ply, origin, angles, fov, view )
+	local relativeSpeed = ply:GetVelocity():Length() / self:GetBasisRunSpeed()
+	local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
+	
+	local fStamina = self:GetStamina()
+	local correction = math.Clamp( FrameTime() * 33 , 0 , 1	)
+	local shiftMod = self.dat.player_TimeShift + fStamina * self:Detail_GetRunningBobFrequency() * ( 1 + clampedSpeedCustom ) / 2 * correction
+	local runMod = self.dat.player_TimeRun + 0.05 * ( 1 + clampedSpeedCustom ) / 2 * correction
+	local distMod  = (1 + fStamina * 7 * ( 2 + clampedSpeedCustom ) / 3) * self:Detail_GetMasterMod()
+	local breatheMod  = (1 + fStamina * self:Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2)
+	
+	--Step algo
+	local stepMod = (self.dat.player_TimeOffGround < 0.5) and (self:Detail_GetStepmodIntensity() * clampedSpeedCustom * math.abs( math.sin( CurTime() * 2 + runMod * self:Detail_GetStepmodFrequency() ) ) * (1 - self.dat.player_TimeOffGround * 2)) or 0
+	
+	self.dat.player_TimeShift = shiftMod
+	self.dat.player_TimeRun   = runMod
+	
+	view.origin.x = view.origin.x + self:Modulation(27, 1, shiftMod) * distMod
+	view.origin.y = view.origin.y + self:Modulation(16, 1, shiftMod) * distMod
+	view.origin.z = view.origin.z + self:Modulation(7 , 1, shiftMod) * distMod + stepMod
+	
+	self.dat.player_PitchInfluence = self.dat.player_PitchInfluence - (self.dat.player_PitchInfluence * 0.1 * correction)
+	--print(self.dat.player_PitchInfluence)
+	
+	if self.dat.player_TimeOffGroundWhenLanding > 0 then
+		local timeFactor = self.dat.player_TimeOffGroundWhenLanding
+		timeFactor = (timeFactor > 2) and 1 or (timeFactor / 2)
+		self.dat.player_PitchInfluence = self.dat.player_PitchInfluence + timeFactor * self:Detail_GetLandingAngle()
+		
+	end
+	
+	local pitchMod = self.dat.player_PitchInfluence
+	-- This should not execute in Machinima Mode
+	if not self:IsNoclipping() then
+		pitchMod = pitchMod - ((self.dat.player_TimeOffGround > 0) and ((1 + ((self.dat.player_TimeOffGround > 2) and 1 or (self.dat.player_TimeOffGround / 2))) * self:Detail_GetLandingAngle() / 6) or 0)
+		
+	end
+	
+	local rollCalc = 0
+	if (relativeSpeed > 1.8) then
+		local angleDiff = math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y)
+		if math.abs(angleDiff) < 110 then
+			rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * self:Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2
+
+		else
+			rollCalc = 0
+			
+		end
+		
+	else
+		rollCalc = 0
+		
+	end
+	self.dat.player_RollChange = self.dat.player_RollChange + (rollCalc - self.dat.player_RollChange) * math.Clamp( 0.2 * FrameTime() * 25 , 0 , 1 )
+	
+	local precisionShot = ((math.Clamp(view.fov, 20, 75) - 15) / 60)
+	
+	--Distorsion algorithm
+	local healthFactorDecreased = 1 - self:GetHealthFactor() ^ 2
+	// Please check. In theory, the shake will never aim the center except if intensity is set to 0.
+	local slightDistorsionAccident = self:Detail_GetShakemodIntensity() * (2 + (1 - healthFactorDecreased) * self:Modulation(11, 1, shiftMod) + healthFactorDecreased * self:Modulation(11, 1 + self:Detail_GetShakemodHealthMod(), shiftMod)) ^ 2
+	// Check neglictible nature of the first sine
+	//local slightDistorsionAngle = self:Modulation(24, 1, shiftMod) + CurTime() - self:Modulation(7, 1, shiftMod) * 4
+	local slightDistorsionAngle = CurTime() + self:Modulation(7, 1, shiftMod) * 4
+	local sD_changeY, sD_changeP = math.cos( slightDistorsionAngle ) * slightDistorsionAccident, math.sin( slightDistorsionAngle ) * slightDistorsionAccident
+	
+	view.angles.p = view.angles.p + precisionShot * self:Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod + sD_changeP
+	view.angles.y = view.angles.y + self:Modulation(11, 1, shiftMod) * 0.1 * distMod + sD_changeY
+	view.angles.r = view.angles.r + self:Modulation(24, 1, shiftMod) * 0.1 * distMod - self.dat.player_RollChange
+	view.angles.p = math.Clamp(view.angles.p, -89.99, 89.99)
+	
+end
+
 function sharpeye.CalcView( ply, origin, angles, fov )
 	local self = sharpeye
 	// Disabled Compatibility Module
@@ -194,76 +271,13 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 	local ragdollMode = self:IsInRagdollMode()
 	if not self:ShouldBobbingDisableCompletely() and (self:InMachinimaMode() or (not self:IsNoclipping() and not self:ShouldBobbingDisableWithTools() and not ragdollMode)) then
-		
-		local relativeSpeed = ply:GetVelocity():Length() / self:GetBasisRunSpeed()
-		local clampedSpeedCustom = (relativeSpeed > 3) and 1 or (relativeSpeed / 3)
-		
-		local fStamina = self:GetStamina()
-		local correction = math.Clamp( FrameTime() * 33 , 0 , 1	)
-		local shiftMod = self.dat.player_TimeShift + fStamina * self:Detail_GetRunningBobFrequency() * ( 1 + clampedSpeedCustom ) / 2 * correction
-		local runMod = self.dat.player_TimeRun + 0.05 * ( 1 + clampedSpeedCustom ) / 2 * correction
-		local distMod  = (1 + fStamina * 7 * ( 2 + clampedSpeedCustom ) / 3) * self:Detail_GetMasterMod()
-		local breatheMod  = (1 + fStamina * self:Detail_GetBreatheBobDistance() * (1 - clampedSpeedCustom)^2)
-		
-		--Step algo
-		local stepMod = (self.dat.player_TimeOffGround < 0.5) and (self:Detail_GetStepmodIntensity() * clampedSpeedCustom * math.abs( math.sin( CurTime() * 2 + runMod * self:Detail_GetStepmodFrequency() ) ) * (1 - self.dat.player_TimeOffGround * 2)) or 0
-		
-		self.dat.player_TimeShift = shiftMod
-		self.dat.player_TimeRun   = runMod
-		
-		view.origin.x = view.origin.x + self:Modulation(27, 1, shiftMod) * distMod
-		view.origin.y = view.origin.y + self:Modulation(16, 1, shiftMod) * distMod
-		view.origin.z = view.origin.z + self:Modulation(7 , 1, shiftMod) * distMod + stepMod
-		
-		self.dat.player_PitchInfluence = self.dat.player_PitchInfluence - (self.dat.player_PitchInfluence * 0.1 * correction)
-		--print(self.dat.player_PitchInfluence)
-		
-		if self.dat.player_TimeOffGroundWhenLanding > 0 then
-			local timeFactor = self.dat.player_TimeOffGroundWhenLanding
-			timeFactor = (timeFactor > 2) and 1 or (timeFactor / 2)
-			self.dat.player_PitchInfluence = self.dat.player_PitchInfluence + timeFactor * self:Detail_GetLandingAngle()
-			
-		end
-		
-		local pitchMod = self.dat.player_PitchInfluence
-		-- This should not execute in Machinima Mode
-		if not self:IsNoclipping() then
-			pitchMod = pitchMod - ((self.dat.player_TimeOffGround > 0) and ((1 + ((self.dat.player_TimeOffGround > 2) and 1 or (self.dat.player_TimeOffGround / 2))) * self:Detail_GetLandingAngle() / 6) or 0)
-			
-		end
-		
-		local rollCalc = 0
-		if (relativeSpeed > 1.8) then
-			local angleDiff = math.AngleDifference(ply:GetVelocity():Angle().y, ply:EyeAngles().y)
-			if math.abs(angleDiff) < 110 then
-				rollCalc = ((angleDiff > 0) and 1 or -1) * (1 - ((1 - (math.abs(angleDiff) / 110)) ^ 2)) * self:Detail_GetLeaningAngle() * math.Clamp((relativeSpeed - 1.8), 0, 1) ^ 2
-
-			else
-				rollCalc = 0
-				
-			end
+		if self:IsUsingEmotion() then
+			self:ApplyEmotion( ply, origin, angles, fov, view )
 			
 		else
-			rollCalc = 0
+			self:ApplyMotion( ply, origin, angles, fov, view )
 			
 		end
-		self.dat.player_RollChange = self.dat.player_RollChange + (rollCalc - self.dat.player_RollChange) * math.Clamp( 0.2 * FrameTime() * 25 , 0 , 1 )
-		
-		local precisionShot = ((math.Clamp(view.fov, 20, 75) - 15) / 60)
-		
-		--Distorsion algorithm
-		local healthFactorDecreased = 1 - self:GetHealthFactor() ^ 2
-		// Please check. In theory, the shake will never aim the center except if intensity is set to 0.
-		local slightDistorsionAccident = self:Detail_GetShakemodIntensity() * (2 + (1 - healthFactorDecreased) * self:Modulation(11, 1, shiftMod) + healthFactorDecreased * self:Modulation(11, 1 + self:Detail_GetShakemodHealthMod(), shiftMod)) ^ 2
-		// Check neglictible nature of the first sine
-		//local slightDistorsionAngle = self:Modulation(24, 1, shiftMod) + CurTime() - self:Modulation(7, 1, shiftMod) * 4
-		local slightDistorsionAngle = CurTime() + self:Modulation(7, 1, shiftMod) * 4
-		local sD_changeY, sD_changeP = math.cos( slightDistorsionAngle ) * slightDistorsionAccident, math.sin( slightDistorsionAngle ) * slightDistorsionAccident
-		
-		view.angles.p = view.angles.p + precisionShot * self:Modulation(8 , 1, shiftMod * 0.7) * 0.2 * breatheMod + pitchMod + sD_changeP
-		view.angles.y = view.angles.y + self:Modulation(11, 1, shiftMod) * 0.1 * distMod + sD_changeY
-		view.angles.r = view.angles.r + self:Modulation(24, 1, shiftMod) * 0.1 * distMod - self.dat.player_RollChange
-		view.angles.p = math.Clamp(view.angles.p, -89.99, 89.99)
 		
 	elseif ragdollMode then -- Player is dead and has a ragdoll
 

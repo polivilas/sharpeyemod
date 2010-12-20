@@ -196,11 +196,12 @@ function sharpeye.Mount()
 	self:RequireParameterMediator( )
 	
 	self:CreateVarParam( "bool", "core_enable", "1" )
-	self:CreateVarParam( "bool", "core_enable", "1")
 	self:CreateVarParam( "bool", "core_motion", "1")
 	self:CreateVarParam( "bool", "core_sound" , "1")
 	self:CreateVarParam( "bool", "core_crosshair" , "1")
 	self:CreateVarParam( "bool", "core_overlay" , "0")
+	
+	self:CreateVarParam( "bool", "core_emotion", "1")
 	
 	self:CreateVarParam( "bool", "opt_focus", "1")
 	self:CreateVarParam( "bool", "opt_relax", "0")

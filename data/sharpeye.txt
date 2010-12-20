@@ -1,3 +1,9 @@
+1.73
+Changed the way Stamina works.
+&
+Added Stamina bar in the menu for testing.
+&
+Began fixing Graphics Tablet.
 1.722
 Attempt to fix twitchy Focus mode.
 1.721

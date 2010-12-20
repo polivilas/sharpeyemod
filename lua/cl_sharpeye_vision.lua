@@ -114,6 +114,7 @@ function sharpeye.HUDPaint()
 		local focusSize   = self:GetCrosshairFocusSize()
 		local focusShadowSize   = self:GetCrosshairFocusShadowSize()
 		
+		
 		if staticSize > 0 then
 			self:SetDrawColorFromVar( "xhair_color" )
 			surface.SetTexture(self.dat.crosshair.shape[1])
@@ -155,7 +156,6 @@ function sharpeye.HUDPaint()
 		
 		-- Calculating
 		self.dat.crosshair.traceLineData = utilx.GetPlayerTrace( LocalPlayer(), vgui.IsHoveringWorld() and LocalPlayer():GetCursorAimVector() or LocalPlayer():GetAimVector() )
-		
 		
 		self.dat.crosshair.traceLineData.mask = nil
 		self.dat.crosshair.traceLineRes = util.TraceLine( self.dat.crosshair.traceLineData )

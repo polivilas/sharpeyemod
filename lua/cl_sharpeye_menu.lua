@@ -95,6 +95,21 @@ function sharpeye:BuildMenu()
 				category.List:AddItem( self:BuildParamPanel( "core_sound", { Type = "bool", Text = "Enable Sounds" } ) )
 				category.List:AddItem( self:BuildParamPanel( "core_crosshair", { Type = "bool", Text = "Enable Crosshair" } ) )
 				category.List:AddItem( self:BuildParamPanel( "core_overlay", { Type = "bool", Text = "Enable Tunnel" } ) )
+				
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "Stamina" } ) )
+				
+				
+				local labelStamina = vgui.Create( "DLabel", category )
+				labelStamina:SetText( "" )
+				labelStamina.Paint = function(self)
+					surface.SetDrawColor(255, 255, 255, 255)
+					surface.DrawRect(0, 0, self:GetWide() * sharpeye:GetStamina(), self:GetTall())
+					surface.SetDrawColor(0, 0, 0, 255)
+					surface.DrawRect(self:GetWide() * sharpeye:GetStamina(), 0, self:GetWide() - self:GetWide() * sharpeye:GetStamina(), self:GetTall())
+					return false
+					
+				end
+				category.List:AddItem( labelStamina )
 			end
 			
 			do
@@ -109,6 +124,8 @@ function sharpeye:BuildMenu()
 				
 				category:SetContents( category.List )
 				formOptions:AddItem( category )
+				
+				//category.List:AddItem( self:BuildParamPanel( "core_emotion", { Type = "bool", Text = "Use eMotion instead of Motion (ALPHA)" } ) )
 				
 				category.List:AddItem( self:BuildParamPanel( "opt_firstpersondeath", { Type = "bool", Text = "Use First Person Deathcam" } ) )
 				category.List:AddItem( self:BuildParamPanel( "opt_relax", { Type = "bool", Text = "Use Relax Mode (Smoothed view)" } ) )
@@ -156,7 +173,7 @@ function sharpeye:BuildMenu()
 				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_readonly", Text = "bind \"F9\" \"sharpeye_menu\"" } ) )
 
 				end
-			do
+			/*do
 				local category = vgui.Create("DCollapsibleCategory", formOptions)
 				category:SetExpanded( true )
 				category:SetLabel( "New Modifiers" )
@@ -169,15 +186,12 @@ function sharpeye:BuildMenu()
 				category:SetContents( category.List )
 				formOptions:AddItem( category )
 				
-				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nA new option has been added in Focus Mode ! You can now tweak Hand Pull, that is the way your hands move when you are aiming up or down in Focus mode, and Hand Tilt, that is a slight tilt of your weapon on edges !", Wrap = true } ) )
-				category.List:AddItem( self:BuildParamPanel( "detail_focus_handalternate", { Type = "bool", Text = "Let Handpull use the same value as Handshift" } ) )
-				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshiftx", { Type = "range", Text = "Hand Shift (Extended)", Min = 0, Max = 50, Decimals = 0 } ) )
-				category.List:AddItem( self:BuildParamPanel( "detail_focus_handshifty", { Type = "range", Text = "Hand Pull (Extended)", Min = 0, Max = 50, Decimals = 0 } ) )
-				category.List:AddItem( self:BuildParamPanel( "detail_focus_handlean", { Type = "range", Text = "Hand Tilt (Weapon tilt)", Min = 0, Max = 10, Decimals = 0 } ) )
-				category.List:AddItem( self:BuildParamPanel( "detail_focus_handlean", { Type = "range", Text = "Hand Tilt (Extended on negatives)", Min = -10, Max = 10, Decimals = 0 } ) )
-				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nChoosing different values for Handshift and Handpull can result in various effects ! (If you want to simulate the way it was before the update, check \"Let Handpull use the same value as Handshift\" and only tweak Handshift value).", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "eMotion is a new experimental Motion Module, that is different from classic motion. Want to try out?", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "core_emotion", { Type = "bool", Text = "Use eMotion instead of Motion (ALPHA)" } ) )
 				
-			end
+				
+				
+			end*/
 			
 		end
 		
@@ -305,6 +319,20 @@ function sharpeye:BuildMenu()
 				
 				category.List:AddItem( self:BuildParamPanel( "basis_healthbased", { Type = "range", Text = "Behaviour Intensity by health", Min = 0, Max = 10, Decimals = 0 } ) )
 				
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "Stamina" } ) )
+				local labelStamina = vgui.Create( "DLabel", category )
+				labelStamina:SetText( "" )
+				labelStamina.Paint = function(self)
+					surface.SetDrawColor(255, 255, 255, 255)
+					surface.DrawRect(0, 0, self:GetWide() * sharpeye:GetStamina(), self:GetTall())
+					surface.SetDrawColor(0, 0, 0, 255)
+					surface.DrawRect(self:GetWide() * sharpeye:GetStamina(), 0, self:GetWide() - self:GetWide() * sharpeye:GetStamina(), self:GetTall())
+					return false
+					
+				end
+				category.List:AddItem( labelStamina )
+				
+				
 			end
 			
 			do				
@@ -409,7 +437,7 @@ function sharpeye:BuildMenu()
 				category:SetContents( category.List )
 				formAdvanced:AddItem( category )
 				
-				category.List:AddItem( self:BuildParamPanel( "detail_mastermod", { Type = "range", Text = "Master Spark", Min = 0, Max = 10, Decimals = 0 } ) )
+				category.List:AddItem( self:BuildParamPanel( "detail_mastermod", { Type = "range", Text = "Master Scale", Min = 0, Max = 10, Decimals = 0 } ) )
 				
 				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nYou can either use " .. tostring(SHARPEYE_NAME) .. " integrated Motion blur extension which hubs with Source Engine's motion blur. However, experienced users may want to use the integrated Source \"Forward motion blur\" and disable this one.", Wrap = true } ) )
 				category.List:AddItem( self:BuildParamPanel( "opt_motionblur", { Type = "bool", Text = "Use " .. tostring(SHARPEYE_NAME) .. " Motion Blur" } ) )

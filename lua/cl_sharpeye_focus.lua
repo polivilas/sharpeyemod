@@ -17,7 +17,6 @@
 //
 ////////////////////////////////////////////////
 
-// ATTENTION PERSONNEL. sharpeye_focus USES METHODS.
 local sharpeye = sharpeye
 local sharpeye_focus = sharpeye_focus
 
@@ -360,75 +359,7 @@ function sharpeye_focus:AppendCalcView( view )
 			pos = pos + Forward * self.__shiftat.z * (1 - smoothFactorWeapon) + Right * self.__shiftat.x * (1 - smoothFactorWeapon) + Up * self.__shiftat.y * (1 - smoothFactorWeapon)
 		end*/
 		view.vm_origin = pos
-
-	--[[elseif self:IsApproach() then
-		local ratio = self:ApproachRatio()
-		local ratioSq = ratio ^ 2
-		local spratio = 1 + (1 - ratioSq) * 0.5
 		
-		local smoothFactorWeapon = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHWEAPON * spratio
-		local smoothFactorLook = math.Clamp( FrameTime() / 0.03, 0, 1 ) * FOCUS_SMOOTHLOOK * spratio
-		
-		self.__oriAngle.p = view.angles.p
-		self.__oriAngle.y = view.angles.y
-		self.__oriAngle.r = view.angles.r
-		
-		local angles = view.angles -- Redundant, but we do the analogy with the code before
-		local actualViewAng = view.angles
-		local tp,ty,tr = math.AngleDifference(self.__smoothCameraAngles.p, actualViewAng.p), math.AngleDifference(self.__smoothCameraAngles.y, actualViewAng.y), math.AngleDifference(self.__smoothCameraAngles.r, actualViewAng.r)
-		
-		self.__smoothCameraAngles.p = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.p, actualViewAng.p, tp * smoothFactorLook) )
-		self.__smoothCameraAngles.y = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.y, actualViewAng.y, ty * smoothFactorLook) )
-		self.__smoothCameraAngles.r = math.NormalizeAngle( math.ApproachAngle( self.__smoothCameraAngles.r, actualViewAng.r, tr * smoothFactorLook) )
-		
-		/*view.angles.p = self.__smoothCameraAngles.p
-		view.angles.y = self.__smoothCameraAngles.y
-		view.angles.r = self.__smoothCameraAngles.r*/
-		
-		local usefulViewAng = self.__smoothCameraAngles
-		view.angles = usefulViewAng
-		
-		-- Fov is variable from aimsimulation.
-		local fovratio = FOCUS_FOVTOSET / FOCUS_FOV
-		angles = (angles * fovratio) + (usefulViewAng * (1 - fovratio))
-		
-		-- CS:S models needs to have YAW flipped.
-		if FOCUS_FLIP then
-			angles.y = 2 * usefulViewAng.y - angles.y
-		end
-		
-		-- Rotate for SWEPs with custom angles.
-		/*if view.vm_angles then
-			angles:RotateAroundAxis( angles:Right(), 	view.vm_angles.p - self.__oriAngle.p )
-			angles:RotateAroundAxis( angles:Up(), 		view.vm_angles.y - self.__oriAngle.y ) 
-			angles:RotateAroundAxis( angles:Forward(),  view.vm_angles.r - self.__oriAngle.r )
-		end*/
-		
-		if view.vm_angles then
-			local ap,ay,ar = math.AngleDifference(angles.p, usefulViewAng.p), math.AngleDifference(angles.y, usefulViewAng.y), math.AngleDifference(angles.r, usefulViewAng.r)
-			local dp,dy,dr = math.AngleDifference(self.__vm_angles_delta.p, ap), math.AngleDifference(self.__vm_angles_delta.y, ay), math.AngleDifference(self.__vm_angles_delta.r, ar)
-		
-			self.__vm_angles_delta.p = math.ApproachAngle( self.__vm_angles_delta.p, ap, dp * smoothFactorWeapon ) * ratioSq
-			self.__vm_angles_delta.y = math.ApproachAngle( self.__vm_angles_delta.y, ay, dy * smoothFactorWeapon ) * ratioSq
-			self.__vm_angles_delta.r = math.ApproachAngle( self.__vm_angles_delta.r, ar, dr * smoothFactorWeapon ) * ratioSq
-			
-			self.__vm_angles.p = usefulViewAng.p + self.__vm_angles_delta.p
-			self.__vm_angles.y = usefulViewAng.y + self.__vm_angles_delta.y
-			self.__vm_angles.r = usefulViewAng.r + self.__vm_angles_delta.r
-
-			/*view.vm_angles.p = self.__vm_angles.p 
-			view.vm_angles.y = self.__vm_angles.y
-			view.vm_angles.r = self.__vm_angles.r*/
-			view.vm_angles = self.__vm_angles
-			
-		end
-		
-		local pos = view.vm_origin or view.origin
-		local Forward = view.vm_angles:Forward()
-		local Right   = view.vm_angles:Right()
-		local Up 	  = view.vm_angles:Up()
-		view.vm_origin = pos - Forward * self.__diligent * FOCUS_BACKING * ratioSq + Right * self.__raccor_x_quo * FOCUS_HANDSHIFT * (FOCUS_FLIP and -1 or 1) * ratioSq + Up * self.__raccor_y_quo * FOCUS_HANDSHIFT * ratioSq 
-		]]--
 	end
 	
 end

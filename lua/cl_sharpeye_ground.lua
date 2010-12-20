@@ -58,7 +58,7 @@ end
 function sharpeye:GetBasisStaminaRecover()
 	-- Default is 5, so 0.25 that means 0.97
 	-- Assume the end user will never make it negative.
-	return 0.995 - self:GetVar("basis_staminarecover") * 0.005 * self:GetHealthFactor()
+	return 0.995 - self:GetVar("basis_staminarecover") * 0.02 * self:GetHealthFactor()
 end
 
 function sharpeye:GetStamina()
@@ -87,9 +87,9 @@ end
 end*/
 
 function sharpeye:Modulation( magic, speedMod, shift )
-	local aa = -1^magic        + (( magic * 7 ) % 11) * 0.027
-	local bb = -1^(magic % 7)  + ((7 + magic * 11) % 29) * 0.011
-	local cc = -1^(magic % 11) + ((11 + magic * 3) % 37) * 0.008
+	local aa = (((magic % 2) == 0) and -1 or 1) 		* (( magic * 7 ) % 11) * 0.027
+	local bb = ((((magic % 7) % 2) == 0) and -1 or 1) 	* ((7 + magic * 11) % 29) * 0.011
+	local cc = ((((magic % 3) % 2) == 0) and -1 or 1) 	* ((11 + magic * 3) % 37) * 0.008
 	
 	return math.sin( CurTime()*aa*speedMod + bb*6 + shift ) * math.sin( CurTime()*bb*speedMod + cc*6 + shift ) * math.sin( CurTime()*cc*speedMod + aa*6 + shift )
 end
@@ -156,7 +156,7 @@ function sharpeye.Think( )
 		self.dat.player_Stamina = 0
 		
 	else
-		self.dat.player_Stamina = self.dat.player_Stamina + (-1 * self.dat.player_Stamina * (1 - self:GetBasisStaminaRecover()) * (1 - relativeSpeed) + self.dat.player_StaminaSpeedFactor * relativeSpeed) * correction * 0.2
+		self.dat.player_Stamina = self.dat.player_Stamina + ( -1 * self.dat.player_Stamina * (1 - self:GetBasisStaminaRecover()) * (1 - clampedSpeed) + self.dat.player_StaminaSpeedFactor * clampedSpeed) * correction * 0.2
 		self.dat.player_Stamina = math.Clamp( self.dat.player_Stamina, 0, 1 )
 		
 	end

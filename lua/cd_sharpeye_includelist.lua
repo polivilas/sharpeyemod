@@ -16,6 +16,7 @@ table.insert( ADDON_PROP, HAYFRAME_DIR .. "hayframe_backup.lua" )
 
 table.insert( ADDON_PROP, "cl_sharpeye_ground.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_motion.lua" )
+table.insert( ADDON_PROP, "cl_sharpeye_emotion.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_focus.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_sound.lua" )
 table.insert( ADDON_PROP, "cl_sharpeye_vision.lua" )
