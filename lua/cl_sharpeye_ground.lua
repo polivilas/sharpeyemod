@@ -30,6 +30,10 @@ function sharpeye:EXT_IsPCSEnabled()
 	return self:GetVar("ext_perfectedclimbswep") > 0
 end
 
+function sharpeye:EXT_IsLeeroyNewmanPFModEnabled()
+	return self:GetVar("ext_leeroynewmanpfmod") > 0
+end
+
 -- Player custom status
 function sharpeye:GetBasisHealthBehavior()
 	-- Default is 5, so 0.5

@@ -451,6 +451,8 @@ function sharpeye:BuildMenu()
 				category.List:AddItem( self:BuildParamPanel( "opt_firstpersondeath_highspeed", { Type = "bool", Text = "Enable Deathcam Highspeed Mode" } ) )
 				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nYou can cross \"SharpeYe's Stamina\" and \"Perfected Climb SWEP Fatigue\" (by -[SB]- Spy and Kogitsune) using this.", Wrap = true } ) )
 				category.List:AddItem( self:BuildParamPanel( "ext_perfectedclimbswep", { Type = "bool", Text = "Cross with Perfected Climb SWEP" } ) )
+				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nYou can cross \"SharpeYe's Motion\" and \"Player Falling\" (by LeEroy NeWmAn) using this.", Wrap = true } ) )
+				category.List:AddItem( self:BuildParamPanel( "ext_leeroynewmanpfmod", { Type = "bool", Text = "Cross with Player Falling (Mod)" } ) )
 				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "\nYou can enable SharpeYe to allow a Graphics Tablet or a Wiimote pointer to aim.", Wrap = true } ) )
 				category.List:AddItem( self:BuildParamPanel( "wiimote_enable", { Type = "bool", Text = "Enable Wiimote / Tablet input" } ) )
 				

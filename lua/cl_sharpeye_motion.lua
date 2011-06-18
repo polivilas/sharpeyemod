@@ -233,6 +233,10 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 		self.dat.motion_firstframe = true
 		return defaultReturn
 	end
+	if self:EXT_IsLeeroyNewmanPFModEnabled() and ply:GetNWBool("PlayerRagdoll") then
+		self.dat.motion_firstframe = true
+		return defaultReturn
+	end
 	
 
 	-- EKUSUTARA : DONT USE

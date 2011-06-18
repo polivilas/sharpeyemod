@@ -1,3 +1,5 @@
+1.74
+Added possible compatibility fix with LeEroy NeWmAn's Player falling Mod.
 1.731
 Fixed Motion being disabled by default.
 1.73

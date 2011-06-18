@@ -216,6 +216,7 @@ function sharpeye.Mount()
 	self:CreateVarParam( "bool", "opt_disableinthirdperson", "1")
 	
 	self:CreateVarParam( "bool", "ext_perfectedclimbswep", "1")
+	self:CreateVarParam( "bool", "ext_leeroynewmanpfmod", "1")
 	
 	self:CreateVarParam( "range", "detail_mastermod" , "5")
 	self:CreateVarParam( "range", "detail_crouchmod" , "5")
