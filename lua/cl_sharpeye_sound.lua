@@ -189,7 +189,7 @@ function sharpeye:SoundWind()
 		
 	end
 	
-	if not ply:Alive() and ValidEntity( ply:GetRagdollEntity() ) then
+	if not ply:Alive() and IsValid( ply:GetRagdollEntity() ) then
 		self.dat.wind_velocity = ply:GetRagdollEntity():GetVelocity():Length()
 		
 	elseif not self:IsInVehicle() then

@@ -18,8 +18,8 @@ end
 SHARPEYE_NAME = "SharpeYe"
 SHARPEYE_FOCUS_NAME = "SharpeYe :: Focus"
 
-SHARPEYE_FORCE_VERSION = false
-SHARPEYE_FORCE_USE_CLOUD = true
+SHARPEYE_FORCE_VERSION = true
+SHARPEYE_FORCE_USE_CLOUD = false
 
 if (CLIENT or SinglePlayer()) then
 	if (sharpeye and sharpeye.Unmount) then sharpeye.Unmount() end

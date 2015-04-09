@@ -311,7 +311,7 @@ function sharpeye.Unmount()
 		sharpeye_util.OutputLineBreak( )
 		sharpeye_util.OutputOut( "Unmounting ..." )
 		
-		if (SinglePlayer() and SERVER) or (not SinglePlayer() and CLIENT) then
+		if (game.SinglePlayer()  and SERVER) or (not game.SinglePlayer()  and CLIENT) then
 			hook.Remove("PlayerFootstep", "sharpeye_PlayerFootstep")
 			
 		end

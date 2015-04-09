@@ -23,7 +23,7 @@ end
 
 function sharpeye:IsUsingSandboxTools()
 	local myWeapon = LocalPlayer():GetActiveWeapon()
-	return ( ValidEntity(myWeapon) and ((myWeapon:GetClass() == "gmod_tool") or (myWeapon:GetClass() == "weapon_physgun")) )
+	return ( IsValid(myWeapon) and ((myWeapon:GetClass() == "gmod_tool") or (myWeapon:GetClass() == "weapon_physgun")) )
 end
 
 function sharpeye:EXT_IsPCSEnabled()
@@ -71,7 +71,7 @@ function sharpeye:GetStamina()
 	-- Dorky return ><
 	if sharpeye:EXT_IsPCSEnabled() then
 		local weapon = LocalPlayer():GetActiveWeapon()
-		if ValidEntity( weapon ) and (weapon:GetClass() == "climb_swep") then
+		if IsValid( weapon ) and (weapon:GetClass() == "climb_swep") then
 			
 			return math.Max(sharpeye.dat.player_Stamina, 1 - (LocalPlayer():GetNWInt("FATIG_AMOUNT") or 100) * 0.01)
 		end

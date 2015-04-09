@@ -19,11 +19,11 @@ function sharpeye:UpdateMenuPosition()
 	local pos = self:GetVar( "menu_position" )
 	if pos > 0 then
 		SHARPEYE_MENU:SetPos( ScrW() - SHARPEYE_MENU:GetWide(), 0 )
-		SHARPEYE_MENU:GetContents()._p_topPanel._p_positionBox:SetType( "left" )
+		--SHARPEYE_MENU:GetContents()._p_topPanel._p_positionBox:SetType( "left" )
 		
 	else
 		SHARPEYE_MENU:SetPos( 0, 0 )
-		SHARPEYE_MENU:GetContents()._p_topPanel._p_positionBox:SetType( "right" )
+		--SHARPEYE_MENU:GetContents()._p_topPanel._p_positionBox:SetType( "right" )
 		
 	end
 	
@@ -135,7 +135,7 @@ function sharpeye:BuildMenu()
 				
 				category.List:AddItem( self:BuildParamPanel( "noconvars", { Type = "panel_label", Text = "Breathing mode :" } ) )
 				do
-					local GeneralBreathingMulti = vgui.Create( "DMultiChoice" )
+					local GeneralBreathingMulti = vgui.Create( "DComboBox" )
 					GeneralBreathingMulti:AddChoice( "No breathing" )
 					GeneralBreathingMulti:AddChoice( "Based on player model" )
 					GeneralBreathingMulti:AddChoice( "Always Male" )
@@ -262,7 +262,7 @@ function sharpeye:BuildMenu()
 						tReverse[id] = hs
 					end
 					
-					local GeneralMulti = vgui.Create( "DMultiChoice" )
+					local GeneralMulti = vgui.Create( "DComboBox" )
 					GeneralMulti:AddChoice( "Custom" )     // 1
 					GeneralMulti:AddChoice( "Old school" ) // 2
 					GeneralMulti:AddChoice( "Slight pan" ) // 3
@@ -934,16 +934,6 @@ function sharpeye:BuildHeader( mainPanel, sHeaderName )
 		end
 		subTitle:SetParent( topPanel )
 		
-		local MY_VERSION, ONLINE_VERSION = sharpeye_internal.GetVersionData()
-		if ((MY_VERSION < ONLINE_VERSION) and sharpeye_cloud:IsUsingCloud()) then
-			subTitle:SetToolTip( "There is an update ! You're currently using a temporary copy of the new version (You have v" .. tostring( MY_VERSION ) .. " installed)." )
-			subTitle.Think = function (self)
-				local blink = 127 + (math.sin( math.pi * CurTime() * 0.5 ) + 1 ) * 64
-				self:SetColor( Color( 255, 255, 255, blink ) ) // TODO : ?
-				
-			end
-			
-		end
 		
 		local enableBox = self:BuildParamPanel( "core_enable", { Type = "bool_nolabel", Style = "grip" } )
 		enableBox:SetParent( title )
@@ -991,19 +981,6 @@ function sharpeye:BuildHeader( mainPanel, sHeaderName )
 		loadChangelog:SetParent( subTitle )
 		loadChangelog:SetToolTip( "Press to view the changelog." )
 		
-		if MY_VERSION < ONLINE_VERSION then
-			loadChangelog.PaintOver = function ( self )
-				local blink = (math.sin( math.pi * CurTime() * 0.5 ) + 1 ) * 64
-				surface.SetDrawColor( 255, 255, 255, blink )
-				draw.RoundedBoxEx( 2, 0, 0, self:GetWide(), self:GetTall(), Color( 255, 255, 255, blink ), true, true, true, true  )
-				
-			end
-			loadChangelog:SetToolTip( "There are updates ! You should update your Locale." )
-			
-		else
-			loadChangelog:SetToolTip( "Press to view the changelog." )
-			
-		end
 		
 		
 		topPanel._p_title = title

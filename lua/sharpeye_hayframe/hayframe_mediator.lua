@@ -228,8 +228,8 @@ function HAY_MAIN:InitializeGenericConstructors()
 	end , "noconvars" )
 	
 	self:RegisterParamType( "panel_sysbutton" , function( sFullConvarName, stData )	
-		local myPanel = vgui.Create("DSysButton")
-		myPanel:SetType( stData.Style or "grip" )
+		local myPanel = vgui.Create("DButton")
+		--myPanel:SetType( stData.Style or "grip" )
 		if stData.DoClick then
 			myPanel.DoClick = function( ... )
 				if self:ParamBridgeCall( stData ) then
@@ -272,7 +272,7 @@ function HAY_MAIN:InitializeGenericConstructors()
 	
 	self:RegisterParamType( "bool_nolabel" , function( sConvarName, stData )
 		local myPanel = vgui.Create( "DCheckBox" )
-		myPanel:SetType( stData.Style or "tick" )
+		--myPanel:SetType( stData.Style or "tick" )
 		myPanel:SetConVar( self:GetVarName( sConvarName ) )
 		
 		return myPanel

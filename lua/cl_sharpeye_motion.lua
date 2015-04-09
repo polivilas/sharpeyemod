@@ -57,7 +57,7 @@ function sharpeye:IsInThirdPersonMode()
 end
 
 function sharpeye:IsInRagdollMode()
-	return self:IsFirstPersonDeathEnabled() and (self:IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and ValidEntity( LocalPlayer():GetRagdollEntity() )
+	return self:IsFirstPersonDeathEnabled() and (self:IsFirstPersonDeathHighSpeed() or not LocalPlayer():Alive()) and IsValid( LocalPlayer():GetRagdollEntity() )
 	
 end
 
@@ -246,9 +246,9 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	--end
 	
 	-- EKUSUTARA 
-	if not self.dat.player_oriangle then
+	--if not self.dat.player_oriangle then
 		self.dat.player_oriangle = Angle(0,0,0)
-	end
+	--end
 	
 	self.dat.player_oriangle.p = angles.p
 	self.dat.player_oriangle.y = angles.y
@@ -311,7 +311,7 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	
 	--WEAPON TAP
 	local wep = ply:GetActiveWeapon()
-	if ( ValidEntity( wep ) ) then
+	if ( IsValid( wep ) ) then
 	
 		local func = wep.GetViewModelPosition
 		if ( func ) then

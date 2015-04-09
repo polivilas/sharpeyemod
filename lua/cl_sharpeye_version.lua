@@ -9,14 +9,14 @@
 
 sharpeye_internal = {}
 
-local MY_VERSION = tonumber(string.Explode( "\n", file.Read("sharpeye.txt"))[1])
+local MY_VERSION = 1.74
 local ONLINE_VERSION = nil
 local DOWNLOAD_LINK = nil
 local RECEIVED_RESPONSE = false
 local CONTENTS_REPLICATE = nil
 
 function sharpeye_internal.IsUsingCloud()
-	return sharpeye_cloud and sharpeye_cloud.IsUsingCloud and sharpeye_cloud:IsUsingCloud() or nil
+	return false
 end
 
 function sharpeye_internal.HasReceivedResponse()
@@ -55,6 +55,6 @@ function sharpeye_internal.ReceiveVersion( args, contents , size )
 end
 
 function sharpeye_internal.QueryVersion( funcCallback )
-	http.Get( "http://sharpeyemod.googlecode.com/svn/trunk/data/sharpeye.txt", "", sharpeye_internal.ReceiveVersion, funcCallback )
+	--http.Fetch( "http://sharpeyemod.googlecode.com/svn/trunk/data/sharpeye.txt", "", sharpeye_internal.ReceiveVersion, funcCallback )
 	
 end
