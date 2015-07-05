@@ -110,7 +110,7 @@ function sharpeye.Compatibility_MakeSCarsCompatible( optbForce )
 		local veh = LocalPlayer():GetVehicle()
 		local isScarSeat = 0
 		
-		if ValidEntity(veh) then
+		if IsValid(veh) then
 			isScarSeat = veh:GetNetworkedInt( "SCarSeat" )
 		end
 		
@@ -250,7 +250,7 @@ function sharpeye.Compatibility_MakeWeaponSeatsCompatible( optbForce )
 	local function WeaponSeat_DrawPlayerInSeat()
 		for key, ply in pairs(player.GetAll()) do
 			local seat = ply:GetNWEntity("weapon seat")
-			if ValidEntity(seat) and ValidEntity(ply) then
+			if IsValid(seat) and IsValid(ply) then
 				local posang = seat:GetAttachment(seat:LookupAttachment("vehicle_feet_passenger0"))
 				local angles = seat:GetAngles()
 				angles:RotateAroundAxis(seat:GetUp(), 90)
@@ -269,7 +269,7 @@ function sharpeye.Compatibility_MakeWeaponSeatsCompatible( optbForce )
 	function sharpeye.Compatibility_WeaponSeat(ply, origin, angles, fov, tCalcView)
 		WeaponSeat_DrawPlayerInSeat()
 		local seat = ply:GetNWEntity("weapon seat")
-		if ply:GetNWBool("is in weapon seat") and ValidEntity(seat) and not ply.weapon_seat_visible then
+		if ply:GetNWBool("is in weapon seat") and IsValid(seat) and not ply.weapon_seat_visible then
 			local posang = seat:GetAttachment(seat:LookupAttachment("vehicle_feet_passenger0"))
 			tCalcView.origin = posang.Pos + posang.Ang:Up() * 25
 			return true

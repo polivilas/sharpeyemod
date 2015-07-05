@@ -1,0 +1,11 @@
+{
+	"title"		:	"SharpeYe",
+	"type"		:	"Effects",
+	"tags"		:	[ "Fun", "Realism" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*"
+	]
+}

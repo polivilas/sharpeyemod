@@ -113,7 +113,7 @@ function sharpeye_focus:EvaluateConfigVars( optbNoPlayer )
 	FOCUS_MOUSESENSITIVITY = 1
 	FOCUS_ZOOMTIME         = 1.0
 	
-	FOCUS_FLIP         = optbNoPlayer and false or LocalPlayer():GetActiveWeapon().ViewModelFlip
+	--FOCUS_FLIP         = optbNoPlayer and false or LocalPlayer():GetActiveWeapon().ViewModelFlip
 
 	FOCUS_LIMITANGLE_X = relaxMode and 0 or sharpeye:GetVar("detail_focus_anglex" )
 	FOCUS_LIMITANGLE_Y = relaxMode and 0 or sharpeye:GetVar("detail_focus_angley" )

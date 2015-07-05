@@ -336,8 +336,9 @@ function sharpeye.CalcView( ply, origin, angles, fov )
 	--end
 	
 	--WEAPON TAP END : ADD BOB
+	if !self:IsNoclipping() then
 	view.vm_angles = view.vm_angles + view.vm_angle_aimdelta
-	
+	end
 	if sharpeye_drops and sharpeye_drops:IsEnabled() then
 		sharpeye_drops:AppendCalcView( view )
 	end
